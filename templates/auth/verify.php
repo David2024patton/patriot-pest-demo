@@ -1,6 +1,6 @@
 <?php
 /**
- * auth/verify.php — the code-entry step, styled to match the sign-in page.
+ * auth/verify.php - the code-entry step, styled to match the sign-in page.
  * Vars: $purpose, $action (POST endpoint), $sentTo (flash: 'sent' | 'to' | 'error').
  */
 $action = $data['action'] ?? '/login/verify';

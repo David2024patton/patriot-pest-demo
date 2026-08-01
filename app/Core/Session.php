@@ -1,6 +1,6 @@
 <?php
 /**
- * Session — hardened session management.
+ * Session - hardened session management.
  *
  * Fixes the security debt in the old bootstrap:
  *   - use_strict_mode = 1  (rejects uninitialized session ids → session-fixation defense)

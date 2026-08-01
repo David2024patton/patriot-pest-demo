@@ -1,15 +1,15 @@
 /* ==========================================================================
-   app.css — the LIGHT authenticated app shell.
+   app.css - the LIGHT authenticated app shell.
 
-   The marketing site is dark (olive/cream). The authenticated areas — staff
-   dashboard, customer portal, and the CMS — flip to a clean, paper-white
+   The marketing site is dark (olive/cream). The authenticated areas - staff
+   dashboard, customer portal, and the CMS - flip to a clean, paper-white
    workspace so staff can read data all day without fatigue.
 
    How it works: every component in admin.css/styles.css is driven by the CSS
    custom properties defined in styles.css :root. We RE-DECLARE those vars on
    body.appshell-body, mapping the dark olive ramp onto a light paper ramp.
    Everything downstream (panels, tables, badges, forms, buttons) re-skins
-   automatically — no per-component overrides needed except where a component
+   automatically - no per-component overrides needed except where a component
    hard-codes a dark color (notices, table headers) which we fix below.
 
    Layout: a fixed LEFT sidebar (desktop) that collapses to an off-canvas

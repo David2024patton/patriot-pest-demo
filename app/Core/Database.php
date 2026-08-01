@@ -1,6 +1,6 @@
 <?php
 /**
- * Database — SQLite (PDO) access layer.
+ * Database - SQLite (PDO) access layer.
  *
  * Replaces the old dual-layer setup (a PPDatabase singleton plus a dead MySQL
  * helper that silently returned null). This is the single source of DB access:
@@ -147,7 +147,7 @@ final class Database
 
     /**
      * Insert an associative array as a row; returns the new row id.
-     * Column names come from code (never user input) — values are bound.
+     * Column names come from code (never user input) - values are bound.
      */
     public function insert(string $table, array $data): int
     {

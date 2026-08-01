@@ -1,6 +1,6 @@
 <?php
 /**
- * Config — environment + configuration loader.
+ * Config - environment + configuration loader.
  *
  * Replaces the old hand-rolled `.env` parser (which mishandled quoting and
  * escaping). This version:

@@ -1,5 +1,5 @@
 # ============================================================
-# Patriot Pest Control — Apache config (public/ is the web root)
+# Patriot Pest Control - Apache config (public/ is the web root)
 # All requests route to index.php EXCEPT real files (assets, etc).
 # Sensitive directories (app, config, database, storage) live OUTSIDE
 # public/ and are additionally blocked here as defense-in-depth.

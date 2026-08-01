@@ -1,6 +1,6 @@
 <?php
 /**
- * Geo — visitor region detection for localizing the site (phone number, etc.).
+ * Geo - visitor region detection for localizing the site (phone number, etc.).
  *
  * Patriot runs two phone lines: the main WA/ID/OR line and a dedicated Arizona
  * line. This class figures out which line to show a visitor based on where they
@@ -8,11 +8,11 @@
  * everyone else sees the main line.
  *
  * Detection order (first hit wins):
- *   1. Session cache — resolved once per visit, never re-computed per request.
- *   2. GEO_FORCE_REGION env var — lets you preview a region (e.g. "az") locally.
- *   3. On-disk cache keyed by IP (7-day TTL) — repeat visitors skip the lookup.
+ *   1. Session cache - resolved once per visit, never re-computed per request.
+ *   2. GEO_FORCE_REGION env var - lets you preview a region (e.g. "az") locally.
+ *   3. On-disk cache keyed by IP (7-day TTL) - repeat visitors skip the lookup.
  *   4. A fast GeoIP lookup (ip-api.com, no key needed) with a short timeout.
- *   5. Default: 'wa' (the main line) — we never block or fail a page over this.
+ *   5. Default: 'wa' (the main line) - we never block or fail a page over this.
  *
  * It is deliberately fail-open: any error, timeout, or private/localhost IP just
  * yields the default region. Localization is a nicety, never a dependency.

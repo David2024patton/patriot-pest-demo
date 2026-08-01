@@ -1,4 +1,4 @@
-<?php /** pages/help.php — help center. Vars: none. */ ?>
+<?php /** pages/help.php - help center. Vars: none. */ ?>
 <section class="block">
   <div class="wrap">
     <div class="eyebrow">SUPPORT // HELP CENTER</div>
@@ -16,7 +16,7 @@
       </div>
       <div class="card">
         <h3 style="font-family:var(--display);color:var(--cream)">🔐 Account Access</h3>
-        <p style="color:var(--khaki);line-height:1.7;margin:.5rem 0">Everyone signs in passwordless — we email a secure code and send you to the right dashboard. <a href="/login" style="color:var(--orange)">Go to sign in ▸</a></p>
+        <p style="color:var(--khaki);line-height:1.7;margin:.5rem 0">Everyone signs in passwordless. We email a secure code and send you to the right dashboard. <a href="/login" style="color:var(--orange)">Go to sign in ▸</a></p>
       </div>
       <div class="card">
         <h3 style="font-family:var(--display);color:var(--cream)">📅 Reschedule Service</h3>

@@ -1,6 +1,6 @@
 <?php
 /**
- * BlogController — the blog, rendered through ONE unified template.
+ * BlogController - the blog, rendered through ONE unified template.
  *
  * Posts live in the `posts` table and are managed from the admin CMS. Every
  * post uses the same template (pages/blog-post) so any selected pest photo
@@ -32,7 +32,7 @@ class BlogController extends PageController
         );
 
         echo View::page('pages/blog-index', ['posts' => $posts], $this->meta(
-            'Pest Control Blog & Tips — Seasonal Guides | Patriot Pest Control',
+            'Pest Control Blog & Tips - Seasonal Guides | Patriot Pest Control',
             'Expert pest control tips, seasonal guides, and identification help for WA, ID, OR, AZ. Written by licensed technicians.',
             '/blogs',
             ['crumb' => [['Home', '/'], ['Blog', '/blogs']]]

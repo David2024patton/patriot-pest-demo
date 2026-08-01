@@ -1,6 +1,6 @@
 <?php
 /**
- * staff/messages.php — internal message center.
+ * staff/messages.php - internal message center.
  * Vars: $messages, $isAdmin.
  */
 $messages = $data['messages'] ?? [];

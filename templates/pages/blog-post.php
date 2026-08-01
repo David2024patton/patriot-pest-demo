@@ -1,6 +1,6 @@
 <?php
 /**
- * pages/blog-post.php — the unified single-post template.
+ * pages/blog-post.php - the unified single-post template.
  *
  * Every post renders here, so the selected pest photo gets the identical tactical
  * treatment as the rest of the site. body_html was sanitized on save, so it's

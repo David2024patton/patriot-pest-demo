@@ -1,6 +1,6 @@
 <?php
 /**
- * bin/fix-flea-tick-split.php — split the combined "Fleas & Ticks" library entry
+ * bin/fix-flea-tick-split.php - split the combined "Fleas & Ticks" library entry
  * into two distinct pests (Fleas + Ticks), each with its own photo.
  *
  * The old single asset was a portrait SEM of a flea only (no tick), which on a

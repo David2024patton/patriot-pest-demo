@@ -1,13 +1,13 @@
 <?php
 /**
- * bin/fr-sync-customers.php — pull customers from FieldRoutes into the local
+ * bin/fr-sync-customers.php - pull customers from FieldRoutes into the local
  * cache, for EVERY configured district (WA + AZ). FieldRoutes stays the source
  * of truth; this only refreshes identity fields and never overwrites local
  * opt-out flags (is_no_call / dnc_reason).
  *
  * Behaviour:
  *   - If no district is configured (keys blank in .env), it prints exactly which
- *     env vars to fill and exits 0 (graceful — that is the expected pre-creds
+ *     env vars to fill and exits 0 (graceful - that is the expected pre-creds
  *     state, not an error).
  *   - Otherwise it syncs each district independently; one failing district does
  *     not abort the other. On success it stamps meta.fr_last_sync.
@@ -26,7 +26,7 @@ $only = strtolower(trim($argv[1] ?? ''));
 
 if (!FieldRoutes::isConfigured()) {
     $missing = FieldRoutes::missingDistricts();
-    echo "FieldRoutes is NOT configured yet — no live pull performed.\n\n";
+    echo "FieldRoutes is NOT configured yet. No live pull performed.\n\n";
     echo "To enable dual-district sync, set these in .env (the base URL is shared):\n";
     echo "  FIELDROUTES_BASE_URL=https://patriotpestc.fieldroutes.com\n";
     foreach ($missing as $code) {
@@ -88,7 +88,7 @@ if ($ran > 0 && $totals['errors'] === 0) {
         [json_encode($totals)]);
     echo "\nRecorded meta.fr_last_sync = {$now} (UTC)\n";
 } elseif ($totals['errors'] > 0) {
-    echo "\nSync completed WITH errors — meta.fr_last_sync NOT advanced.\n";
+    echo "\nSync completed WITH errors. meta.fr_last_sync NOT advanced.\n";
 }
 
 echo "\nLocal customer cache now: " . (int) $db->scalar('SELECT COUNT(*) FROM customers') . " row(s)\n";

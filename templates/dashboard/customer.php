@@ -1,6 +1,6 @@
 <?php
 /**
- * dashboard/customer.php — the customer portal overview.
+ * dashboard/customer.php - the customer portal overview.
  * Vars: $customer (row|null), $tickets, $messages, $name.
  */
 $customer = $data['customer'] ?? null;
@@ -33,10 +33,10 @@ $name     = $data['name'] ?? 'Customer';
     <div class="panel">
       <h3>Account Details</h3>
       <dl class="kv" style="margin-top:.8rem">
-        <dt>Account #</dt><dd class="mono"><?= $view->e($customer['account_number'] ?? '—') ?></dd>
-        <dt>Name</dt><dd><?= $view->e($customer['name'] ?? '—') ?></dd>
-        <dt>Email</dt><dd><?= $view->e($customer['email'] ?? '—') ?></dd>
-        <dt>Phone</dt><dd><?= $view->e($customer['phone'] ?? '—') ?></dd>
+        <dt>Account #</dt><dd class="mono"><?= $view->e($customer['account_number'] ?? 'N/A') ?></dd>
+        <dt>Name</dt><dd><?= $view->e($customer['name'] ?? 'N/A') ?></dd>
+        <dt>Email</dt><dd><?= $view->e($customer['email'] ?? 'N/A') ?></dd>
+        <dt>Phone</dt><dd><?= $view->e($customer['phone'] ?? 'N/A') ?></dd>
         <dt>Service Address</dt><dd><?= $view->e(trim(($customer['address'] ?? '') . ', ' . ($customer['city'] ?? '') . ', ' . ($customer['state'] ?? '') . ' ' . ($customer['zip'] ?? ''), ', ')) ?></dd>
         <dt>Status</dt><dd><span class="badge <?= $view->e($customer['status']) ?>"><?= $view->e(ucfirst($customer['status'] ?? 'active')) ?></span></dd>
       </dl>
@@ -81,6 +81,6 @@ $name     = $data['name'] ?? 'Customer';
       </div>
     </div>
 
-    <div class="promise" style="margin-top:1.6rem"><b>Need something?</b> Call <a href="tel:+15094715767" style="color:var(--orange)">(509) 471-5767</a> or use the contact form — we're here to help. <a href="/help" style="color:var(--orange)">Help Center ▸</a></div>
+    <div class="promise" style="margin-top:1.6rem"><b>Need something?</b> Call <a href="tel:+15094715767" style="color:var(--orange)">(509) 471-5767</a> or use the contact form. We're here to help. <a href="/help" style="color:var(--orange)">Help Center ▸</a></div>
   </div>
 </div>

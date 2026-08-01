@@ -1,6 +1,6 @@
 <?php
 /**
- * admin/posts.php — list every post (draft + published). Vars: $posts, $flash.
+ * admin/posts.php - list every post (draft + published). Vars: $posts, $flash.
  */
 $posts = $data['posts'] ?? [];
 $flash = $data['flash'] ?? null;
@@ -22,10 +22,10 @@ $flash = $data['flash'] ?? null;
       <?php foreach ($posts as $p): ?>
       <tr>
         <td><a href="/admin/posts/<?= (int)$p['id'] ?>"><?= $view->e($p['title']) ?></a><div class="mono" style="font-size:.7rem;color:var(--olive-300)">/blogs/<?= $view->e($p['slug']) ?></div></td>
-        <td class="muted"><?= $view->e($p['pest_name'] ?? '—') ?></td>
+        <td class="muted"><?= $view->e($p['pest_name'] ?? 'N/A') ?></td>
         <td><span class="badge <?= $view->e($p['status']) ?>"><?= $view->e(ucfirst($p['status'])) ?></span></td>
         <td class="num"><?= (int)$p['views'] ?></td>
-        <td class="num"><?= $view->e($p['updated_at'] ? date('M j, Y', strtotime($p['updated_at'])) : '—') ?></td>
+        <td class="num"><?= $view->e($p['updated_at'] ? date('M j, Y', strtotime($p['updated_at'])) : 'N/A') ?></td>
         <td><div class="row-actions">
           <a href="/admin/posts/<?= (int)$p['id'] ?>">Edit</a>
           <?php if ($p['status'] === 'published'): ?><a href="/blogs/<?= $view->e($p['slug']) ?>" target="_blank">View ↗</a><?php endif; ?>

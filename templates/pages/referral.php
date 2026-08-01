@@ -1,4 +1,4 @@
-<?php /** pages/referral.php — referral program. Vars: none. */ ?>
+<?php /** pages/referral.php - referral program. Vars: none. */ ?>
 <section class="block">
   <div class="wrap">
     <div class="eyebrow">ALLIES // REFERRAL PROGRAM</div>

@@ -1,6 +1,6 @@
 <?php
 /**
- * PageController — public marketing pages.
+ * PageController - public marketing pages.
  *
  * Each action assembles the page's data (from the DB where content is
  * editable, e.g. the pest threat board) plus its SEO meta, then renders
@@ -41,7 +41,7 @@ class PageController
     }
 
     /**
-     * LocalBusiness JSON-LD (PestControl subtype) — the stable entity block
+     * LocalBusiness JSON-LD (PestControl subtype) - the stable entity block
      * emitted on every page. geo + areaServed + sameAs are the fields AI
      * answer engines weight most for local businesses.
      */
@@ -87,7 +87,7 @@ class PageController
     }
 
     /**
-     * Homepage — the flagship. The threat board is DB-driven: it renders every
+     * Homepage - the flagship. The threat board is DB-driven: it renders every
      * pest in the photo library (real photos, tactical treatment), not a
      * hardcoded nine.
      */
@@ -115,7 +115,7 @@ class PageController
     public function about(): void
     {
         echo View::page('pages/about', [], $this->meta(
-            'About Us — Veteran-Owned | Patriot Pest Control',
+            'About Us - Veteran-Owned | Patriot Pest Control',
             'Founded by U.S. Military Veteran Skyler Rose. Military discipline, integrity, and eco-friendly pest control across Washington, Idaho, Oregon & Arizona.',
             '/about'
         ));
@@ -127,7 +127,7 @@ class PageController
         $db    = Database::instance();
         $pests = $db->fetchAll('SELECT slug, name, filename, category FROM pest_photos ORDER BY name');
         echo View::page('pages/services', ['pests' => $pests], $this->meta(
-            'Pest Control Services — Every Pest We Treat | Patriot Pest Control',
+            'Pest Control Services - Every Pest We Treat | Patriot Pest Control',
             'Complete pest control: ants, spiders, rodents, bed bugs, termites, mosquitoes, wasps, roaches, scorpions, wildlife & more across WA, ID, OR, AZ.',
             '/services'
         ));
@@ -137,7 +137,7 @@ class PageController
     public function prices(): void
     {
         echo View::page('pages/prices', [], $this->meta(
-            'Pricing & Plans — Transparent Online Pricing | Patriot Pest Control',
+            'Pricing & Plans - Transparent Online Pricing | Patriot Pest Control',
             'Transparent pest control pricing. One-time, seasonal, year-round & premium plans. Free quotes, no hidden fees, 90-day warranty.',
             '/prices'
         ));
@@ -147,7 +147,7 @@ class PageController
     public function areas(): void
     {
         echo View::page('pages/areas', ['states' => $this->states()], $this->meta(
-            'Service Areas — WA, ID, OR & AZ | Patriot Pest Control',
+            'Service Areas - WA, ID, OR & AZ | Patriot Pest Control',
             'Pest control service areas across Spokane WA, Coeur d\'Alene ID, Hermiston OR, Phoenix AZ and surrounding communities.',
             '/service-areas'
         ));
@@ -187,7 +187,7 @@ class PageController
             'old'     => Session::pullFlash('old', []),
             'analytics_event' => Session::pullFlash('analytics_event'),
         ], $this->meta(
-            'Contact Us — Free Quotes & Same-Day Service | Patriot Pest Control',
+            'Contact Us - Free Quotes & Same-Day Service | Patriot Pest Control',
             'Call (509) 471-5767 (WA/ID/OR) or (602) 755-8414 (AZ). Free quotes, same-day pest control service, 24/7 line.',
             '/contact'
         ));
@@ -211,7 +211,7 @@ class PageController
         }
         // TODO (integrations phase): persist + notify + auto-reply via mailer.
         Logger::info('Contact form submitted', ['email' => $_POST['email'] ?? '']);
-        Session::flash('success', 'Thanks — we received your message and will respond within one business day.');
+        Session::flash('success', 'Thanks. We received your message and will respond within one business day.');
         Session::flash('analytics_event', 'generate_lead');
         header('Location: /contact');
         exit;
@@ -219,7 +219,7 @@ class PageController
 
     public function referral(): void
     {
-        echo View::page('pages/referral', [], $this->meta('Referral Program — Earn $25 | Patriot Pest Control', 'Refer a neighbor, both get $25. Patriot Pest Control referral program.', '/referral'));
+        echo View::page('pages/referral', [], $this->meta('Referral Program - Earn $25 | Patriot Pest Control', 'Refer a neighbor, both get $25. Patriot Pest Control referral program.', '/referral'));
     }
 
     public function socials(): void

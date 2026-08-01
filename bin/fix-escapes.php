@@ -1,6 +1,6 @@
 <?php
 /**
- * bin/fix-escapes.php — one-shot data repair.
+ * bin/fix-escapes.php - one-shot data repair.
  *
  * An earlier seed.php stored a few apostrophes as the literal six-character
  * sequence \u2019 (PHP single-quoted strings do not interpret \u escapes), so
@@ -43,4 +43,4 @@ foreach ($cols as $table => $fields) {
     }
 }
 
-echo $total === 0 ? "No \\u2019 sequences found — data already clean.\n" : "Done. $total column-value(s) repaired.\n";
+echo $total === 0 ? "No \\u2019 sequences found. Data already clean.\n" : "Done. $total column-value(s) repaired.\n";

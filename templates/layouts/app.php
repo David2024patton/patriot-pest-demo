@@ -1,11 +1,11 @@
 <?php
 /**
- * layouts/app.php — the LIGHT authenticated app shell.
+ * layouts/app.php - the LIGHT authenticated app shell.
  *
  * Wraps the staff dashboard, customer portal, and the CMS in a clean paper-white
  * workspace: a fixed left sidebar (desktop) that collapses to an off-canvas
  * drawer + a sticky 5-icon bottom bar (mobile). The center bottom icon is a
- * raised magnifier that opens the customer-search overlay (staff/admin) — or a
+ * raised magnifier that opens the customer-search overlay (staff/admin) - or a
  * raised "request" action for customers.
  *
  * Deliberately OMITS the marketing nav/footer and main.js (which injects the

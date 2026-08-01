@@ -1,6 +1,6 @@
 <?php
 /**
- * Front controller — every HTTP request enters here.
+ * Front controller - every HTTP request enters here.
  *
  * The old site relied on .htaccess rewriting to loose .php files plus a
  * router.php shim. This single entry point gives us one place to:
@@ -56,7 +56,7 @@ Router::get('/areas/{slug}',     [PageController::class, 'areaDetail']);
 Router::get('/blogs',            [BlogController::class, 'index']);
 Router::get('/blogs/{slug}',     [BlogController::class, 'show']);
 
-// ---------- Unified auth (passwordless email OTP — one login for everyone) ----------
+// ---------- Unified auth (passwordless email OTP - one login for everyone) ----------
 // The single login identifies the user (staff or customer), emails a code, then
 // routes them to the dashboard matching their authority level.
 Router::get('/login',         [AuthController::class, 'loginForm']);

@@ -1,6 +1,6 @@
 <?php
 /**
- * admin/media.php — the pest photo library. Vars: $photos, $flash.
+ * admin/media.php - the pest photo library. Vars: $photos, $flash.
  * This library is the single source of pest imagery used across posts and pages.
  */
 $photos = $data['photos'] ?? [];

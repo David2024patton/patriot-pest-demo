@@ -1,6 +1,6 @@
 <?php
 /**
- * pages/sitemap.php — HTML sitemap. Vars: $states (WA/ID/OR/AZ => name+cities).
+ * pages/sitemap.php - HTML sitemap. Vars: $states (WA/ID/OR/AZ => name+cities).
  */
 $states  = $data['states'] ?? [];
 $slugify = fn(string $s): string => trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($s)) ?? '', '-');

@@ -1,6 +1,6 @@
 <?php
 /**
- * pages/area-detail.php — a single service-area city landing page.
+ * pages/area-detail.php - a single service-area city landing page.
  * Vars: $city (city/state/stateName/slug).
  */
 $city = $data['city'] ?? [];

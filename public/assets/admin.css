@@ -1,5 +1,5 @@
 /* ==========================================================================
-   admin.css — UI for authenticated areas: login (OTP), customer & staff
+   admin.css - UI for authenticated areas: login (OTP), customer & staff
    dashboards, and the admin CMS. Loaded only on those routes (see layout).
    Reuses the palette variables defined in styles.css :root.
    ========================================================================== */
@@ -91,7 +91,7 @@ table.data .num { font-family: var(--mono); color: var(--khaki); }
 .auth-alt { margin-top: 1.4rem; font-size: .85rem; color: var(--khaki); }
 .auth-alt a { color: var(--orange); }
 
-/* OTP code entry — big, spaced, monospace */
+/* OTP code entry - big, spaced, monospace */
 .code-input { width: 100%; text-align: center; font-family: var(--mono) !important; font-size: 2rem !important; letter-spacing: .55em; padding: .8rem !important; text-indent: .55em; }
 
 /* ---------- media library / photo picker ---------- */
@@ -146,7 +146,7 @@ table.data .num { font-family: var(--mono); color: var(--khaki); }
 @media (max-width: 560px) { .kv { grid-template-columns: 1fr; } .kv dt { margin-top: .5rem; } }
 
 /* ==========================================================================
-   AUTH EXPERIENCE — the customer sign-in (split-screen, alive).
+   AUTH EXPERIENCE - the customer sign-in (split-screen, alive).
    Left: brand panel (ambient grid + radar sweep + rotating threat photo).
    Right: the sign-in form. Stacks on mobile.
    ========================================================================== */

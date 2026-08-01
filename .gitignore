@@ -1,5 +1,5 @@
 # ============================================================
-# Patriot Pest Control — .gitignore
+# Patriot Pest Control - .gitignore
 # SECURITY: never commit secrets, the database, or user data.
 # ============================================================
 
@@ -32,7 +32,7 @@ Thumbs.db
 .idea/
 .vscode/
 
-# --- Backups / archives (old site had 35MB zips committed — don't) ---
+# --- Backups / archives (old site had 35MB zips committed - don't) ---
 *.zip
 *.7z
 *.bak

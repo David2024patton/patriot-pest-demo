@@ -1,6 +1,6 @@
 <?php
 /**
- * Logger — lightweight structured file logger (PSR-3 inspired).
+ * Logger - lightweight structured file logger (PSR-3 inspired).
  *
  * Why it exists: the old site scattered `error_log()` calls and left a 350KB
  * `php_error.log` with no structure. This logger writes one file per day under
