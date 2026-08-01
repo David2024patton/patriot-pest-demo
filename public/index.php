@@ -70,6 +70,7 @@ $toLogin       = function () { header('Location: /login'); exit; };
 $toLoginVerify = function () { header('Location: /login/verify'); exit; };
 Router::get('/customer-auth',   $toLogin);
 Router::get('/staff',           $toLogin);
+Router::get('/dashboard',       $toLogin);  // convenience alias → login (redirects to correct dashboard after auth)
 Router::get('/staff-logout',    [AuthController::class, 'logout']);
 Router::get('/customer-verify', $toLoginVerify);
 Router::get('/staff-verify',    $toLoginVerify);
