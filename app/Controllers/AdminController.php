@@ -1,12 +1,12 @@
 <?php
 /**
- * AdminController — the WordPress-like CMS (admin-only).
+ * AdminController - the WordPress-like CMS (admin-only).
  *
  * Lets admins manage the site's content without touching code:
  *   - Blog posts: list → click to edit → create new. All posts share ONE
  *     template; the editor offers a pest-photo picker (the media library) so
  *     any selected photo gets the site's tactical treatment automatically.
- *   - Media: the pest photo library (pest_photos) — the single source of pest
+ *   - Media: the pest photo library (pest_photos) - the single source of pest
  *     imagery used across posts and pages.
  *   - Content: per-page editable blocks (expanded in the CMS phase).
  *

@@ -1,9 +1,9 @@
 <?php
 /**
- * Csrf — Cross-Site Request Forgery protection.
+ * Csrf - Cross-Site Request Forgery protection.
  *
  * The old staff-dashboard POST handlers (save settings, save/delete districts)
- * and several API actions had NO CSRF protection — only role checks. This class
+ * and several API actions had NO CSRF protection - only role checks. This class
  * provides the standard mitigating pattern:
  *
  *   - one random token per session, embedded in every form as a hidden field,

@@ -1,4 +1,4 @@
-<?php /** pages/links.php — complete link directory. Vars: none. */
+<?php /** pages/links.php - complete link directory. Vars: none. */
 $groups = [
     'Main' => [['/', 'Home'], ['/about', 'About Us'], ['/services', 'Services'], ['/prices', 'Pricing'], ['/service-areas', 'Service Areas'], ['/faqs', 'FAQs'], ['/contact', 'Contact']],
     'Top Services' => [['/pest/ants', 'Ant Control'], ['/pest/spiders', 'Spider Control'], ['/pest/rodents', 'Rodent Control'], ['/pest/bed-bugs', 'Bed Bug Treatment'], ['/pest/termites', 'Termite Control'], ['/pest/mosquitoes', 'Mosquito Control'], ['/pest/wasps', 'Wasp Removal'], ['/pest/scorpions', 'Scorpion Control']],

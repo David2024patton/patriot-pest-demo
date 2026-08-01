@@ -1,5 +1,5 @@
 # ============================================================
-# Patriot Pest Control — Production Dockerfile
+# Patriot Pest Control - Production Dockerfile
 # nginx + php-fpm in one container, non-root where possible
 # ============================================================
 FROM php:8.3-fpm-alpine

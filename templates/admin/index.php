@@ -1,6 +1,6 @@
 <?php
 /**
- * admin/index.php — CMS home. Vars: $stats (posts/published/photos/blocks), $flash.
+ * admin/index.php - CMS home. Vars: $stats (posts/published/photos/blocks), $flash.
  */
 $stats = $data['stats'] ?? [];
 $flash = $data['flash'] ?? null;

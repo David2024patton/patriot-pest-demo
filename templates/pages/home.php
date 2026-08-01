@@ -1,6 +1,6 @@
 <?php
 /**
- * pages/home.php — the flagship landing page.
+ * pages/home.php - the flagship landing page.
  *
  * The threat board is DB-driven: it renders EVERY pest in the photo library
  * ($pests), each with its real photo under the tactical treatment. Counters,
@@ -16,14 +16,14 @@ $pestCount = $data['pestCount'] ?? count($pests);
   <div id="xh-v"></div><div id="xh-h"></div><div id="xh-ring"></div>
   <div class="hud-top">
     <span>PATRIOT PEST CONTROL <span class="live">SYSTEMS ONLINE</span></span>
-    <span>47.6588° N / 117.4260° W — SPOKANE, WA</span>
+    <span>47.6588° N / 117.4260° W - SPOKANE, WA</span>
     <span id="hud-clock">--:--:--</span>
   </div>
   <div class="wrap hero-grid">
     <div>
       <div class="kicker"><span>🇺🇸</span> A PROUD VETERAN-OWNED AMERICAN COMPANY</div>
       <h1>Hostile pests?<br><span class="strike">Neutralized.</span></h1>
-      <p class="hero-sub">Military-precision pest control for homes and businesses across <b>Washington, Idaho, Oregon &amp; Arizona</b>. Eco-friendly treatments safe for your family and pets — with <b>same-day service</b> when it can't wait.</p>
+      <p class="hero-sub">Military-precision pest control for homes and businesses across <b>Washington, Idaho, Oregon &amp; Arizona</b>. Eco-friendly treatments safe for your family and pets, with <b>same-day service</b> when it can't wait.</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="<?= $view->phoneHref() ?>">☎ Call <?= $view->phone() ?> <small><?= $view->phoneLabel() ?></small></a>
         <a class="btn btn-ghost" href="/prices">View Plans ▸</a>
@@ -81,14 +81,14 @@ $pestCount = $data['pestCount'] ?? count($pests);
           <div class="drow"><dt>Service</dt><dd>U.S. MILITARY VETERAN <span class="redact">██████</span></dd></div>
           <div class="drow"><dt>Theater</dt><dd>WA · ID · OR · AZ</dd></div>
           <div class="drow"><dt>Clearance</dt><dd>LICENSED · BONDED · INSURED</dd></div>
-          <div class="drow"><dt>Status</dt><dd>ACTIVE — SAME-DAY RESPONSE</dd></div>
+          <div class="drow"><dt>Status</dt><dd>ACTIVE - SAME-DAY RESPONSE</dd></div>
         </dl>
       </div>
       <div>
         <h2 data-reveal>The operator behind <em>the operation.</em></h2>
-        <p class="lead" data-reveal>Patriot Pest Control was founded by <b>U.S. Military Veteran Skyler Rose</b> — bringing military discipline, integrity, and uncompromising excellence to pest control across four states. Over a decade of field experience. Thousands of homes and businesses protected.</p>
+        <p class="lead" data-reveal>Patriot Pest Control was founded by <b>U.S. Military Veteran Skyler Rose</b>, bringing military discipline, integrity, and uncompromising excellence to pest control across four states. Over a decade of field experience. Thousands of homes and businesses protected.</p>
         <blockquote class="quote" data-reveal>
-          <p>After serving our country, I founded Patriot Pest Control to continue serving American families and businesses with the same dedication, precision, and integrity I learned in the military. We're not just eliminating pests — we're protecting what matters most.</p>
+          <p>After serving our country, I founded Patriot Pest Control to continue serving American families and businesses with the same dedication, precision, and integrity I learned in the military. We're not just eliminating pests. We're protecting what matters most.</p>
           <footer><span class="medal">🎖️</span><div><b>Skyler Rose</b><small>FOUNDER &amp; VETERAN · PATRIOT PEST CONTROL</small></div></footer>
         </blockquote>
       </div>
@@ -127,8 +127,8 @@ $pestCount = $data['pestCount'] ?? count($pests);
     <div class="grid g4">
       <div class="card plan" data-reveal><span class="plan-tier">BRONZE</span><h3>One-Time Treatment</h3><p>A single targeted strike on an active infestation. Fast, focused, guaranteed.</p><a class="more" href="/prices">View Pricing ▸</a></div>
       <div class="card plan" data-reveal><span class="plan-tier">SILVER</span><h3>Seasonal Protection</h3><p>Scheduled seasonal treatments that keep the perimeter secure through every pest season.</p><a class="more" href="/prices">View Pricing ▸</a></div>
-      <div class="card plan featured" data-reveal><span class="rec">RECOMMENDED</span><span class="plan-tier">GOLD</span><h3>Year-Round Protection</h3><p>Our best-value plan — continuous year-round defense, priority scheduling, and free re-treatments.</p><a class="more" href="/prices">View Pricing ▸</a></div>
-      <div class="card plan" data-reveal><span class="plan-tier">PLATINUM</span><h3>Premium Comprehensive</h3><p>Maximum coverage — perimeter, interior, and specialty pests, every angle locked down.</p><a class="more" href="/prices">View Pricing ▸</a></div>
+      <div class="card plan featured" data-reveal><span class="rec">RECOMMENDED</span><span class="plan-tier">GOLD</span><h3>Year-Round Protection</h3><p>Our best-value plan: continuous year-round defense, priority scheduling, and free re-treatments.</p><a class="more" href="/prices">View Pricing ▸</a></div>
+      <div class="card plan" data-reveal><span class="plan-tier">PLATINUM</span><h3>Premium Comprehensive</h3><p>Maximum coverage: perimeter, interior, and specialty pests, every angle locked down.</p><a class="more" href="/prices">View Pricing ▸</a></div>
     </div>
   </div>
 </section>
@@ -146,7 +146,7 @@ $pestCount = $data['pestCount'] ?? count($pests);
       <div class="stat" data-reveal><span class="num" data-count="10">0</span><span class="unit">+</span><span class="cap">YEARS OF EXPERIENCE</span></div>
       <div class="stat" data-reveal><span class="num" data-count="48">0</span><span class="unit">-48H</span><span class="cap">EMERGENCY RESPONSE WINDOW</span></div>
     </div>
-    <div class="promise" data-reveal><b>🛡️ Our promise:</b> if pests return between scheduled visits, we re-treat at no additional cost. No hassles, no excuses. Licensed, bonded, and insured — with eco-friendly, low-toxicity products safe for kids, pets, and the environment.</div>
+    <div class="promise" data-reveal><b>🛡️ Our promise:</b> if pests return between scheduled visits, we re-treat at no additional cost. No hassles, no excuses. Licensed, bonded, and insured, with eco-friendly, low-toxicity products safe for kids, pets, and the environment.</div>
   </div>
 </section>
 
@@ -168,7 +168,7 @@ $pestCount = $data['pestCount'] ?? count($pests);
   <div class="wrap" style="text-align:center">
     <div class="eyebrow">FINAL ORDERS</div>
     <h2 data-reveal>Ready to go <em>pest-free?</em></h2>
-    <p class="lead" data-reveal>Book online in minutes or call the line — same-day service available across all four states. Free quotes, transparent pricing, zero hidden fees.</p>
+    <p class="lead" data-reveal>Book online in minutes or call the line. Same-day service available across all four states. Free quotes, transparent pricing, zero hidden fees.</p>
     <div class="hero-ctas" style="justify-content:center">
       <a class="btn btn-primary" href="<?= $view->phoneHref() ?>">☎ <?= $view->phone() ?> <small><?= $view->phoneLabel() ?></small></a>
       <a class="btn btn-ghost" href="/contact" data-track="quote_request">Free Quote ▸</a>

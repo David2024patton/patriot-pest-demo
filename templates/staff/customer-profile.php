@@ -1,6 +1,6 @@
 <?php
 /**
- * staff/customer-profile.php — a single customer ("like the original").
+ * staff/customer-profile.php - a single customer ("like the original").
  * Vars: $customer, $tickets, $messages, $notes, $isAdmin.
  */
 $c        = $data['customer'];
@@ -16,7 +16,7 @@ $noCall   = (int) ($c['is_no_call'] ?? 0) === 1;
     <div>
       <h1><?= $view->e($c['name'] ?? 'Customer') ?></h1>
       <div class="sub">
-        Account #<?= $view->e($c['account_number'] ?? '—') ?>
+        Account #<?= $view->e($c['account_number'] ?? 'N/A') ?>
         · <span class="badge <?= $view->e($c['status']) ?>"><?= $view->e(ucfirst($c['status'] ?? 'active')) ?></span>
         <?php if ($noCall): ?> · <span class="badge cancelled">No-Call</span><?php endif; ?>
       </div>
@@ -35,25 +35,25 @@ $noCall   = (int) ($c['is_no_call'] ?? 0) === 1;
     <div class="panel">
       <h3>Account Details</h3>
       <dl class="kv" style="margin-top:.8rem">
-        <dt>Name</dt><dd><?= $view->e($c['name'] ?? '—') ?></dd>
-        <dt>Email</dt><dd><?= $view->e($c['email'] ?? '—') ?></dd>
-        <dt>Phone</dt><dd><?= $view->e($c['phone'] ?? '—') ?></dd>
-        <dt>Address</dt><dd><?= $view->e($addr ?: '—') ?></dd>
-        <dt>District</dt><dd class="mono"><?= $view->e(strtoupper($c['district'] ?? '—')) ?></dd>
+        <dt>Name</dt><dd><?= $view->e($c['name'] ?? 'N/A') ?></dd>
+        <dt>Email</dt><dd><?= $view->e($c['email'] ?? 'N/A') ?></dd>
+        <dt>Phone</dt><dd><?= $view->e($c['phone'] ?? 'N/A') ?></dd>
+        <dt>Address</dt><dd><?= $view->e($addr ?: 'N/A') ?></dd>
+        <dt>District</dt><dd class="mono"><?= $view->e(strtoupper($c['district'] ?? 'N/A')) ?></dd>
         <dt>FieldRoutes ID</dt><dd class="mono"><?= $view->e($c['fr_id'] ?? 'not linked') ?></dd>
-        <dt>Last Service</dt><dd><?= $view->e($c['last_service'] ? date('M j, Y', strtotime($c['last_service'])) : '—') ?></dd>
-        <dt>Customer Since</dt><dd><?= $view->e(isset($c['created_at']) && $c['created_at'] ? date('M j, Y', strtotime($c['created_at'])) : '—') ?></dd>
+        <dt>Last Service</dt><dd><?= $view->e($c['last_service'] ? date('M j, Y', strtotime($c['last_service'])) : 'N/A') ?></dd>
+        <dt>Customer Since</dt><dd><?= $view->e(isset($c['created_at']) && $c['created_at'] ? date('M j, Y', strtotime($c['created_at'])) : 'N/A') ?></dd>
       </dl>
     </div>
 
     <div class="panel">
-      <h3>FieldRoutes — Live</h3>
+      <h3>FieldRoutes - Live</h3>
       <?php if (!$fr['configured']): ?>
         <p class="muted" style="margin-top:.6rem;line-height:1.7">Appointments, subscriptions &amp; billing stream straight from FieldRoutes so staff never leave this console.</p>
         <p class="muted" style="margin-top:.8rem;line-height:1.7"><span class="badge draft">Pending</span> &nbsp;Waiting on FieldRoutes API credentials in <code>.env</code> (WA + AZ) to connect this customer's live record.</p>
       <?php elseif (!$fr['linked']): ?>
         <p class="muted" style="margin-top:.6rem;line-height:1.7">FieldRoutes is connected, but this local record isn't linked to a FieldRoutes customer ID yet.</p>
-        <p class="muted" style="margin-top:.8rem;line-height:1.7">Run <strong>⟳ Sync FieldRoutes</strong> on the Customers page — it matches customers by email and links them automatically.</p>
+        <p class="muted" style="margin-top:.8rem;line-height:1.7">Run <strong>⟳ Sync FieldRoutes</strong> on the Customers page. It matches customers by email and links them automatically.</p>
       <?php else: ?>
         <?php if (!empty($fr['error'])): ?><div class="notice error">Couldn't reach FieldRoutes right now: <?= $view->e($fr['error']) ?></div><?php endif; ?>
 

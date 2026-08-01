@@ -1,4 +1,4 @@
-/* app.js — light app shell behaviors: mobile drawer + customer search overlay.
+/* app.js - light app shell behaviors: mobile drawer + customer search overlay.
    No dependencies. Loaded only on authenticated app routes (layouts/app.php). */
 (function () {
   'use strict';
@@ -65,7 +65,7 @@
       var status = c.status || 'active';
       return '<a class="cs-item" href="/staff/customers/' + encodeURIComponent(c.id) + '">' +
         '<span class="cs-av">' + esc(initials(c.name)) + '</span>' +
-        '<span><span class="cs-name">' + esc(c.name || '—') + '</span>' +
+        '<span><span class="cs-name">' + esc(c.name || 'N/A') + '</span>' +
         '<span class="cs-meta">' + esc(meta) + '</span></span>' +
         '<span class="cs-status badge ' + esc(status) + '">' + esc(status) + '</span>' +
         '</a>';
@@ -85,7 +85,7 @@
       .then(function (r) { return r.json(); })
       .then(function (data) { render(Array.isArray(data) ? data : (data.results || [])); })
       .catch(function () {
-        results.innerHTML = '<div class="csearch-empty">Search failed — please try again.</div>';
+        results.innerHTML = '<div class="csearch-empty">Search failed. Please try again.</div>';
       });
   }
 

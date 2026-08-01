@@ -1,6 +1,6 @@
 <?php
 /**
- * StaffController — the staff dashboard (the "real admin" of the old site).
+ * StaffController - the staff dashboard (the "real admin" of the old site).
  *
  * Phase 1 renders an overview with role-aware nav. Later phases rebuild the
  * full feature set (customers, appointments, tickets, cases, messages,
@@ -44,7 +44,7 @@ class StaffController extends PageController
     }
 
     /**
-     * Customer book — searchable list of the local customer cache. FieldRoutes
+     * Customer book - searchable list of the local customer cache. FieldRoutes
      * stays the source of truth; this is the offline-capable cache plus local
      * flags (no-call / status). Supports ?q= (name/phone/email/account) and
      * ?status= filtering.
@@ -122,7 +122,7 @@ class StaffController extends PageController
         // Live FieldRoutes panel (appointments + subscriptions). Only fetched when
         // the integration is configured AND this record is linked to an FR id; the
         // seeded fixtures (no fr_id) just show the "pending" state. Failures never
-        // break the page — they surface as a notice via $fr['error'].
+        // break the page - they surface as a notice via $fr['error'].
         $fr = ['configured' => FieldRoutes::isConfigured(), 'linked' => false, 'appointments' => [], 'subscriptions' => [], 'error' => null];
         $frId = $customer['fr_id'] ?? null;
         if ($fr['configured'] && $frId !== null && $frId !== '') {
@@ -151,7 +151,7 @@ class StaffController extends PageController
     }
 
     /**
-     * Staff message center — conversations to/from staff. Phase 1 lists the
+     * Staff message center - conversations to/from staff. Phase 1 lists the
      * local messages table; Twilio SMS/conversations plug in here later.
      */
     public function messages(): void
@@ -190,7 +190,7 @@ class StaffController extends PageController
     }
 
     /**
-     * "Sync now" — pull every WA + AZ customer from FieldRoutes into the local
+     * "Sync now" - pull every WA + AZ customer from FieldRoutes into the local
      * cache from inside the console (no CLI, no FR login). CSRF-guarded, with a
      * 60s cooldown so a stray double-click can't burn the per-minute rate limit.
      * Degrades gracefully: if the keys aren't in .env yet it just flashes that
@@ -202,7 +202,7 @@ class StaffController extends PageController
         @set_time_limit(180); // hundreds of customers, batched over the network
 
         if (!FieldRoutes::isConfigured()) {
-            Session::flash('fr_sync', ['type' => 'info', 'msg' => 'FieldRoutes is not configured yet — fill the WA & AZ keys in .env, then sync.']);
+            Session::flash('fr_sync', ['type' => 'info', 'msg' => 'FieldRoutes is not configured yet. Fill the WA & AZ keys in .env, then sync.']);
             header('Location: /staff/customers');
             exit;
         }
@@ -211,7 +211,7 @@ class StaffController extends PageController
         $last = $db->scalar("SELECT value FROM meta WHERE key = 'fr_last_sync'");
         if ($last && (time() - strtotime((string) $last)) < 60) {
             $ago = time() - strtotime((string) $last);
-            Session::flash('fr_sync', ['type' => 'info', 'msg' => "Synced {$ago}s ago — wait a moment before syncing again (FieldRoutes rate-limits reads)."]);
+            Session::flash('fr_sync', ['type' => 'info', 'msg' => "Synced {$ago}s ago. Wait a moment before syncing again (FieldRoutes rate-limits reads)."]);
             header('Location: /staff/customers');
             exit;
         }
@@ -249,7 +249,7 @@ class StaffController extends PageController
         }
 
         $cache = (int) $db->scalar('SELECT COUNT(*) FROM customers');
-        $msg   = 'FieldRoutes sync done — ' . implode(' · ', $parts) . ". Cache now {$cache} customer(s).";
+        $msg   = 'FieldRoutes sync done: ' . implode(' · ', $parts) . ". Cache now {$cache} customer(s).";
         Session::flash('fr_sync', ['type' => $totals['errors'] ? 'error' : 'success', 'msg' => $msg]);
         header('Location: /staff/customers');
         exit;

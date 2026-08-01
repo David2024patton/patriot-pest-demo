@@ -1,4 +1,4 @@
-<?php /** pages/prices.php — transparent plan structure. Vars: none. */ ?>
+<?php /** pages/prices.php - transparent plan structure. Vars: none. */ ?>
 <section class="block">
   <div class="wrap">
     <div class="eyebrow">SUPPLY MANIFEST // PRICING</div>
@@ -34,7 +34,7 @@
         <span class="rec">RECOMMENDED</span>
         <span class="plan-tier">GOLD</span>
         <h3 style="font-family:var(--display);color:var(--cream)">Year-Round Protection</h3>
-        <p style="color:var(--khaki);line-height:1.6">Our best-value plan — continuous year-round defense with priority scheduling.</p>
+        <p style="color:var(--khaki);line-height:1.6">Our best-value plan: continuous year-round defense with priority scheduling.</p>
         <ul style="margin:.8rem 0 0 1.1rem;color:var(--khaki);font-size:.9rem;line-height:1.7">
           <li>Year-round coverage</li>
           <li>Priority same-day service</li>
@@ -44,7 +44,7 @@
       <div class="card plan">
         <span class="plan-tier">PLATINUM</span>
         <h3 style="font-family:var(--display);color:var(--cream)">Premium Comprehensive</h3>
-        <p style="color:var(--khaki);line-height:1.6">Maximum coverage — perimeter, interior, and specialty pests, every angle locked down.</p>
+        <p style="color:var(--khaki);line-height:1.6">Maximum coverage: perimeter, interior, and specialty pests, every angle locked down.</p>
         <ul style="margin:.8rem 0 0 1.1rem;color:var(--khaki);font-size:.9rem;line-height:1.7">
           <li>Everything in Gold</li>
           <li>Specialty pest coverage</li>
@@ -52,7 +52,7 @@
         </ul>
       </div>
     </div>
-    <div class="promise" style="margin-top:1.6rem"><b>💲 Honest pricing:</b> exact costs depend on your home's size, the pest, and the severity. Get an accurate, no-obligation quote in minutes — call or book online. <b>Zero hidden fees, ever.</b></div>
+    <div class="promise" style="margin-top:1.6rem"><b>💲 Honest pricing:</b> exact costs depend on your home's size, the pest, and the severity. Get an accurate, no-obligation quote in minutes. Call or book online. <b>Zero hidden fees, ever.</b></div>
   </div>
 </section>
 

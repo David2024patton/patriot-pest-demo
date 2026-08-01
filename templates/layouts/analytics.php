@@ -1,11 +1,11 @@
 <?php
 /**
- * layouts/analytics.php — Google Analytics 4 + Google Ads (gtag.js).
+ * layouts/analytics.php - Google Analytics 4 + Google Ads (gtag.js).
  *
  * Ported from the original site (includes/header.php). IDs come from .env:
- *   GTAG_ID  — GA4 measurement id (G-…). The original shipped a placeholder
+ *   GTAG_ID  - GA4 measurement id (G-…). The original shipped a placeholder
  *              (G-XXXXXXXXXX); put the real id here when you have it.
- *   GADS_ID  — Google Ads conversion id (AW-18082646992 in the original).
+ *   GADS_ID  - Google Ads conversion id (AW-18082646992 in the original).
  *
  * Emitted only when at least one id is configured AND we're not in local dev
  * (set ANALYTICS_ENABLED=true to force it locally). This keeps localhost
@@ -23,7 +23,7 @@ if (!$__on) {
 // The gtag.js loader needs one id in the src; config() the rest below.
 $__loaderId = $__gtag ?: $__gads;
 ?>
-<!-- Google tag (gtag.js) — Analytics & Ads -->
+<!-- Google tag (gtag.js) - Analytics & Ads -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=<?= $view->e($__loaderId) ?>"></script>
 <script>
   window.dataLayer = window.dataLayer || [];

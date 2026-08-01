@@ -1,6 +1,6 @@
 <?php
 /**
- * admin/content.php — per-page editable content blocks. Vars: $blocks, $flash.
+ * admin/content.php - per-page editable content blocks. Vars: $blocks, $flash.
  * Phase 1 lists the registered blocks; inline editing lands in the CMS phase.
  */
 $blocks = $data['blocks'] ?? [];
@@ -14,7 +14,7 @@ $flash  = $data['flash'] ?? null;
   </div>
 
   <?php if (!$blocks): ?>
-    <div class="panel"><p class="muted">No content blocks are registered yet. Blocks let admins edit page sections (hero copy, intros, guarantees) without touching code — they'll appear here as the CMS phase registers them per page.</p></div>
+    <div class="panel"><p class="muted">No content blocks are registered yet. Blocks let admins edit page sections (hero copy, intros, guarantees) without touching code. They'll appear here as the CMS phase registers them per page.</p></div>
   <?php else: ?>
   <div class="table-wrap"><table class="data">
     <thead><tr><th>Page</th><th>Block</th><th>Type</th><th>Order</th><th>Updated</th></tr></thead>
@@ -25,7 +25,7 @@ $flash  = $data['flash'] ?? null;
         <td><?= $view->e($b['block_key']) ?></td>
         <td><span class="badge draft"><?= $view->e($b['block_type']) ?></span></td>
         <td class="num"><?= (int)$b['sort_order'] ?></td>
-        <td class="num"><?= $view->e($b['updated_at'] ? date('M j, Y', strtotime($b['updated_at'])) : '—') ?></td>
+        <td class="num"><?= $view->e($b['updated_at'] ? date('M j, Y', strtotime($b['updated_at'])) : 'N/A') ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

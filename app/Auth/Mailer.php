@@ -1,11 +1,11 @@
 <?php
 /**
- * Mailer — outbound email (login codes, reactivation campaigns, notifications).
+ * Mailer - outbound email (login codes, reactivation campaigns, notifications).
  *
  * Two transports:
  *   - local / debug: writes the full message to storage/logs/mail-YYYY-MM-DD.log
  *     so OTP codes and campaigns can be inspected without a real mailbox
- *     (this is an intentional debugging affordance — codes are visible in dev).
+ *     (this is an intentional debugging affordance - codes are visible in dev).
  *   - production: sends over SMTP (SSL/TLS) using the MAIL_* config.
  *
  * The SMTP client here is deliberately small (EHLO/AUTH LOGIN/MAIL/RCPT/DATA).
@@ -38,7 +38,7 @@ final class Mailer
         // Always keep a local copy for debugging/auditing.
         self::log($to, $subject, $body);
 
-        // In local dev (or with no SMTP configured) we stop at the log — the
+        // In local dev (or with no SMTP configured) we stop at the log - the
         // code/campaign is readable in storage/logs/mail-*.log.
         if (Config::isLocal() || $host === '') {
             Logger::info('Mail logged (dev mode, not sent)', ['to' => $to, 'subject' => $subject]);

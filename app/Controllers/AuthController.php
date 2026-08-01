@@ -1,9 +1,9 @@
 <?php
 /**
- * AuthController — ONE passwordless login for everyone.
+ * AuthController - ONE passwordless login for everyone.
  *
  * There is a single login page (/login). The user enters any identifier they
- * have — email, phone, or account number. We figure out who they are:
+ * have - email, phone, or account number. We figure out who they are:
  *
  *   1. Match the identifier against active STAFF first (by email).
  *   2. Otherwise match against CUSTOMERS (by email, phone, or account number).
@@ -51,7 +51,7 @@ class AuthController extends PageController
         }
         echo View::page('auth/login', [
             'flash' => Session::pullFlash('auth'),
-        ], $this->meta('Sign In | Patriot Pest Control', 'One secure sign-in for customers and staff. No password — we email you a code and send you to the right dashboard.', '/login'));
+        ], $this->meta('Sign In | Patriot Pest Control', 'One secure sign-in for customers and staff. No password. We email you a code and send you to the right dashboard.', '/login'));
     }
 
     /**
@@ -74,7 +74,7 @@ class AuthController extends PageController
         $db   = Database::instance();
         $dest = '/login/verify';
 
-        // 1) Staff (by email) — staff take priority so an admin email never
+        // 1) Staff (by email) - staff take priority so an admin email never
         //    accidentally resolves to a customer row.
         $staff = $db->fetch('SELECT id, email, name, role FROM staff WHERE email = ? AND active = 1', [$identifier]);
         if ($staff !== null) {
@@ -247,7 +247,7 @@ class AuthController extends PageController
         return '/customer-dashboard';
     }
 
-    /** Mask an email for display (j•••@example.com) — privacy in the UI. */
+    /** Mask an email for display (j•••@example.com) - privacy in the UI. */
     private function maskEmail(string $email): string
     {
         // Only mask things that look like emails; leave phones/accounts as-is.

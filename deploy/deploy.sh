@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-# Patriot Pest Control — Deployment Script
+# Patriot Pest Control - Deployment Script
 # Deploys to Dokploy server at 145.79.2.67
 # Usage: ./deploy.sh [app|audit|both]
 # ============================================================

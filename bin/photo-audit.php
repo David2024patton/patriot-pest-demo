@@ -1,6 +1,6 @@
 <?php
 /**
- * bin/photo-audit.php — READ-ONLY audit of the pest photo library.
+ * bin/photo-audit.php - READ-ONLY audit of the pest photo library.
  *
  * Prints one line per pest_photos row: slug | name | filename | category |
  * threat | exists | WxH | aspect  so we can see, at a glance, which assets are
@@ -23,13 +23,13 @@ echo str_repeat('-', 120) . "\n";
 foreach ($rows as $r) {
     $file = $dir . $r['filename'];
     $exists = is_file($file);
-    $dims = '—';
-    $aspect = '—';
+    $dims = 'N/A';
+    $aspect = 'N/A';
     if ($exists) {
         $sz = @getimagesize($file);
         if ($sz) {
             $dims = $sz[0] . 'x' . $sz[1];
-            $aspect = $sz[1] ? round($sz[0] / $sz[1], 2) : '—';
+            $aspect = $sz[1] ? round($sz[0] / $sz[1], 2) : 'N/A';
         }
     }
     printf("%-16s | %-22s | %-22s | %-9s | %3s | %-6s | %-10s | %s\n",

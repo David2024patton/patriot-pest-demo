@@ -1,6 +1,6 @@
 <?php
 /**
- * admin/post-edit.php — create/edit a post (with pest-photo picker).
+ * admin/post-edit.php - create/edit a post (with pest-photo picker).
  * Vars: $post (row|null), $photos (all pest_photos), $flash.
  * New posts POST to /admin/posts; existing to /admin/posts/{id}.
  */
@@ -50,7 +50,7 @@ $selPhoto = $post['pest_photo_id'] ?? null;
       <div class="field">
         <label for="season">Season</label>
         <select id="season" name="season">
-          <option value="">— none —</option>
+          <option value="">None</option>
           <?php foreach (['spring', 'summer', 'fall', 'winter'] as $s): ?>
             <option value="<?= $s ?>" <?= ($post['season'] ?? '') === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
           <?php endforeach; ?>
@@ -59,7 +59,7 @@ $selPhoto = $post['pest_photo_id'] ?? null;
       <div class="field">
         <label for="pest_category">Pest Category</label>
         <select id="pest_category" name="pest_category">
-          <option value="">— none —</option>
+          <option value="">None</option>
           <?php foreach (['insect', 'rodent', 'wildlife'] as $c): ?>
             <option value="<?= $c ?>" <?= ($post['pest_category'] ?? '') === $c ? 'selected' : '' ?>><?= ucfirst($c) ?></option>
           <?php endforeach; ?>
@@ -81,7 +81,7 @@ $selPhoto = $post['pest_photo_id'] ?? null;
 
     <div class="field">
       <label>Featured Pest Photo</label>
-      <div class="hint" style="margin-bottom:.7rem">Pick a photo from the library — it gets the site's tactical treatment automatically.</div>
+      <div class="hint" style="margin-bottom:.7rem">Pick a photo from the library. It gets the site's tactical treatment automatically.</div>
       <div class="picker">
         <label class="none"><input type="radio" name="pest_photo_id" value="" <?= $selPhoto ? '' : 'checked' ?>><span>No photo</span></label>
         <?php foreach ($photos as $ph): ?>
