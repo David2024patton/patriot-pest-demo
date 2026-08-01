@@ -138,7 +138,7 @@ class PageController
     {
         echo View::page('pages/prices', [], $this->meta(
             'Pricing & Plans - Transparent Online Pricing | Patriot Pest Control',
-            'Transparent pest control pricing. One-time, seasonal, year-round & premium plans. Free quotes, no hidden fees, 90-day warranty.',
+            'Transparent pest control pricing. Exterior-Only, Interior + Exterior, Priority, and Full Coverage plans. Free quotes, no hidden fees, 90-day warranty.',
             '/prices'
         ));
     }
