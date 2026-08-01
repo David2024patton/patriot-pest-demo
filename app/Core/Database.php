@@ -108,7 +108,11 @@ final class Database
         $stmt->execute(['schema_version']);
         $current = (int) ($stmt->fetchColumn() ?: 0);
 
-        $target = 1; // bump when schema.sql changes structurally
+        // Bump when schema.sql changes structurally. Re-running is safe: the
+        // schema file is all CREATE TABLE IF NOT EXISTS, so an older volume
+        // (e.g. schema_version=1 from before otp_codes existed) gets the
+        // missing tables added on boot without touching existing rows.
+        $target = 2;
         if ($current < $target) {
             $sql = file_get_contents($schemaFile);
             if ($sql !== false && trim($sql) !== '') {
