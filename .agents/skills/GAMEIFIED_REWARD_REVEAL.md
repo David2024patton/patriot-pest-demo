@@ -25,10 +25,23 @@ Purpose: build a hidden, gameified reward element (Easter egg) on any site that 
 - Verified live: animates, 5 clicks reveals and relocates, counter survives navigation, toggle works.
 - Zero em dashes in all copy and UI text.
 
+## Acceptance Verification Checklist (run on the live wire, not on faith)
+
+1. Rendered home HTML carries egg markers (easter, jackpot, PATRIOT25, pp_egg keys). Grep the live page, expect hits.
+2. The shipped JS/template contains the locked config object and every string verbatim.
+3. The jackpot modal h2 textContent equals the full payline string as one contiguous run (styling spans live inside the heading, never splitting DOM text).
+4. sessionStorage keys exist (pp_egg_hits counter, pp_egg_claimed guard) and the counter survives navigation.
+5. Reserved analytics events fire: easter_egg_click per hit, easter_egg_reveal on jackpot. Beacon endpoints accept them (POST /api/track/event).
+6. Beacon endpoint live: POST /api/track/view and session_end return non-error; GET /api/retention/summary returns the summary shape.
+7. Settings toggle present and functional (on/off per doctrine).
+8. U+2014 count on live pages = 0. Copy reads clean.
+9. Mobile: touch target sized, no layout breakage, z-index above content.
+
 ## Lessons
 
 - Lock mechanics first, payout second: the build runs while the payout ruling is pending.
 - Keep all strings in one config object so a payout change is a one-line swap.
 - Fire analytics events from day one; never retrofit instrumentation.
+- Put the jackpot payline in the DOM as one text run; style spans go inside the heading so acceptance is a single textContent assert.
 
 Source: PLANS/PATRIOT_PEST_MARKETING/CAMPAIGNS/ALWAYS_ON/EASTER_EGG_PAYOUT_STRINGS.md, ORDER 1 thread client-patriot-pest-control.
