@@ -4,9 +4,9 @@
 # ============================================================
 FROM php:8.3-fpm-alpine
 
-# Extensions + nginx + supervisor
-RUN docker-php-ext-install pdo pdo_sqlite opcache \
-    && apk add --no-cache nginx supervisor icu-libs libintl \
+# Build deps for extensions + runtime packages
+RUN apk add --no-cache sqlite-dev nginx supervisor \
+    && docker-php-ext-install pdo pdo_sqlite opcache \
     && rm -rf /var/cache/apk/*
 
 # Non-root app user
