@@ -1,13 +1,41 @@
-FROM php:8.3-cli-alpine
+# ============================================================
+# Patriot Pest Control — Production Dockerfile
+# nginx + php-fpm in one container, non-root where possible
+# ============================================================
+FROM php:8.3-fpm-alpine
 
-RUN docker-php-ext-install pdo pdo_sqlite
+# Extensions + nginx + supervisor
+RUN docker-php-ext-install pdo pdo_sqlite opcache \
+    && apk add --no-cache nginx supervisor icu-libs libintl \
+    && rm -rf /var/cache/apk/*
+
+# Non-root app user
+RUN addgroup -g 1001 -S ppc && adduser -u 1001 -S ppc -G ppc
 
 WORKDIR /app
 
-COPY . .
+# Copy application
+COPY --chown=ppc:ppc . .
 
-RUN mkdir -p storage/logs && chmod -R 777 storage database
+# Writable dirs
+RUN mkdir -p storage/logs /run/nginx \
+    && chown -R ppc:ppc storage database \
+    && chmod -R 775 storage database
 
-EXPOSE 8080
+# PHP production config + opcache
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY deploy/php-opcache.ini "$PHP_INI_DIR/conf.d/opcache.ini"
 
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public", "public/router.php"]
+# nginx config
+COPY deploy/nginx/default.conf /etc/nginx/http.d/default.conf
+
+# Supervisord config
+COPY deploy/supervisord.conf /etc/supervisord.conf
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget -qO- http://127.0.0.1/health || exit 1
+
+EXPOSE 80
+
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
