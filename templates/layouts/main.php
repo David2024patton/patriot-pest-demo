@@ -1,0 +1,133 @@
+<?php
+/**
+ * layouts/main.php — the shared page shell.
+ *
+ * Wraps every page template. Emits the full SEO/GEO head (title, description,
+ * keywords, robots, canonical, Open Graph, Twitter, and any JSON-LD blocks),
+ * the site nav (login-aware), the page content, and the footer.
+ *
+ * Available vars (from View::page): $title, $description, $keywords, $robots,
+ * $canonical, $ogImage, $jsonld (array), $crumb, $content.
+ */
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <?= $view->raw(\PPC\Core\View::render('layouts/analytics')) ?>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= $view->e($title ?? 'Patriot Pest Control') ?></title>
+  <meta name="description" content="<?= $view->e($description ?? '') ?>">
+  <?php if (!empty($keywords)): ?><meta name="keywords" content="<?= $view->e($keywords) ?>"><?php endif; ?>
+  <meta name="robots" content="<?= $view->e($robots ?? 'index, follow, max-snippet:-1') ?>">
+  <link rel="canonical" href="<?= $view->e($canonical ?? $view->url('/')) ?>">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Patriot Pest Control">
+  <meta property="og:title" content="<?= $view->e($title ?? '') ?>">
+  <meta property="og:description" content="<?= $view->e($description ?? '') ?>">
+  <meta property="og:url" content="<?= $view->e($canonical ?? $view->url('/')) ?>">
+  <meta property="og:image" content="<?= $view->e($ogImage ?? $view->url('/assets/img/og.png')) ?>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?= $view->e($title ?? '') ?>">
+  <meta name="twitter:description" content="<?= $view->e($description ?? '') ?>">
+
+  <!-- Structured data (server-rendered; AI crawlers don't run JS) -->
+  <?php foreach (($jsonld ?? []) as $ld): ?>
+  <script type="application/ld+json"><?= $view->raw(json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ?></script>
+  <?php endforeach; ?>
+
+  <!-- Fonts: Black Ops One (display) + Barlow (body) + IBM Plex Mono (data) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="<?= $view->asset('styles.css') ?>">
+  <?php
+    // Authenticated areas (login, dashboards, CMS) get the app UI stylesheet.
+    $__path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $__appUi = (bool) preg_match('#^/(admin|staff-dashboard|customer-dashboard|login)(/|$)#', $__path);
+  ?>
+  <?php if ($__appUi): ?><link rel="stylesheet" href="<?= $view->asset('admin.css') ?>"><?php endif; ?>
+  <link rel="icon" href="<?= $view->asset('img/pests/ants.jpg') ?>" type="image/jpeg">
+</head>
+<body>
+
+<nav aria-label="Main navigation">
+  <a class="brand" href="/"><span class="star">★</span> PATRIOT PEST CONTROL</a>
+  <button id="menu-btn" aria-label="Toggle menu">☰ Menu</button>
+  <div class="navlinks">
+    <a class="nl" href="/">Home</a><a class="nl" href="/about">About</a><a class="nl" href="/services">Services</a><a class="nl" href="/prices">Prices</a><a class="nl" href="/service-areas">Areas</a><a class="nl" href="/blogs">Blog</a><a class="nl" href="/faqs">FAQs</a><a class="nl" href="/contact">Contact</a>
+    <?php if ($view->userType() === 'customer'): ?>
+      <a class="nl" href="/customer-dashboard">My Account</a>
+    <?php elseif ($view->userType() === 'staff'): ?>
+      <a class="nl" href="/staff-dashboard">Dashboard</a>
+      <?php if (\PPC\Core\Session::isAdmin()): ?><a class="nl" href="/admin">Admin</a><?php endif; ?>
+    <?php else: ?>
+      <a class="nl" href="/login">Sign In</a>
+    <?php endif; ?>
+    <a class="nav-cta" href="<?= $view->phoneHref() ?>">☎ <?= $view->phone() ?></a>
+  </div>
+</nav>
+
+<main>
+<?php if (!empty($crumb) && count($crumb) > 1): ?>
+  <div class="wrap" style="padding-top:1.4rem">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <?php foreach ($crumb as $i => $c): ?>
+        <?php if ($i > 0): ?><span class="sep">/</span><?php endif; ?>
+        <?php if ($i < count($crumb) - 1): ?><a href="<?= $view->e($c[1]) ?>"><?= $view->e($c[0]) ?></a><?php else: ?><span><?= $view->e($c[0]) ?></span><?php endif; ?>
+      <?php endforeach; ?>
+    </nav>
+  </div>
+<?php endif; ?>
+<?= $view->raw($content ?? '') ?>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><span style="color:var(--orange)">★</span> PATRIOT PEST CONTROL</div>
+        <p>Veteran-owned pest control for homes &amp; businesses across Washington, Idaho, Oregon &amp; Arizona. Founded by U.S. Military Veteran Skyler Rose. Eco-friendly, family &amp; pet safe, 100% satisfaction guaranteed.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="/about">About Us</a><a href="/services">Services</a>
+        <a href="/prices">Pricing</a><a href="/blogs">Blog</a>
+        <a href="/faqs">FAQs</a><a href="/referral">Referral Program</a>
+        <a href="/help">Help Center</a>
+      </div>
+      <div>
+        <h4>Top Services</h4>
+        <a href="/pest/ants">Ant Control</a><a href="/pest/termites">Termite Control</a>
+        <a href="/pest/bed-bugs">Bed Bug Treatment</a><a href="/pest/rodents">Rodent Control</a>
+        <a href="/pest/mosquitoes">Mosquito Control</a><a href="/pest/wasps">Wasp Removal</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <?php
+          // Show the visitor's local line first, then the other one.
+          $__primary = \PPC\Core\Geo::region();
+          $__order   = [$__primary, \PPC\Core\Geo::otherRegion()];
+        ?>
+        <?php foreach ($__order as $__r): $__line = \PPC\Core\Geo::REGIONS[$__r]; ?>
+          <a href="tel:<?= $view->e($__line['tel']) ?>"><?= $view->e($__line['display']) ?> — <?= $view->e($__line['label']) ?></a>
+        <?php endforeach; ?>
+        <a href="mailto:info@patriotpest.pro">info@patriotpest.pro</a>
+        <a href="/contact">Spokane, WA 99201, United States</a>
+        <a href="/socials">Social Media</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <?= date('Y') ?> PATRIOT PEST CONTROL · ALL RIGHTS RESERVED</span>
+      <span><a href="/privacy-policy">PRIVACY</a> · <a href="/terms-of-use">TERMS</a> · <a href="/sitemap">SITEMAP</a></span>
+      <span>🇺🇸 VETERAN-OWNED AMERICAN COMPANY</span>
+    </div>
+  </div>
+</footer>
+
+<script src="<?= $view->asset('main.js') ?>"></script>
+</body>
+</html>

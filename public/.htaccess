@@ -1,0 +1,47 @@
+# ============================================================
+# Patriot Pest Control — Apache config (public/ is the web root)
+# All requests route to index.php EXCEPT real files (assets, etc).
+# Sensitive directories (app, config, database, storage) live OUTSIDE
+# public/ and are additionally blocked here as defense-in-depth.
+# ============================================================
+
+# --- Force HTTPS + canonical host (uncomment in production) ---
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# --- Front controller: send non-file requests to index.php ---
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+# --- Block anything sensitive that shouldn't be web-reachable ---
+<FilesMatch "^\.env|composer\.(json|lock)$">
+    Require all denied
+</FilesMatch>
+RedirectMatch 404 /\.(git|env)
+RedirectMatch 404 /(app|config|database|storage|bin|templates)(/|$)
+RedirectMatch 404 \.(sql|db|sqlite|log|md|ps1|bat|sh|zip|7z)$
+
+# --- Security headers ---
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    # HSTS (uncomment in production once HTTPS is confirmed working)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# --- Don't advertise server internals ---
+ServerSignature Off
+
+# --- Sensible caching for static assets ---
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png  "access plus 30 days"
+    ExpiresByType text/css   "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+</IfModule>

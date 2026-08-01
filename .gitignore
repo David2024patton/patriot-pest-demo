@@ -1,0 +1,43 @@
+# ============================================================
+# Patriot Pest Control — .gitignore
+# SECURITY: never commit secrets, the database, or user data.
+# ============================================================
+
+# --- Secrets & environment (NEVER commit real credentials) ---
+.env
+.env.local
+.env.production
+config/secrets.php
+
+# --- Database & runtime data (contains PII: customers, staff, messages) ---
+database/*.db
+database/*.db-journal
+database/*.db-wal
+database/*.db-shm
+storage/logs/*
+storage/cache/*
+storage/uploads/*
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+!storage/uploads/.gitkeep
+
+# --- Dependencies ---
+/vendor/
+/node_modules/
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# --- Backups / archives (old site had 35MB zips committed — don't) ---
+*.zip
+*.7z
+*.bak
+*.sql.gz
+deploy/.env.demo
+.env.demo
+storage/*.db
+security-scan/

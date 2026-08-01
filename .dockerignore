@@ -1,0 +1,25 @@
+# Secrets - NEVER in the image
+.env
+.env.*
+!.env.example
+
+# Database files (mounted as volume or seeded at deploy)
+database/*.db
+storage/*.db
+
+# Git
+.git
+.gitignore
+
+# Dev/scan artifacts
+security-scan/
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp

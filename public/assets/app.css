@@ -1,0 +1,323 @@
+/* ==========================================================================
+   app.css — the LIGHT authenticated app shell.
+
+   The marketing site is dark (olive/cream). The authenticated areas — staff
+   dashboard, customer portal, and the CMS — flip to a clean, paper-white
+   workspace so staff can read data all day without fatigue.
+
+   How it works: every component in admin.css/styles.css is driven by the CSS
+   custom properties defined in styles.css :root. We RE-DECLARE those vars on
+   body.appshell-body, mapping the dark olive ramp onto a light paper ramp.
+   Everything downstream (panels, tables, badges, forms, buttons) re-skins
+   automatically — no per-component overrides needed except where a component
+   hard-codes a dark color (notices, table headers) which we fix below.
+
+   Layout: a fixed LEFT sidebar (desktop) that collapses to an off-canvas
+   drawer + a sticky 5-icon bottom bar (mobile). The center bottom icon is a
+   raised magnifier that opens the customer search overlay (staff/admin).
+   ========================================================================== */
+
+/* ---------- 1. light palette: remap the dark vars onto paper ---------- */
+body.appshell-body {
+  background: #f4f2ea;
+  color: #23281c;
+
+  /* dark olive ramp  ->  light paper ramp */
+  --olive-950: #ffffff;   /* deepest surface (form inputs) -> white        */
+  --olive-900: #fbfaf5;   /* recessed surface (table wrap)  -> near-white  */
+  --olive-800: #ffffff;   /* raised cards / panels          -> white       */
+  --olive-700: #e4e0d2;   /* hairline borders               -> warm gray    */
+  --olive-500: #cfc9b6;   /* stronger borders / focus ring  -> stone        */
+  --olive-300: #6d7c46;   /* olive accent text (readable on white)         */
+  --khaki:     #7b7460;   /* muted labels / secondary text                 */
+  --cream:     #23281c;   /* PRIMARY text -> dark ink                      */
+  --paper:     #ece4cd;
+  --paper-dark:#ddd0ac;
+  /* --orange / --orange-hot / --red / --ink keep their values: they read
+     well as accents on white. Link orange is darkened below for contrast. */
+
+  /* shell-specific tokens */
+  --shell-bg:      #f4f2ea;
+  --shell-side:    #ffffff;
+  --shell-line:    #e4e0d2;
+  --shell-ink:     #23281c;
+  --shell-muted:   #7b7460;
+  --shell-accent:  #f4772e;
+  --shell-accent-d:#c8551a;   /* darker orange for text links (AA on white) */
+  --shell-hover:   #f6f1e6;
+  --shell-shadow:  0 1px 2px rgba(35,40,28,.06), 0 8px 24px rgba(35,40,28,.06);
+}
+
+/* readable text links (keep buttons/CTAs their own colors) */
+body.appshell-body :where(a):not(.btn):not(.nav-cta):not(.appshell-brand):not(.appshell-nav a):not(.appshell-bar a):not(.appshell-user) {
+  color: var(--shell-accent-d);
+}
+
+/* ---------- 2. fix components that hard-coded dark colors ---------- */
+/* notices: the dark-theme text colors (cream / #ffd9d2) would vanish on white */
+body.appshell-body .notice          { color: var(--shell-ink); }
+body.appshell-body .notice.success  { background: #eef3e2; border-color: #b9c98f; color: #33401f; }
+body.appshell-body .notice.error    { background: #fbeae6; border-color: #e0a89c; color: #8a2c1c; }
+body.appshell-body .notice.info     { background: #fdeee1; border-color: #f0c19c; color: #8a4a1c; }
+
+/* table header lost its dark fill (olive-800 -> white); give it a soft tint */
+body.appshell-body table.data th        { background: #f0ede2; color: #6b6450; }
+body.appshell-body table.data tr:hover td { background: rgba(244,119,46,.06); }
+body.appshell-body .table-wrap          { border-color: var(--shell-line); background: #fff; }
+
+/* cards get a soft shadow + border instead of the dark border-only look */
+body.appshell-body .panel,
+body.appshell-body .stat-card,
+body.appshell-body .tile,
+body.appshell-body .media-item { box-shadow: var(--shell-shadow); }
+body.appshell-body .tile:hover { border-color: var(--shell-accent); box-shadow: 0 10px 28px rgba(244,119,46,.14); }
+
+/* ghost button: dark text + stone ring on white */
+body.appshell-body .btn-ghost { color: var(--shell-ink); box-shadow: inset 0 0 0 2px var(--olive-500); }
+body.appshell-body .btn-ghost:hover { color: var(--shell-accent-d); box-shadow: inset 0 0 0 2px var(--shell-accent); }
+
+/* form inputs: white field, stone border, dark text */
+body.appshell-body .field input,
+body.appshell-body .field select,
+body.appshell-body .field textarea { background: #fff; border-color: var(--olive-500); color: var(--shell-ink); }
+
+/* prose (rendered CMS body) -> dark ink on white */
+body.appshell-body .prose,
+body.appshell-body .prose h2,
+body.appshell-body .prose h3,
+body.appshell-body .prose h4 { color: var(--shell-ink); }
+body.appshell-body .prose blockquote { color: var(--shell-muted); }
+
+/* the dashboard/cms templates wrap content in .app > .wrap (built for the dark
+   fixed-nav layout). Inside the shell we provide our own spacing, so neutralize
+   the 58px nav offset and the marketing max-width/padding. */
+body.appshell-body .app { padding: 0; }
+body.appshell-body .app > .wrap { max-width: none; margin: 0; padding: 0; }
+
+/* ==========================================================================
+   3. THE SHELL GRID
+   ========================================================================== */
+.appshell {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+/* ---------- left sidebar (desktop) ---------- */
+.appshell-side {
+  position: sticky; top: 0; align-self: start;
+  height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column;
+  background: var(--shell-side);
+  border-right: 1px solid var(--shell-line);
+  padding: 1.1rem .9rem 1rem;
+  z-index: 60;
+}
+
+.appshell-brand {
+  display: flex; align-items: center; gap: .6rem;
+  font-family: var(--display); font-size: .92rem; letter-spacing: .04em;
+  color: var(--shell-ink); text-decoration: none;
+  padding: .35rem .55rem 1rem; border-bottom: 1px solid var(--shell-line);
+  margin-bottom: .8rem;
+}
+.appshell-brand .star { color: var(--shell-accent); font-size: 1.1rem; }
+.appshell-brand small { display: block; font-family: var(--mono); font-size: .56rem; letter-spacing: .18em; color: var(--shell-muted); text-transform: uppercase; }
+
+.appshell-nav { display: flex; flex-direction: column; gap: .15rem; flex: 1; }
+.appshell-nav .grp {
+  font-family: var(--mono); font-size: .6rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--shell-muted); padding: .9rem .65rem .35rem;
+}
+.appshell-nav a {
+  display: flex; align-items: center; gap: .7rem;
+  font-family: var(--body); font-weight: 500; font-size: .92rem;
+  color: #4a4636; text-decoration: none;
+  padding: .6rem .65rem; border-radius: 7px;
+  border-left: 3px solid transparent;
+  transition: background .15s, color .15s;
+}
+.appshell-nav a .ico { width: 1.25rem; text-align: center; font-size: 1rem; opacity: .85; }
+.appshell-nav a:hover { background: var(--shell-hover); color: var(--shell-ink); }
+.appshell-nav a.active {
+  background: #fdeee1; color: var(--shell-accent-d);
+  border-left-color: var(--shell-accent); font-weight: 600;
+}
+.appshell-nav a.active .ico { opacity: 1; }
+
+/* user chip pinned to the bottom of the sidebar */
+.appshell-user {
+  display: flex; align-items: center; gap: .65rem; text-decoration: none;
+  margin-top: .8rem; padding: .65rem .6rem; border-radius: 8px;
+  border: 1px solid var(--shell-line); background: #fbfaf5;
+  transition: border-color .15s;
+}
+.appshell-user:hover { border-color: var(--shell-accent); }
+.appshell-user .av {
+  width: 34px; height: 34px; flex: 0 0 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--shell-accent); color: #14100a;
+  font-family: var(--display); font-size: .9rem;
+}
+.appshell-user .who { min-width: 0; }
+.appshell-user .who b { display: block; font-size: .86rem; color: var(--shell-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.appshell-user .who span { display: block; font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--shell-muted); }
+
+/* ---------- main content column ---------- */
+.appshell-main { min-width: 0; display: flex; flex-direction: column; }
+.appshell-content { flex: 1; padding: 2rem clamp(1.1rem, 3.5vw, 2.6rem) 4rem; }
+/* a little breathing room between stacked panels inside the shell */
+.appshell-content > .app { display: block; }
+
+/* ==========================================================================
+   4. MOBILE: top bar + off-canvas drawer + 5-icon bottom bar
+   ========================================================================== */
+.appshell-topbar { display: none; }
+.appshell-bar    { display: none; }
+.appshell-scrim  { display: none; }
+
+@media (max-width: 960px) {
+  .appshell { grid-template-columns: 1fr; }
+
+  /* slim sticky top bar: hamburger + brand */
+  .appshell-topbar {
+    display: flex; align-items: center; gap: .8rem;
+    position: sticky; top: 0; z-index: 70;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--shell-line);
+    padding: .7rem 1rem;
+  }
+  .appshell-topbar .burger {
+    background: none; border: 1px solid var(--shell-line); border-radius: 7px;
+    width: 40px; height: 38px; font-size: 1.15rem; color: var(--shell-ink); cursor: pointer;
+  }
+  .appshell-topbar .tbrand { font-family: var(--display); font-size: .9rem; color: var(--shell-ink); letter-spacing: .03em; }
+  .appshell-topbar .tbrand .star { color: var(--shell-accent); }
+
+  /* sidebar becomes an off-canvas drawer */
+  .appshell-side {
+    position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; width: 280px;
+    transform: translateX(-104%); transition: transform .28s ease;
+    box-shadow: 0 0 40px rgba(35,40,28,.18);
+  }
+  body.appshell-body.drawer-open .appshell-side { transform: none; }
+
+  /* scrim behind the drawer */
+  .appshell-scrim {
+    display: block; position: fixed; inset: 0; z-index: 55;
+    background: rgba(35,40,28,.4); opacity: 0; pointer-events: none; transition: opacity .28s;
+  }
+  body.appshell-body.drawer-open .appshell-scrim { opacity: 1; pointer-events: auto; }
+
+  .appshell-content { padding: 1.3rem 1rem 6.5rem; }
+
+  /* sticky 5-icon bottom bar */
+  .appshell-bar {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 80;
+    background: rgba(255,255,255,.96); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--shell-line);
+    padding: .35rem .35rem calc(.35rem + env(safe-area-inset-bottom));
+  }
+  .appshell-bar a, .appshell-bar button {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .18rem;
+    background: none; border: 0; cursor: pointer; text-decoration: none;
+    font-family: var(--mono); font-size: .56rem; letter-spacing: .06em; text-transform: uppercase;
+    color: #5b5646; padding: .35rem 0; border-radius: 8px;
+  }
+  .appshell-bar a .bi, .appshell-bar button .bi { font-size: 1.25rem; line-height: 1; }
+  .appshell-bar a.active { color: var(--shell-accent-d); }
+
+  /* the raised center action (magnifier / request) */
+  .appshell-bar .center { position: relative; }
+  .appshell-bar .center .bi {
+    width: 50px; height: 50px; margin-top: -1.5rem;
+    display: grid; place-items: center; border-radius: 50%;
+    background: var(--shell-accent); color: #14100a; font-size: 1.4rem;
+    box-shadow: 0 6px 18px rgba(244,119,46,.4); border: 4px solid #fff;
+  }
+  .appshell-bar .center:active .bi { transform: scale(.95); }
+}
+
+/* ==========================================================================
+   5. CUSTOMER SEARCH OVERLAY (the center magnifier)
+   ========================================================================== */
+.csearch {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  align-items: flex-start; justify-content: center;
+  background: rgba(35,40,28,.5); backdrop-filter: blur(3px);
+  padding: 12vh 1rem 1rem;
+}
+.csearch.open { display: flex; }
+.csearch-box {
+  width: 100%; max-width: 620px; background: #fff; border-radius: 12px;
+  box-shadow: 0 24px 64px rgba(35,40,28,.3); overflow: hidden;
+  animation: csearch-rise .18s ease both;
+}
+@keyframes csearch-rise { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+.csearch-head { display: flex; align-items: center; gap: .7rem; padding: .9rem 1rem; border-bottom: 1px solid var(--shell-line); }
+.csearch-head .mag { color: var(--shell-accent); font-size: 1.15rem; }
+.csearch-head input {
+  flex: 1; border: 0; outline: none; font-family: var(--body); font-size: 1.05rem; color: var(--shell-ink); background: none;
+}
+.csearch-head input::placeholder { color: #b3ac99; }
+.csearch-head .esc { font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; color: var(--shell-muted); border: 1px solid var(--shell-line); border-radius: 4px; padding: .2rem .4rem; }
+.csearch-results { max-height: 56vh; overflow-y: auto; }
+.csearch-results .cs-item {
+  display: flex; align-items: center; gap: .8rem; text-decoration: none;
+  padding: .8rem 1rem; border-bottom: 1px solid #f0ede2; color: var(--shell-ink);
+}
+.csearch-results .cs-item:hover { background: var(--shell-hover); }
+.csearch-results .cs-av {
+  width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; display: grid; place-items: center;
+  background: #eef3e2; color: #4a5a26; font-family: var(--display); font-size: .85rem;
+}
+.csearch-results .cs-name { font-weight: 600; font-size: .95rem; }
+.csearch-results .cs-meta { font-family: var(--mono); font-size: .68rem; color: var(--shell-muted); margin-top: .1rem; }
+.csearch-results .cs-status { margin-left: auto; }
+.csearch-empty, .csearch-loading { padding: 1.6rem 1rem; text-align: center; color: var(--shell-muted); font-size: .9rem; }
+.csearch-foot { padding: .55rem 1rem; border-top: 1px solid var(--shell-line); font-family: var(--mono); font-size: .62rem; letter-spacing: .08em; color: var(--shell-muted); text-transform: uppercase; }
+
+/* small badge tweak so status chips read on white */
+body.appshell-body .badge.cancelled { color: #b23b26; }
+body.appshell-body .badge.active,
+body.appshell-body .badge.published,
+body.appshell-body .badge.closed { color: #5a7030; }
+
+/* ==========================================================================
+   6. NEUTRALIZE the global `nav{position:fixed; …dark top bar…}` tag selector
+      (styles.css). That rule matches EVERY <nav>, including the shell's sidebar
+      menu and bottom bar, yanking them into a fixed dark band. Re-assert the
+      shell's own layout with higher specificity (body.appshell-body .x = 0,2,0).
+   ========================================================================== */
+body.appshell-body .appshell-nav {
+  position: static; top: auto; left: auto; right: auto;
+  display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+  gap: .15rem; flex: 1;
+  background: none; backdrop-filter: none; border: 0; padding: 0;
+}
+body.appshell-body .appshell-bar {
+  position: static; top: auto; left: auto; right: auto;
+  background: none; backdrop-filter: none; border: 0; padding: 0;
+  align-items: stretch; justify-content: stretch;
+}
+@media (max-width: 960px) {
+  body.appshell-body .appshell-bar {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 80;
+    background: rgba(255,255,255,.96); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--shell-line);
+    padding: .35rem .35rem calc(.35rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* sign-out link at the foot of the sidebar (its own class, not .appshell-nav) */
+.appshell-signout {
+  display: flex; align-items: center; gap: .7rem;
+  font-family: var(--body); font-weight: 500; font-size: .9rem;
+  color: var(--shell-muted); text-decoration: none;
+  padding: .6rem .65rem; margin-top: .35rem; border-radius: 7px;
+  transition: background .15s, color .15s;
+}
+.appshell-signout .ico { width: 1.25rem; text-align: center; }
+.appshell-signout:hover { background: var(--shell-hover); color: #b23b26; }
