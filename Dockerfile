@@ -17,10 +17,10 @@ WORKDIR /app
 # Copy application
 COPY --chown=ppc:ppc . .
 
-# Writable dirs
+# Writable dirs (777 so php-fpm www-data can create the SQLite db)
 RUN mkdir -p storage/logs /run/nginx \
     && chown -R ppc:ppc storage database \
-    && chmod -R 775 storage database
+    && chmod -R 777 storage database
 
 # PHP production config + opcache
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
