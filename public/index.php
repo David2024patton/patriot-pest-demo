@@ -55,6 +55,11 @@ Router::get('/areas/{slug}',     [PageController::class, 'areaDetail']);
 
 // ---------- Blog (public, unified template) ----------
 Router::get('/blogs',            [BlogController::class, 'index']);
+// RSS feed registered BEFORE /blogs/{slug} (router is first-match-wins, so
+// the literal path must win over the {slug} placeholder). /blog/rss.xml is
+// an alias so old feed-reader subscriptions keep resolving.
+Router::get('/blogs/rss.xml',    [BlogController::class, 'rss']);
+Router::get('/blog/rss.xml',     [BlogController::class, 'rss']);
 Router::get('/blogs/{slug}',     [BlogController::class, 'show']);
 
 // ---------- Unified auth (passwordless email OTP - one login for everyone) ----------

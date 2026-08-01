@@ -39,6 +39,11 @@ if [ -f /app/bin/seed.php ]; then
   php /app/bin/seed.php || echo "[entrypoint] seed failed, continuing"
 fi
 
+if [ -f /app/bin/import-blog.php ]; then
+  echo "[entrypoint] importing blog corpus (idempotent)..."
+  php /app/bin/import-blog.php || echo "[entrypoint] blog import failed, continuing"
+fi
+
 # The seed runs as root and (re)creates the DB file, so re-apply the
 # permissions after seeding or the php-fpm worker (www-data) cannot
 # write the file even though the directory is correct.
