@@ -40,4 +40,7 @@ Thumbs.db
 deploy/.env.demo
 .env.demo
 storage/*.db
+storage/retention.sqlite*
+storage/retention.sqlite-wal
+storage/retention.sqlite-shm
 security-scan/

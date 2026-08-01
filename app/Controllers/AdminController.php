@@ -24,6 +24,8 @@ use PPC\Core\Database;
 use PPC\Core\Csrf;
 use PPC\Core\Logger;
 use PPC\Core\Validator;
+use PPC\Core\Retention;
+use PPC\Core\Settings;
 
 class AdminController extends PageController
 {
@@ -139,6 +141,38 @@ class AdminController extends PageController
         $db     = Database::instance();
         $blocks = $db->fetchAll('SELECT * FROM content_blocks ORDER BY page, sort_order');
         echo View::page('admin/content', ['blocks' => $blocks, 'flash' => $this->flash()], $this->meta('Content | Admin', 'Edit page sections.', '/admin/content'));
+    }
+
+    /** Retention dashboard (ORDER 3): live summary + toggle states. */
+    public function retention(): void
+    {
+        $summary = [];
+        try {
+            $summary = Retention::summary();
+        } catch (\Throwable $e) {
+            \PPC\Core\Logger::warning('Retention summary failed', ['error' => $e->getMessage()]);
+        }
+        echo View::page('admin/retention', [
+            'summary'      => $summary,
+            'eggEnabled'   => Settings::bool('egg_enabled', true),
+            'trackEnabled' => Settings::bool('track_enabled', true),
+            'flash'        => $this->flash(),
+        ], $this->meta('Retention Analytics | Admin', 'First-party retention analytics.', '/admin/retention'));
+    }
+
+    /** Save the retention/beacon toggles (doctrine: on/off per feature). */
+    public function retentionSettings(): void
+    {
+        Csrf::verifyOrDie();
+        Settings::set('egg_enabled',   !empty($_POST['egg_enabled'])   ? '1' : '0');
+        Settings::set('track_enabled', !empty($_POST['track_enabled']) ? '1' : '0');
+        $this->audit('settings.update', 'settings', 'retention', [
+            'egg_enabled'   => Settings::bool('egg_enabled'),
+            'track_enabled' => Settings::bool('track_enabled'),
+        ]);
+        Session::flash('admin', ['success' => 'Settings saved.']);
+        header('Location: /admin/retention');
+        exit;
     }
 
     /* ============================ helpers ============================ */
