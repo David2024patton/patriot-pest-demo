@@ -218,5 +218,16 @@ if (window.gsap && window.ScrollTrigger){
   }
 
   ScrollTrigger.refresh();
+} else {
+  /* ---------- no-gsap fallback: content must NEVER stay hidden ----------
+     If gsap or ScrollTrigger failed to load (CDN down, offline, blocked),
+     reveal everything immediately so the page is never blank. */
+  document.querySelectorAll("[data-reveal]").forEach(function (el) {
+    el.style.opacity = "1";
+    el.style.transform = "none";
+  });
+  document.querySelectorAll(".meter .fill").forEach(function (f) {
+    if (f.dataset.lvl) f.style.width = f.dataset.lvl + "%";
+  });
 }
 })();
