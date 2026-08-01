@@ -109,6 +109,12 @@ $isActive = fn(string $href): bool => $href !== '' && $href === $__activeHref;
   <link rel="stylesheet" href="<?= $view->asset('admin.css') ?>">
   <link rel="stylesheet" href="<?= $view->asset('app.css') ?>">
   <link rel="icon" href="<?= $view->asset('img/pests/ants.jpg') ?>" type="image/jpeg">
+
+  <!-- PWA: manifest, theme color, home-screen icon -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1c2415">
+  <link rel="apple-touch-icon" href="<?= $view->asset('icons/apple-touch-icon.png') ?>">
+  <link rel="stylesheet" href="<?= $view->asset('pwa-install.css') ?>">
 </head>
 <body class="appshell-body">
 
@@ -206,5 +212,7 @@ $isActive = fn(string $href): bool => $href !== '' && $href === $__activeHref;
 <?php if (\PPC\Core\Settings::bool('track_enabled', true)): ?>
 <script src="<?= $view->asset('beacon.js') ?>"></script>
 <?php endif; ?>
+<?= $view->raw(\PPC\Core\View::render('partials/install-banner')) ?>
+<script src="<?= $view->asset('pwa-install.js') ?>"></script>
 </body>
 </html>
