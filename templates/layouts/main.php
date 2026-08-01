@@ -22,6 +22,11 @@
   <meta name="robots" content="<?= $view->e($robots ?? 'index, follow, max-snippet:-1') ?>">
   <link rel="canonical" href="<?= $view->e($canonical ?? $view->url('/')) ?>">
 
+  <!-- PWA: manifest, theme color, home-screen icon -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1c2415">
+  <link rel="apple-touch-icon" href="<?= $view->asset('icons/apple-touch-icon.png') ?>">
+
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Patriot Pest Control">
@@ -51,6 +56,7 @@
   ?>
   <?php if ($__appUi): ?><link rel="stylesheet" href="<?= $view->asset('admin.css') ?>"><?php endif; ?>
   <?php if (\PPC\Core\Settings::bool('egg_enabled', true)): ?><link rel="stylesheet" href="<?= $view->asset('beacon.css') ?>"><?php endif; ?>
+  <link rel="stylesheet" href="<?= $view->asset('pwa-install.css') ?>">
   <link rel="icon" href="<?= $view->asset('img/pests/ants.jpg') ?>" type="image/jpeg">
 </head>
 <body>
@@ -136,5 +142,7 @@
 <?= $view->raw(\PPC\Core\View::render('partials/egg')) ?>
 <script src="<?= $view->asset('beacon.js') ?>"></script>
 <?php endif; ?>
+<?= $view->raw(\PPC\Core\View::render('partials/install-banner')) ?>
+<script src="<?= $view->asset('pwa-install.js') ?>"></script>
 </body>
 </html>

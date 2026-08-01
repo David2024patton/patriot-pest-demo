@@ -38,10 +38,21 @@ RedirectMatch 404 \.(sql|db|sqlite|log|md|ps1|bat|sh|zip|7z)$
 ServerSignature Off
 
 # --- Sensible caching for static assets ---
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType image/jpeg "access plus 30 days"
     ExpiresByType image/png  "access plus 30 days"
     ExpiresByType text/css   "access plus 7 days"
     ExpiresByType application/javascript "access plus 7 days"
+</IfModule>
+
+# PWA: never long-cache the service worker or manifest (update safety)
+<IfModule mod_headers.c>
+    <FilesMatch "^(sw\.js|manifest\.webmanifest)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
 </IfModule>
