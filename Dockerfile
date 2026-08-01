@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --chown=ppc:ppc . .
 
 # Writable dirs (777 so php-fpm www-data can create the SQLite db)
-RUN mkdir -p storage/logs /run/nginx \
+RUN mkdir -p storage/logs storage/database /run/nginx \
     && chown -R ppc:ppc storage database \
     && chmod -R 777 storage database
 
@@ -31,11 +31,14 @@ COPY deploy/nginx/default.conf /etc/nginx/http.d/default.conf
 
 # Supervisord config
 COPY deploy/supervisord.conf /etc/supervisord.conf
+COPY deploy/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget -qO- http://127.0.0.1/health || exit 1
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
 EXPOSE 80
 
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]

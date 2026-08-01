@@ -46,6 +46,7 @@ if ($uType === 'staff') {
             ['/admin/posts',   '📝', 'Posts'],
             ['/admin/media',   '🖼', 'Media'],
             ['/admin/content', '🧩', 'Content Blocks'],
+            ['/admin/retention', '📊', 'Retention'],
         ];
     }
     // 5-icon bottom bar; center = customer search magnifier
@@ -202,5 +203,8 @@ $isActive = fn(string $href): bool => $href !== '' && $href === $__activeHref;
   window.PPC_APP = { userType: <?= json_encode($uType) ?> };
 </script>
 <script src="<?= $view->asset('app.js') ?>"></script>
+<?php if (\PPC\Core\Settings::bool('track_enabled', true)): ?>
+<script src="<?= $view->asset('beacon.js') ?>"></script>
+<?php endif; ?>
 </body>
 </html>

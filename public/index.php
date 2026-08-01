@@ -30,6 +30,7 @@ use PPC\Controllers\AuthController;
 use PPC\Controllers\PortalController;
 use PPC\Controllers\StaffController;
 use PPC\Controllers\AdminController;
+use PPC\Controllers\RetentionController;
 
 // ---------- Marketing pages (public) ----------
 Router::get('/',                 [PageController::class, 'home']);
@@ -100,6 +101,18 @@ Router::get('/admin/posts/{id}', [AdminController::class, 'postEdit'])->auth('st
 Router::post('/admin/posts/{id}',[AdminController::class, 'postUpdate'])->auth('staff')->role('admin');
 Router::get('/admin/media',      [AdminController::class, 'media'])->auth('staff')->role('admin');
 Router::get('/admin/content',    [AdminController::class, 'content'])->auth('staff')->role('admin');
+
+// ---------- Retention analytics (ORDER 3) ----------
+// Anonymous ingestion beacons (CSRF-exempt by design; sendBeacon cannot set
+// headers). Same-origin checked + payload validated in the controller.
+Router::post('/api/track/view',        [RetentionController::class, 'view']);
+Router::post('/api/track/event',       [RetentionController::class, 'event']);
+Router::post('/api/track/session_end', [RetentionController::class, 'sessionEnd']);
+// Admin dashboard data (401 for non-admins, enforced inside the controller).
+Router::get('/api/retention/summary',  [RetentionController::class, 'summary']);
+// Admin dashboard page + settings toggles (per doctrine).
+Router::get('/admin/retention',             [AdminController::class, 'retention'])->auth('staff')->role('admin');
+Router::post('/admin/retention/settings',   [AdminController::class, 'retentionSettings'])->auth('staff')->role('admin');
 
 // ---------- Health check (public, no auth) ----------
 Router::get('/health', function () {

@@ -50,6 +50,7 @@
     $__appUi = (bool) preg_match('#^/(admin|staff-dashboard|customer-dashboard|login)(/|$)#', $__path);
   ?>
   <?php if ($__appUi): ?><link rel="stylesheet" href="<?= $view->asset('admin.css') ?>"><?php endif; ?>
+  <?php if (\PPC\Core\Settings::bool('egg_enabled', true)): ?><link rel="stylesheet" href="<?= $view->asset('beacon.css') ?>"><?php endif; ?>
   <link rel="icon" href="<?= $view->asset('img/pests/ants.jpg') ?>" type="image/jpeg">
 </head>
 <body>
@@ -131,5 +132,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="<?= $view->asset('main.js') ?>"></script>
+<?php if (\PPC\Core\Settings::bool('track_enabled', true)): ?>
+<?= $view->raw(\PPC\Core\View::render('partials/egg')) ?>
+<script src="<?= $view->asset('beacon.js') ?>"></script>
+<?php endif; ?>
 </body>
 </html>

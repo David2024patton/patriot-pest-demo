@@ -6,6 +6,9 @@
 # Database files (mounted as volume or seeded at deploy)
 database/*.db
 storage/*.db
+storage/retention.sqlite*
+storage/retention.sqlite-wal
+storage/retention.sqlite-shm
 
 # Git
 .git

@@ -77,6 +77,20 @@ final class Database
     }
 
     /**
+     * Open a secondary SQLite database without running the app migration.
+     * Used by the retention analytics store (storage/retention.sqlite) so its
+     * sessions table never collides with the app auth sessions table. Callers
+     * own schema setup for secondary databases (see Retention::db()).
+     */
+    public static function open(string $relPath): self
+    {
+        $path = str_starts_with($relPath, '/') || preg_match('#^[A-Za-z]:[\\\\/]#', $relPath)
+            ? $relPath
+            : BASE_PATH . DIRECTORY_SEPARATOR . $relPath;
+        return new self($path);
+    }
+
+    /**
      * Apply database/schema.sql if the schema_version marker is missing/stale.
      * The schema file is idempotent (CREATE TABLE IF NOT EXISTS), so re-running
      * it is safe. Add ALTER-based upgrades in upgrade() as the schema evolves.
