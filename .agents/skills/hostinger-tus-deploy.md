@@ -10,12 +10,12 @@ Hostinger's `api.hostinger.com` is behind a Cloudflare perimeter. Direct API cal
 
 ## The Solution
 
-Hostinger's **developers.hostinger.com** endpoint is NOT behind the same Cloudflare perimeter. It exposes a file upload endpoint that returns TUS upload credentials. Importantly, it requires the **OLD** API token (`ILO35hzhP5PFVYDzmVSbj94T567iRkAaZ5P4l0xR011cc441` from `Videos/creds.md`), not the BUZZ token in `CREDENTIALS.md`.
+Hostinger's **developers.hostinger.com** endpoint is NOT behind the same Cloudflare perimeter. It exposes a file upload endpoint that returns TUS upload credentials. The API token is stored in `CREDENTIALS.md` and read via the `HOSTINGER_API_TOKEN` environment variable. Do NOT hardcode the token in any file.
 
 ## Required Credentials
 
 From the workspace:
-- **API Token:** `ILO35hzhP5PFVYDzmVSbj94T567iRkAaZ5P4l0xR011cc441` (in `C:/Users/David/Videos/creds.md`, line 18)
+- **API Token:** From `CREDENTIALS.md`, exposed as `$HOSTINGER_API_TOKEN` environment variable. Never hardcoded.
 - **Hosting Username:** `u269861438` (derived from health.php response)
 - **Domain:** `patriotpest.pro` (or target subdomain)
 
@@ -25,7 +25,7 @@ From the workspace:
 
 ```bash
 curl -s -X POST "https://developers.hostinger.com/api/hosting/v1/files/upload-urls" \
-  -H "Authorization: Bearer ILO35hzhP5PFVYDzmVSbj94T567iRkAaZ5P4l0xR011cc441" \
+  -H "Authorization: Bearer ${HOSTINGER_API_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{"username":"u269861438","domain":"patriotpest.pro"}'
 ```
@@ -94,7 +94,7 @@ Create + Patch each file in sequence. The session JWT is valid for ~6 hours.
 
 - **PHP files on subdomains:** health.php works from `patriotpest.pro/cost/health.php` but returns a Hostinger 404 page from `cost.patriotpest.pro/health.php` — likely PHP not enabled on the subdomain. Static files (HTML, CSS, JS) serve fine on subdomains.
 - **CDN caching:** Cloudflare caches assets aggressively. After deploying, wait ~30 seconds for edge cache to expire, or use cache-busting query params (`?v=2` breaks on this server; instead wait for natural expiration).
-- **CREDENTIALS.md:** The BUZZ token (`NS0gHbl...`) returns 401 on developers.hostinger.com. Always use the old token for this endpoint.
+- **API token:** The `$HOSTINGER_API_TOKEN` from CREDENTIALS.md works for the TUS upload endpoint. Rotate the token if it has ever been committed to a repository.
 - **The MCP tools** (`hostinger-hosting-mcp`) use `api.hostinger.com` internally and will fail with 401/530. Do not use them for file uploads.
 
 ## Example: Full Deploy Script
@@ -102,7 +102,7 @@ Create + Patch each file in sequence. The session JWT is valid for ~6 hours.
 ```bash
 #!/bin/bash
 # Deploy all files in a directory to Hostinger via TUS
-TOKEN="ILO35hzhP5PFVYDzmVSbj94T567iRkAaZ5P4l0xR011cc441"
+TOKEN="${HOSTINGER_API_TOKEN}"
 USERNAME="u269861438"
 DOMAIN="patriotpest.pro"
 LOCAL_DIR="public/cost"

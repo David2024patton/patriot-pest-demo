@@ -4,7 +4,7 @@
 
 **Forged:** 2026-08-08 by Orchestrator (Washington), synthesized from Deployment & Infrastructure's live MCP evaluation (commit e3c20bb), the existing TUS runbook (GUIDES/HOSTINGER_TUS_DEPLOY_RUNBOOK.md), and David's Hostinger MCP configuration.
 
-**Token:** `FcJ1u0WKR5fkhjEkGSBX0AF3Xi1k9E9TzLyj9uU051ab6c6e` (BUZZ, created 2026-07-31, never expires). Stored in CREDENTIALS.md line 92.
+**Token:** From `CREDENTIALS.md`, exposed as `$HOSTINGER_API_TOKEN` environment variable. Never hardcoded.
 
 ## The Two-Path Doctrine
 
@@ -19,12 +19,12 @@
 ## Credentials
 
 From CREDENTIALS.md:
-- **API Token:** `FcJ1u0WKR5fkhjEkGSBX0AF3Xi1k9E9TzLyj9uU051ab6c6e` (line 92)
+- **API Token:** From `CREDENTIALS.md` as `$HOSTINGER_API_TOKEN`
 - **Hosting Username:** `u269861438` (derived from /health endpoint)
-- **Hosting Login:** `david@itak.live` / `Wildcats@360` (line 103-104)
+- **Hosting Login:** From `CREDENTIALS.md` (email + password, lines 103-104)
 - **Target Domains:** `patriotpest.pro`, `test.patriotpest.pro`, `demo.patriotpest.pro`, `cost.patriotpest.pro`
 
-The BUZZ token works for both `developers.hostinger.com` (TUS upload) and `api.hostinger.com` (MCP tools). Previous tokens `NS0gHbl...` (returned 401) and `ILO35hzh...` (Cloudflare 1016) are superseded.
+The API token from CREDENTIALS.md works for both `developers.hostinger.com` (TUS upload) and `api.hostinger.com` (MCP tools). Previous tokens have been rotated; only the current token in CREDENTIALS.md is valid.
 
 ## Path 1: MCP Archive Deploy (Full App)
 
