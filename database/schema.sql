@@ -368,3 +368,69 @@ INSERT OR IGNORE INTO roles (role, label, permissions) VALUES
     ('accounts',    'Accounts',      '["view_customers","search_customers","manage_billing","view_tickets","respond_tickets","send_messages"]'),
     ('sales',       'Sales',         '["view_customers","search_customers","create_customers","manage_subscriptions","send_messages"]'),
     ('staff',       'Staff',         '["view_customers","search_customers","send_messages"]');
+
+-- ---------- Twilio Integration (NEW) ----------
+-- SMS message logs for tracking all SMS activity
+CREATE TABLE IF NOT EXISTS sms_logs (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    phone_number   TEXT NOT NULL,
+    message        TEXT NOT NULL,
+    direction      TEXT NOT NULL,              -- 'inbound' | 'outbound'
+    status         TEXT NOT NULL DEFAULT 'queued', -- queued, sent, delivered, failed, undelivered
+    twilio_sid     TEXT UNIQUE,                -- Twilio message SID for tracking
+    twilio_status  TEXT,                       -- Twilio's detailed status
+    error_message  TEXT,
+    media_url      TEXT,                       -- MMS media URL if present
+    created_at     TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_sms_phone ON sms_logs(phone_number);
+CREATE INDEX IF NOT EXISTS idx_sms_status ON sms_logs(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_sms_direction ON sms_logs(direction, created_at);
+
+-- Voice call logs for tracking all call activity
+CREATE TABLE IF NOT EXISTS call_logs (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    phone_number   TEXT NOT NULL,
+    direction      TEXT NOT NULL,              -- 'inbound' | 'outbound'
+    duration       INTEGER DEFAULT 0,          -- Call duration in seconds
+    status         TEXT NOT NULL,              -- queued, ringing, in-progress, completed, failed, busy, no-answer
+    twilio_sid     TEXT UNIQUE,                -- Twilio call SID
+    twilio_status  TEXT,                       -- Twilio's detailed status
+    recording_url  TEXT,                       -- URL to call recording
+    transcription  TEXT,                       -- Call transcription if available
+    error_message  TEXT,
+    created_at     TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_call_phone ON call_logs(phone_number);
+CREATE INDEX IF NOT EXISTS idx_call_status ON call_logs(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_call_direction ON call_logs(direction, created_at);
+
+-- Voicemail storage and management
+CREATE TABLE IF NOT EXISTS voicemails (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    phone_number   TEXT NOT NULL,
+    call_sid       TEXT,                       -- Associated call SID from call_logs
+    audio_url      TEXT NOT NULL,              -- URL to voicemail audio
+    duration       INTEGER DEFAULT 0,          -- Voicemail duration in seconds
+    transcription  TEXT,                       -- Voicemail transcription
+    status         TEXT DEFAULT 'new',         -- new, listened, archived, deleted
+    created_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_voicemail_phone ON voicemails(phone_number);
+CREATE INDEX IF NOT EXISTS idx_voicemail_status ON voicemails(status, created_at);
+
+-- Webhook event logging for all Twilio webhook callbacks
+CREATE TABLE IF NOT EXISTS webhook_events (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_type     TEXT NOT NULL,              -- 'sms.incoming', 'voice.status', 'voicemail', etc.
+    twilio_sid     TEXT,                       -- Associated message/call SID
+    payload        TEXT NOT NULL,              -- Full JSON payload from Twilio
+    processed      INTEGER NOT NULL DEFAULT 0, -- 0 = pending, 1 = processed
+    processed_at   TEXT,
+    created_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_webhook_type ON webhook_events(event_type, created_at);
+CREATE INDEX IF NOT EXISTS idx_webhook_processed ON webhook_events(processed, created_at);
+CREATE INDEX IF NOT EXISTS idx_webhook_sid ON webhook_events(twilio_sid);
