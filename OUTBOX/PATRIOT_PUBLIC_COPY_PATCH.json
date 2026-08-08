@@ -1,0 +1,345 @@
+{
+    "_meta": {
+        "source": "OUTBOX/PATRIOT_PUBLIC_COPY_AUDIT.md",
+        "owner": "Hamilton (Marketing)",
+        "date": "2026-08-08",
+        "apply_note": "Apply in the copy-cleanup commit of the responsive retrofit (UI/UX Architect lane). Match strings exactly, one replace per file. Find strings intentionally contain em dashes (they are the targets); replace strings contain zero. Docblock comments intentionally untouched.",
+        "files": [
+            "templates/layouts/main.php",
+            "templates/pages/home.php",
+            "templates/pages/about.php",
+            "templates/pages/services.php",
+            "templates/pages/prices.php",
+            "templates/pages/areas.php",
+            "templates/pages/faqs.php",
+            "templates/pages/contact.php",
+            "templates/pages/help.php",
+            "templates/pages/blog-index.php",
+            "templates/pages/legal.php",
+            "templates/pages/pest.php",
+            "templates/auth/login.php",
+            "app/Controllers/AuthController.php",
+            "app/Controllers/PageController.php",
+            "app/Controllers/BlogController.php",
+            "public/assets/main.js",
+            "templates/pages/socials.php",
+            "templates/errors/403.php",
+            "templates/errors/404.php",
+            "public/cost/index.php",
+            "public/cost/assets/js/cost.js"
+        ],
+        "patch_count": 62
+    },
+    "patches": [
+        {
+            "file": "templates/layouts/main.php",
+            "find": "<?= $view->e($__line['display']) ?> — <?= $view->e($__line['label']) ?>",
+            "replace": "<?= $view->e($__line['display']) ?> · <?= $view->e($__line['label']) ?>"
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "117.4260° W — SPOKANE, WA",
+            "replace": "117.4260° W / SPOKANE, WA"
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "Military-precision pest control for homes and businesses across <b>Washington, Idaho, Oregon &amp; Arizona</b>. Eco-friendly treatments safe for your family and pets — with <b>same-day service</b> when it can't wait.",
+            "replace": "Pest control for homes and businesses across <b>Washington, Idaho, Oregon &amp; Arizona</b>. Products are safe for your family and pets. <b>Same-day service</b> when it can't wait."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "ACTIVE — SAME-DAY RESPONSE",
+            "replace": "ACTIVE: SAME-DAY RESPONSE"
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "<p class=\"lead\" data-reveal><?= $view->e($pestCount) ?> hostile categories operate in your region right now. Each one is identified, tracked, and eliminated with eco-friendly, family-safe treatments. Scroll the threat board.</p>",
+            "replace": "<p class=\"lead\" data-reveal><?= $view->e($pestCount) ?> types of pests are active in your region right now. We know each one and treat them with products that are safe for your family. Scroll the board.</p>"
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "Patriot Pest Control was founded by <b>U.S. Military Veteran Skyler Rose</b> — bringing military discipline, integrity, and uncompromising excellence to pest control across four states. Over a decade of field experience. Thousands of homes and businesses protected.",
+            "replace": "Patriot Pest Control was founded by <b>U.S. military veteran Skyler Rose</b>. He runs the company the way he was trained: on time, honest, and thorough. Over a decade in the field, thousands of homes and businesses protected."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "After serving our country, I founded Patriot Pest Control to continue serving American families and businesses with the same dedication, precision, and integrity I learned in the military. We're not just eliminating pests — we're protecting what matters most.",
+            "replace": "I served this country, and I built this company on the same rules: show up when you say you will, do the job right, and don't sell people things they don't need. We get rid of pests, and we treat your home with respect while we're in it."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "Our best-value plan — continuous year-round defense, priority scheduling, and free re-treatments.",
+            "replace": "Our best value. Year-round coverage, priority scheduling, and free re-treatments."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "Maximum coverage — perimeter, interior, and specialty pests, every angle locked down.",
+            "replace": "Everything in Gold, plus interior and specialty pest coverage."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "No hassles, no excuses. Licensed, bonded, and insured — with eco-friendly, low-toxicity products safe for kids, pets, and the environment.",
+            "replace": "No hassles, no excuses. Licensed, bonded, and insured. Products are low-toxicity and safe for kids, pets, and the environment."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "Book online in minutes or call the line — same-day service available across all four states. Free quotes, transparent pricing, zero hidden fees.",
+            "replace": "Call the line or send a request online. Same-day service is available across all four states. Free quotes, no hidden fees."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "A single targeted strike on an active infestation. Fast, focused, guaranteed.",
+            "replace": "One visit for an active infestation. Fast, thorough, guaranteed."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "Scheduled seasonal treatments that keep the perimeter secure through every pest season.",
+            "replace": "Quarterly treatments that keep pests out through every season."
+        },
+        {
+            "file": "templates/pages/home.php",
+            "find": "We stand behind <em>every mission.</em>",
+            "replace": "We stand behind <em>every treatment.</em>"
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "Veteran-owned. <em>Mission-driven.</em>",
+            "replace": "Veteran-owned. <em>Done right.</em>"
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "to bring military discipline, integrity, and uncompromising excellence to pest control across four states.",
+            "replace": "to bring military standards to pest control across four states: on time, honest, and thorough."
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "After serving our country, our founder brought the same dedication and precision learned in the military to protecting American homes and businesses. What started as a one-operator mission has grown into a trusted, licensed, bonded, and insured team serving Washington, Idaho, Oregon, and Arizona.",
+            "replace": "After serving, our founder brought the same standards to pest control: show up on time, do the job right, and treat every home like his own. What started as one operator has grown into a licensed, bonded, and insured team serving Washington, Idaho, Oregon, and Arizona."
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "We're not just eliminating pests — we're protecting what matters most. Every treatment is backed by our 90-day warranty and our 100% satisfaction guarantee.",
+            "replace": "We get rid of pests and treat your home with respect while we do it. Every treatment is backed by our 90-day warranty and our 100% satisfaction guarantee."
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "ACTIVE — SAME-DAY RESPONSE",
+            "replace": "ACTIVE: SAME-DAY RESPONSE"
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "Targeted treatments that eliminate pests at the source — not just the symptoms you see.",
+            "replace": "Targeted treatments that kill the problem at the source, not just the bugs you see."
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "We continue serving American families with the same dedication we showed in uniform.",
+            "replace": "We served this country. We still serve our neighbors, one home at a time."
+        },
+        {
+            "file": "templates/pages/about.php",
+            "find": "Join the families who <em>trust Patriot.</em>",
+            "replace": "Join your neighbors who <em>already trust us.</em>"
+        },
+        {
+            "file": "templates/pages/services.php",
+            "find": "From ants to wildlife, we identify, treat, and prevent <?= count($pests) ?>+ pest categories across Washington, Idaho, Oregon &amp; Arizona — with eco-friendly, family- and pet-safe methods.",
+            "replace": "From ants to wildlife, we identify, treat, and prevent <?= count($pests) ?>+ pest categories across Washington, Idaho, Oregon, and Arizona. Methods are eco-friendly and safe for your family and pets."
+        },
+        {
+            "file": "templates/pages/prices.php",
+            "find": "A single targeted strike on an active infestation. Fast, focused, guaranteed.",
+            "replace": "One visit for an active infestation. Fast, thorough, guaranteed."
+        },
+        {
+            "file": "templates/pages/prices.php",
+            "find": "Scheduled seasonal treatments that keep the perimeter secure through every pest season.",
+            "replace": "Quarterly treatments that keep pests out through every season."
+        },
+        {
+            "file": "templates/pages/prices.php",
+            "find": "Our best-value plan — continuous year-round defense with priority scheduling.",
+            "replace": "Our best value. Year-round coverage with priority scheduling."
+        },
+        {
+            "file": "templates/pages/prices.php",
+            "find": "Maximum coverage — perimeter, interior, and specialty pests, every angle locked down.",
+            "replace": "Everything in Gold, plus interior and specialty pest coverage."
+        },
+        {
+            "file": "templates/pages/prices.php",
+            "find": "in minutes — call or book online. <b>Zero hidden fees, ever.</b>",
+            "replace": "in minutes. Call or send a request online. <b>Zero hidden fees, ever.</b>"
+        },
+        {
+            "file": "templates/pages/areas.php",
+            "find": "Find your community below — if we're not listed, call us; we likely still cover you.",
+            "replace": "Find your community below. Not listed? Call us. We probably still cover you."
+        },
+        {
+            "file": "templates/pages/faqs.php",
+            "find": "We offer transparent pricing with no hidden fees — get an accurate, no-obligation quote in minutes by phone or online.",
+            "replace": "We offer transparent pricing with no hidden fees. Get an accurate, no-obligation quote in minutes by phone or online."
+        },
+        {
+            "file": "templates/pages/faqs.php",
+            "find": "Yes — same-day service is available across all four states when pests can\\'t wait. Call the line and we\\'ll get you scheduled fast.",
+            "replace": "Yes. Same-day service is available across all four states when pests can\\'t wait. Call the line and we\\'ll get you scheduled fast."
+        },
+        {
+            "file": "templates/pages/faqs.php",
+            "find": "We\\'ll assess the situation, recommend a plan, and schedule service — often same-day.",
+            "replace": "We\\'ll assess the situation, recommend a plan, and schedule service, often same-day."
+        },
+        {
+            "file": "templates/pages/faqs.php",
+            "find": "<a href=\"/contact\" style=\"color:var(--orange)\">Reach out</a> — we're happy to help.",
+            "replace": "<a href=\"/contact\" style=\"color:var(--orange)\">Reach out</a>. We're happy to help."
+        },
+        {
+            "file": "templates/pages/contact.php",
+            "find": "Call the line or send the form — we respond within one business day (usually much faster). Same-day service available across all four states.",
+            "replace": "Call or send the form. We respond within one business day, usually faster. Same-day service available across all four states."
+        },
+        {
+            "file": "templates/pages/help.php",
+            "find": "Everyone signs in passwordless — we email a secure code and send you to the right dashboard.",
+            "replace": "No passwords. We email you a secure code and send you to the right dashboard."
+        },
+        {
+            "file": "templates/pages/help.php",
+            "find": "We're committed to an accessible experience. If you need assistance using this site, call us and we'll help.",
+            "replace": "If you need help using this site, call us and we'll walk you through it."
+        },
+        {
+            "file": "templates/pages/blog-index.php",
+            "find": "Expert identification, seasonal guides, and prevention tips from our licensed technicians — written for homeowners across Washington, Idaho, Oregon &amp; Arizona.",
+            "replace": "Identification help, seasonal guides, and prevention tips from our licensed technicians. Written for homeowners across Washington, Idaho, Oregon, and Arizona."
+        },
+        {
+            "file": "templates/pages/legal.php",
+            "find": "We collect information you provide directly — such as your name, contact details, address, and service information — when you request a quote, schedule service, or create an account.",
+            "replace": "We collect information you provide directly, such as your name, contact details, address, and service information, when you request a quote, schedule service, or create an account."
+        },
+        {
+            "file": "templates/pages/legal.php",
+            "find": "The content on this site — including text, graphics, logos, and images — is the property of Patriot Pest Control LLC or its licensors and is protected by applicable law.",
+            "replace": "The content on this site, including text, graphics, logos, and images, is the property of Patriot Pest Control LLC or its licensors and is protected by applicable law."
+        },
+        {
+            "file": "templates/pages/pest.php",
+            "find": "Targeted crack-and-crevice and baiting programs that reach the colony at its source — not just the insects you see. We use low-toxicity, family- and pet-safe products, then monitor to confirm elimination.",
+            "replace": "Targeted crack-and-crevice and baiting programs that reach the colony at its source, not just the bugs you see. Products are low-toxicity and safe for your family and pets. We follow up to confirm they are gone."
+        },
+        {
+            "file": "templates/pages/pest.php",
+            "find": "Humane removal and exclusion. We safely remove the animals, then install one-way doors and seal entry points so they can’t return — with cleanup and decontamination of affected areas.",
+            "replace": "Humane removal and exclusion. We safely remove the animals, then install one-way doors and seal entry points so they can’t return. We clean up and decontaminate the areas they used."
+        },
+        {
+            "file": "templates/auth/login.php",
+            "find": "Your appointments, your technician, your plan — everything about your pest-free home, right here.",
+            "replace": "Your appointments, your technician, and your plan, all in one place."
+        },
+        {
+            "file": "templates/auth/login.php",
+            "find": "Welcome aboard — enter your details and we'll get you set up in seconds.",
+            "replace": "New here? Enter your details and we'll get you set up in seconds."
+        },
+        {
+            "file": "templates/auth/login.php",
+            "find": "Use whichever you have on file — we'll recognize you and email a one-time code.",
+            "replace": "Use whichever you have on file. We'll email you a one-time code."
+        },
+        {
+            "file": "app/Controllers/AuthController.php",
+            "find": "No password — we email you a code and send you to the right dashboard.",
+            "replace": "No password. We email you a code and send you to the right dashboard."
+        },
+        {
+            "file": "app/Controllers/PageController.php",
+            "find": "About Us — Veteran-Owned",
+            "replace": "About Us: Veteran-Owned"
+        },
+        {
+            "file": "app/Controllers/PageController.php",
+            "find": "Pest Control Services — Every Pest We Treat",
+            "replace": "Pest Control Services: Every Pest We Treat"
+        },
+        {
+            "file": "app/Controllers/PageController.php",
+            "find": "Pricing & Plans — Transparent Online Pricing",
+            "replace": "Pricing & Plans: Transparent Online Pricing"
+        },
+        {
+            "file": "app/Controllers/PageController.php",
+            "find": "Service Areas — WA, ID, OR & AZ",
+            "replace": "Service Areas: WA, ID, OR & AZ"
+        },
+        {
+            "file": "app/Controllers/PageController.php",
+            "find": "Contact Us — Free Quotes & Same-Day Service",
+            "replace": "Contact Us: Free Quotes & Same-Day Service"
+        },
+        {
+            "file": "app/Controllers/PageController.php",
+            "find": "Referral Program — Earn $25",
+            "replace": "Referral Program: Earn $25"
+        },
+        {
+            "file": "app/Controllers/BlogController.php",
+            "find": "Pest Control Blog & Tips — Seasonal Guides",
+            "replace": "Pest Control Blog & Tips: Seasonal Guides"
+        },
+        {
+            "file": "public/assets/main.js",
+            "find": "c.toUpperCase()+\" — SAME-DAY AVAILABLE</span>\"",
+            "replace": "c.toUpperCase()+\" / SAME-DAY AVAILABLE</span>\""
+        },
+        {
+            "file": "templates/pages/socials.php",
+            "find": "@pestmgtpros — reviews, updates &amp; community",
+            "replace": "@pestmgtpros: reviews, updates &amp; community"
+        },
+        {
+            "file": "templates/pages/socials.php",
+            "find": "@patriot_pest — behind the scenes &amp; field work",
+            "replace": "@patriot_pest: behind the scenes &amp; field work"
+        },
+        {
+            "file": "templates/errors/403.php",
+            "find": "<title>403 — Restricted | Patriot Pest Control</title>",
+            "replace": "<title>403 Restricted | Patriot Pest Control</title>"
+        },
+        {
+            "file": "templates/errors/404.php",
+            "find": "<title>404 — Target Not Found | Patriot Pest Control</title>",
+            "replace": "<title>404 Target Not Found | Patriot Pest Control</title>"
+        },
+        {
+            "file": "public/cost/index.php",
+            "find": "No fluff, no hidden fees — just the raw numbers.",
+            "replace": "No hidden fees, no surprises. Just the raw numbers."
+        },
+        {
+            "file": "public/cost/index.php",
+            "find": "<span class=\"total-amt grand-amt\" id=\"grand-total\">$75,000 — $150,000</span>",
+            "replace": "<span class=\"total-amt grand-amt\" id=\"grand-total\">$75,000 to $150,000</span>"
+        },
+        {
+            "file": "public/cost/index.php",
+            "find": "<span id=\"receipt-timeline\">3-6 months</span> — Full agency team deployment.",
+            "replace": "<span id=\"receipt-timeline\">3-6 months</span>. Full agency team deployment."
+        },
+        {
+            "file": "public/cost/assets/js/cost.js",
+            "find": "this.formatCurrency(totalMin) + ' \\u2014 ' + this.formatCurrency(totalMax)",
+            "replace": "this.formatCurrency(totalMin) + ' to ' + this.formatCurrency(totalMax)"
+        },
+        {
+            "file": "app/Controllers/PageController.php",
+            "find": "Session::flash('success', 'Thanks — we received your message and will respond within one business day.');",
+            "replace": "Session::flash('success', 'Thanks. We received your message and will respond within one business day.');"
+        }
+    ]
+}
