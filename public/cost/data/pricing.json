@@ -1,0 +1,76 @@
+{
+  "agency_range": {
+    "min": 75000,
+    "max": 150000,
+    "currency": "USD"
+  },
+  "breakdown": [
+    {
+      "category": "Custom Framework Architecture",
+      "min": 15000,
+      "max": 25000,
+      "description": "Custom PHP 8.3 MVC framework with no off-the-shelf CMS",
+      "color": "#f4772e"
+    },
+    {
+      "category": "CRM Integrations",
+      "min": 10000,
+      "max": 20000,
+      "description": "FieldRoutes CRM + Twilio SMS, voice, voicemail, and webhooks",
+      "color": "#ff8c3b"
+    },
+    {
+      "category": "Payment Portal",
+      "min": 8000,
+      "max": 15000,
+      "description": "Customer payment portal with secure payment processing",
+      "color": "#c8b98c"
+    },
+    {
+      "category": "CMS and Blog System",
+      "min": 8000,
+      "max": 12000,
+      "description": "Content management system with integrated blog",
+      "color": "#8fa05e"
+    },
+    {
+      "category": "Admin and Customer Portals",
+      "min": 12000,
+      "max": 20000,
+      "description": "Admin dashboard with full management + customer self-service",
+      "color": "#5c6f3a"
+    },
+    {
+      "category": "Design and Branding",
+      "min": 10000,
+      "max": 18000,
+      "description": "Mobile-responsive tactical design with brand identity",
+      "color": "#334024"
+    },
+    {
+      "category": "SEO and Analytics",
+      "min": 7000,
+      "max": 12000,
+      "description": "Search optimization and analytics integration",
+      "color": "#26301c"
+    },
+    {
+      "category": "Testing and Deployment",
+      "min": 5000,
+      "max": 8000,
+      "description": "Quality assurance testing and production deployment",
+      "color": "#1c2415"
+    }
+  ],
+  "timeline": {
+    "agency": "3-6 months"
+  },
+  "factors": [
+    "Senior developer rates: $150-$250 per hour",
+    "Project management overhead included",
+    "Multiple specialists: frontend, backend, integrations, design",
+    "Agency profit margin: 50-100% standard markup",
+    "Ongoing maintenance and support contracts typical",
+    "Hosting, SSL, and infrastructure costs additional"
+  ]
+}
