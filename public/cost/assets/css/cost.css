@@ -202,7 +202,7 @@ section { position: relative; z-index: 1; }
 }
 .total-amt { font-family: var(--mono); font-size: .82rem; font-weight: 600; color: var(--ink); }
 .total-divider { height: 2px; background: var(--ink); margin: .6rem 0; }
-.total-row.grand { font-size: .9rem; letter-spacing: .12em; color: var(--ink); font-weight: 700; }
+.total-row.grand { font-size: .9rem; letter-spacing: .12em; color: var(--ink); font-weight: 700; flex-wrap: wrap; gap: .4rem 1rem; }
 .grand-amt { font-family: var(--display); font-size: 1.2rem; color: var(--orange); font-weight: 400; letter-spacing: .04em; }
 .stamp-row { display: flex; justify-content: flex-end; margin-top: 1rem; }
 
@@ -233,6 +233,7 @@ section { position: relative; z-index: 1; }
 /* responsive */
 @media (max-width: 640px) {
   .cost-hero { padding: 120px 0 50px; }
+  .cost-nav { flex-wrap: wrap; row-gap: .2rem; }
   .cost-content { padding: 2rem 0 3.5rem; }
   .receipt-header, .receipt-body { padding-left: 1.2rem; padding-right: 1.2rem; }
   .receipt-footer { padding: 1.2rem; }

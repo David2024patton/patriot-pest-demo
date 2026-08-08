@@ -95,7 +95,7 @@ class CostReceiptRenderer {
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.round(initial + (target - initial) * eased);
+      const current = Math.min(target, Math.max(0, Math.round(initial + (target - initial) * eased)));
       element.textContent = '$' + current.toLocaleString();
       if (progress < 1) requestAnimationFrame(update);
     }
