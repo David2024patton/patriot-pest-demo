@@ -94,11 +94,19 @@ final class Database
         $stmt->execute(['schema_version']);
         $current = (int) ($stmt->fetchColumn() ?: 0);
 
-        $target = 1; // bump when schema.sql changes structurally
+        $target = 2; // bump when schema.sql changes structurally
         if ($current < $target) {
             $sql = file_get_contents($schemaFile);
             if ($sql !== false && trim($sql) !== '') {
                 $this->pdo->exec($sql);
+            }
+            // v2: campaign segment snapshot column (added 2026-08-08).
+            if ($current >= 1) {
+                try {
+                    $this->pdo->exec('ALTER TABLE reactivation_campaigns ADD COLUMN segment_json TEXT');
+                } catch (\Throwable $e) {
+                    // column already present: nothing to do
+                }
             }
             $up = $this->pdo->prepare('INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)');
             $up->execute(['schema_version', (string) $target]);

@@ -46,6 +46,7 @@ if ($uType === 'staff') {
             ['/admin/posts',   '📝', 'Posts'],
             ['/admin/media',   '🖼', 'Media'],
             ['/admin/content', '🧩', 'Content Blocks'],
+            ['/admin/marketing', '📣', 'Marketing'],
         ];
     }
     // 5-icon bottom bar; center = customer search magnifier

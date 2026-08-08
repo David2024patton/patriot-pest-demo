@@ -252,6 +252,7 @@ CREATE TABLE IF NOT EXISTS reactivation_campaigns (
     template_id INTEGER REFERENCES reactivation_templates(id),
     status      TEXT DEFAULT 'draft',      -- draft | scheduled | running | paused | done
     schedule    TEXT,                      -- cron-like or weekly cadence description
+    segment_json TEXT,                     -- {district, status, audience} chosen at draft time
     created_by  TEXT,
     created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );

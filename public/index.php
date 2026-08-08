@@ -55,6 +55,7 @@ use PPC\Controllers\AuthController;
 use PPC\Controllers\PortalController;
 use PPC\Controllers\StaffController;
 use PPC\Controllers\AdminController;
+use PPC\Controllers\MarketingController;
 use PPC\Controllers\WebhookController;
 
 // ---------- Marketing pages (public) ----------
@@ -126,6 +127,14 @@ Router::get('/admin/posts/{id}', [AdminController::class, 'postEdit'])->auth('st
 Router::post('/admin/posts/{id}',[AdminController::class, 'postUpdate'])->auth('staff')->role('admin');
 Router::get('/admin/media',      [AdminController::class, 'media'])->auth('staff')->role('admin');
 Router::get('/admin/content',    [AdminController::class, 'content'])->auth('staff')->role('admin');
+
+// ---------- Marketing Command Center (admin-guarded) ----------
+// Dashboard + reactivation campaign launcher. Test sends are server-gated to
+// seed customers; SMS stays locked while TWILIO_SMS_ENABLED=false.
+Router::get('/admin/marketing',                  [MarketingController::class, 'index'])->auth('staff')->role('admin');
+Router::get('/admin/marketing/campaigns',        [MarketingController::class, 'campaigns'])->auth('staff')->role('admin');
+Router::post('/admin/marketing/campaigns/store', [MarketingController::class, 'campaignStore'])->auth('staff')->role('admin');
+Router::post('/admin/marketing/campaigns/test',  [MarketingController::class, 'campaignTest'])->auth('staff')->role('admin');
 
 // ---------- Health check (public, no auth) ----------
 Router::get('/health', function () {

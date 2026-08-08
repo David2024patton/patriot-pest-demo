@@ -1,0 +1,260 @@
+{
+    "meta": {
+        "brand": "Patriot Pest Control",
+        "owner": "Hamilton (Marketing)",
+        "date": "2026-08-08",
+        "purpose": "Drop-in marketing copy for the /admin/marketing dashboard and reactivation campaign launcher (FRONT TWO).",
+        "voice_rules": [
+            "No em dashes anywhere",
+            "No AI references anywhere",
+            "Short sentences. Local first. Specific beats generic.",
+            "One CTA per asset. Every outbound message carries an unsubscribe path.",
+            "Only claims we can back: seasonal pest behavior, service names, phone numbers, referral offer.",
+            "SMS bodies stay within 160 chars literal (validated 2026-08-08)."
+        ],
+        "merge_tags": [
+            "{{name}}",
+            "{{city}}",
+            "{{pest}}",
+            "{{season}}",
+            "{{unsubscribe_url}}",
+            "{{phone}}"
+        ],
+        "render_note": "Engine currently supports name/city/pest/season/unsubscribe_url only. Recommended: add {{phone}} so AZ customers get (602) 755-8414 and WA customers get (509) 471-5767 instead of a hardcoded number.",
+        "phones": {
+            "wa": "(509) 471-5767",
+            "az": "(602) 755-8414"
+        }
+    },
+    "templates": [
+        {
+            "key": "spring_ants",
+            "name": "Spring Defense: Ant & Termite Swarm",
+            "season": "spring",
+            "pest_type": "ants",
+            "channel": "both",
+            "subject": "{{name}}, spring swarms are starting in {{city}}",
+            "body_sms": "{{name}}, spring ant & termite swarms are active in {{city}}. One Patriot treatment stops the colony at the source. Call (509) 471-5767. {{unsubscribe_url}}",
+            "sms_chars": 156,
+            "body_html": "<p>Hi {{name}},</p><p>Spring rains in {{city}} trigger ant and termite swarms. Colonies wake up hungry and a trail to your home forms fast.</p><p>One Patriot spring treatment covers the perimeter, seals entry points, and baits the colony at the source. It stops the problem before it becomes a trail.</p><p>Call <a href=\"tel:+15094715767\">(509) 471-5767</a> or reply to this email to book your spring treatment.</p><p>Patriot Pest Control</p><p style=\"font-size:12px;color:#777\"><a href=\"{{unsubscribe_url}}\">Unsubscribe</a></p>",
+            "angle": "Seasonal trigger plus single action. The colony is waking up, one treatment ends it.",
+            "cta": "Book spring treatment"
+        },
+        {
+            "key": "summer_mosquitoes",
+            "name": "Summer Mosquito Defense",
+            "season": "summer",
+            "pest_type": "mosquitoes",
+            "channel": "both",
+            "subject": "{{name}}, take your {{city}} yard back from mosquitoes",
+            "body_sms": "{{name}}, mosquito season is peaking in {{city}}. One barrier treatment gives you weeks of control. Call (509) 471-5767. {{unsubscribe_url}}",
+            "sms_chars": 140,
+            "body_html": "<p>Hi {{name}},</p><p>Mosquito season peaks in {{city}} right now. One untreated yard can ruin every evening outside.</p><p>Our summer barrier treatment targets breeding and resting sites and knocks the population down for weeks. Pet-safe once dry, and scheduled around your week.</p><p>Call <a href=\"tel:+15094715767\">(509) 471-5767</a> or reply to book your yard treatment.</p><p>Patriot Pest Control</p><p style=\"font-size:12px;color:#777\"><a href=\"{{unsubscribe_url}}\">Unsubscribe</a></p>",
+            "angle": "Peak season pain. Reclaim the yard for weeks at a time.",
+            "cta": "Book yard treatment"
+        },
+        {
+            "key": "fall_rodents",
+            "name": "Fall Rodent Exclusion",
+            "season": "fall",
+            "pest_type": "rodents",
+            "channel": "both",
+            "subject": "{{name}}, mice are looking for a warm home in {{city}}",
+            "body_sms": "{{name}}, as temps drop in {{city}}, mice move indoors. Our fall exclusion seals them out before winter. Call (509) 471-5767. {{unsubscribe_url}}",
+            "sms_chars": 145,
+            "body_html": "<p>Hi {{name}},</p><p>As temperatures drop in {{city}}, mice start moving indoors. A mouse can squeeze through a gap the size of a dime.</p><p>Our fall exclusion seals entry points, traps existing invaders, and places monitored bait stations. Fall is the best time to act, before winter drives them all inside.</p><p>Call <a href=\"tel:+15094715767\">(509) 471-5767</a> or reply to schedule your exclusion.</p><p>Patriot Pest Control</p><p style=\"font-size:12px;color:#777\"><a href=\"{{unsubscribe_url}}\">Unsubscribe</a></p>",
+            "angle": "Act now before winter. Exclusion is the pre-winter move.",
+            "cta": "Schedule exclusion"
+        },
+        {
+            "key": "winter_shield",
+            "name": "Winter Pest Shield",
+            "season": "winter",
+            "pest_type": "rodents",
+            "channel": "both",
+            "subject": "{{name}}, winter pests are seeking shelter in {{city}}",
+            "body_sms": "{{name}}, winter drives pests indoors. Keep your {{city}} home protected all season. Call (509) 471-5767. {{unsubscribe_url}}",
+            "sms_chars": 125,
+            "body_html": "<p>Hi {{name}},</p><p>Winter drives rodents and cold-sensitive pests to seek shelter, and your {{city}} home is the warmest option on the block.</p><p>Our winter shield keeps the barrier fresh through the coldest months, with rodent monitoring and exclusion maintenance so you never wake up to scratching in the walls.</p><p>Call <a href=\"tel:+15094715767\">(509) 471-5767</a> or reply to renew your protection.</p><p>Patriot Pest Control</p><p style=\"font-size:12px;color:#777\"><a href=\"{{unsubscribe_url}}\">Unsubscribe</a></p>",
+            "angle": "Prevent the winter intrusion. Barrier stays fresh all season.",
+            "cta": "Renew protection"
+        }
+    ],
+    "social_posts": {
+        "facebook": [
+            {
+                "key": "summer_mosquito_fb",
+                "season": "summer",
+                "body": "Mosquito season is peaking in Spokane right now. One barrier treatment knocks the population down for weeks, and it is pet-safe once dry. Protect the yard. Enjoy the evenings. Call (509) 471-5767 or message us to book.",
+                "cta": "Book now",
+                "asset": "Photo of a treated backyard at dusk, no people, real location"
+            },
+            {
+                "key": "referral_fb",
+                "season": "any",
+                "body": "Know a neighbor fighting the same pests you beat? Refer them to Patriot Pest and you both get $25 off. It is the fastest way we know to make a neighborhood pest-free.",
+                "cta": "Share the referral page",
+                "asset": "Simple split graphic: neighbor plus $25 both sides"
+            }
+        ],
+        "x": [
+            {
+                "key": "summer_mosquito_x",
+                "season": "summer",
+                "body": "Mosquito season is peaking in Spokane. One barrier treatment = weeks of control, pet-safe once dry. Local techs, fast booking. (509) 471-5767",
+                "cta": "Call or DM",
+                "asset": "Same dusk yard photo, tight crop"
+            }
+        ],
+        "instagram": [
+            {
+                "key": "summer_mosquito_ig",
+                "season": "summer",
+                "body": "Mosquito season is here, Spokane. One barrier treatment gives you weeks of control so the yard stays yours. Pet-safe once dry and scheduled around your week. DM us or tap the link in bio to book.",
+                "hashtags": [
+                    "#Spokane",
+                    "#SpokaneValley",
+                    "#pestcontrol",
+                    "#backyardseason",
+                    "#nomoquitoes"
+                ],
+                "cta": "Link in bio",
+                "asset": "Vertical 4:5 photo, treated yard at dusk, golden hour"
+            }
+        ],
+        "linkedin": [
+            {
+                "key": "commercial_facilities_li",
+                "season": "any",
+                "body": "Seasonal pest pressure is a facilities problem that shows up quietly. Mosquito control around entry points, outdoor seating, and loading docks protects staff and customers and keeps the property professional. Patriot Pest Control runs scheduled barrier and exclusion programs for Spokane and Phoenix metro properties. Message us to discuss a service plan.",
+                "cta": "Request a service plan",
+                "asset": "Commercial property photo, technician in uniform, no logos needed"
+            }
+        ]
+    },
+    "segments": {
+        "by_district": [
+            {
+                "key": "wa",
+                "label": "Spokane / Inland Northwest (WA)",
+                "description": "All WA customers in the FieldRoutes book"
+            },
+            {
+                "key": "az",
+                "label": "Phoenix Metro (AZ)",
+                "description": "All AZ customers in the FieldRoutes book"
+            }
+        ],
+        "by_status": [
+            {
+                "key": "active",
+                "label": "Active Plans",
+                "description": "Current customers with an active subscription"
+            },
+            {
+                "key": "cancelled",
+                "label": "Cancelled (Win-back)",
+                "description": "Customers who cancelled; highest-value reactivation target"
+            },
+            {
+                "key": "inactive",
+                "label": "Lapsed / Inactive",
+                "description": "Inactive customers who have not re-engaged recently"
+            }
+        ],
+        "by_pest": [
+            {
+                "key": "ants",
+                "label": "Ant History",
+                "description": "Customers with ant service history or seasonal ant pressure"
+            },
+            {
+                "key": "rodents",
+                "label": "Rodent History",
+                "description": "Customers with rodent service history"
+            },
+            {
+                "key": "mosquitoes",
+                "label": "Mosquito Season Targets",
+                "description": "Customers in mosquito-heavy windows or with mosquito history"
+            },
+            {
+                "key": "scorpions",
+                "label": "Scorpion Exposure (AZ)",
+                "description": "AZ customers in scorpion-prone areas"
+            }
+        ],
+        "combined_examples": [
+            "Lapsed mosquito customers in Phoenix",
+            "Cancelled rodent customers in Spokane",
+            "Active multi-pest plans in WA",
+            "Ant history, spring window, all districts"
+        ]
+    },
+    "microcopy": {
+        "page_title": "Marketing Command Center",
+        "page_sub": "Campaigns, social, and analytics in one console.",
+        "cards": {
+            "campaigns": {
+                "title": "Campaign Overview",
+                "sub": "Seasonal reactivation waves"
+            },
+            "social": {
+                "title": "Social Quick-Post",
+                "sub": "Post to connected platforms"
+            },
+            "analytics": {
+                "title": "Analytics Snapshot",
+                "sub": "GA4 traffic and lead flow"
+            }
+        },
+        "buttons": {
+            "launch": "Launch Campaign",
+            "preview": "Preview",
+            "send_test": "Send Test",
+            "save_draft": "Save Draft",
+            "schedule": "Schedule (coming soon)",
+            "connect": "Connect",
+            "disconnect": "Disconnect",
+            "connected": "Connected",
+            "not_connected": "Not connected"
+        },
+        "empty_states": {
+            "campaigns": "No campaigns yet. Pick a template and launch your first reactivation wave.",
+            "social": "No platforms connected. Connect Facebook, X, Instagram, or LinkedIn to post from here.",
+            "analytics": "GA4 data appears here once the property is connected and traffic flows."
+        },
+        "notices": {
+            "sms_disabled": "SMS is disabled in this environment. Test sends are limited to email.",
+            "test_only": "Test sends go to approved test contacts only. No production numbers."
+        },
+        "platform_connect": {
+            "facebook": {
+                "title": "Facebook Page",
+                "status": "App ready, page token pending",
+                "unlocks": "Post to the Patriot Pest page and pull page insights"
+            },
+            "x": {
+                "title": "X (Twitter)",
+                "status": "No credentials on file",
+                "unlocks": "Post to the company X account"
+            },
+            "instagram": {
+                "title": "Instagram",
+                "status": "App ready, business ID pending",
+                "unlocks": "Publish to Instagram and read engagement"
+            },
+            "linkedin": {
+                "title": "LinkedIn",
+                "status": "No credentials on file",
+                "unlocks": "Post to the company page and track reach"
+            }
+        }
+    },
+    "credential_gaps": {
+        "facebook_instagram": "Meta app exists (APP_ID 784613607277564, page pestmgtpros, IG @patriot_pest). Missing: PAGE_ACCESS_TOKEN and PIXEL_ID. Both are one-time grabs from Meta Business Suite.",
+        "x_twitter": "No Twitter/X app, API key, or handle on file anywhere. David must create the developer app and hand over TWITTER_API_KEY plus TWITTER_HANDLE.",
+        "linkedin": "No LinkedIn app or page access on file. David must create the developer app and hand over LINKEDIN_PAGE_ID plus access token.",
+        "ga4": "GA4 property G-GZV90ZCT4E exists in CREDENTIALS.md. Analytics snapshot can render live once the site serves traffic in production."
+    }
+}

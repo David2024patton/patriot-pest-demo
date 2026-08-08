@@ -244,3 +244,52 @@ table.data .num { font-family: var(--mono); color: var(--khaki); }
 
 /* big spaced code entry */
 .authx-code { text-align: center; font-family: var(--mono) !important; font-size: 1.9rem !important; letter-spacing: .5em; text-indent: .5em; }
+
+/* ============================================================
+   MARKETING COMMAND CENTER (/admin/marketing)
+   Tactical grid: olive panels, orange accents, mono labels.
+   ============================================================ */
+.mkt-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+.mkt-col { display: grid; gap: 1.2rem; min-width: 0; }
+@media (max-width: 1020px) { .mkt-grid { grid-template-columns: 1fr; } }
+
+.mkt-card { background: var(--olive-900); border: 1px solid var(--olive-700); padding: 1.4rem 1.5rem; min-width: 0; }
+.mkt-card h3 { font-family: var(--display); color: var(--cream); font-size: 1.05rem; letter-spacing: .02em; margin: 0 0 .25rem; }
+.mkt-sub { color: var(--khaki); font-size: .85rem; margin-bottom: 1rem; }
+.mkt-empty { color: var(--olive-300); font-size: .88rem; font-style: italic; line-height: 1.55; }
+.mkt-label { display: block; font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--khaki); margin: .9rem 0 .45rem; }
+.mkt-list { margin: 0 0 0 1.1rem; color: var(--cream); font-size: .88rem; line-height: 1.7; }
+
+.mkt-select, .mkt-textarea {
+  width: 100%; background: var(--olive-950); border: 1px solid var(--olive-500);
+  color: var(--cream); font-family: var(--body); font-size: .95rem; padding: .8rem .9rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.mkt-select:focus, .mkt-textarea:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 3px rgba(244,119,46,.18); }
+.mkt-textarea { resize: vertical; min-height: 7rem; }
+
+.mkt-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.3rem; }
+.mkt-actions .btn[disabled] { opacity: .55; cursor: not-allowed; }
+
+/* ---- platform connect cards ---- */
+.platform-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .8rem; margin-bottom: 1.1rem; }
+.platform-card { background: var(--olive-950); border: 1px solid var(--olive-700); padding: .9rem 1rem; }
+.platform-card.on { border-color: var(--olive-300); }
+.platform-card .p-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-bottom: .45rem; flex-wrap: wrap; }
+.platform-card .p-head b { color: var(--cream); font-size: .88rem; }
+.platform-card .p-status { font-family: var(--mono); font-size: .72rem; color: var(--orange); letter-spacing: .04em; margin-bottom: .3rem; }
+.platform-card.on .p-status { color: var(--olive-300); }
+.platform-card .p-unlock { color: var(--khaki); font-size: .78rem; line-height: 1.5; }
+
+/* ---- campaign launcher preview pane ---- */
+.mkt-preview { border: 1px dashed var(--olive-500); background: var(--olive-950); padding: 1rem 1.1rem; }
+.mkt-pv-subject { color: var(--cream); font-weight: 600; font-size: .95rem; margin-bottom: .3rem; }
+.mkt-pv-html { color: var(--khaki); font-size: .88rem; line-height: 1.6; border-bottom: 1px solid var(--olive-800); padding-bottom: .8rem; margin-bottom: .8rem; word-break: break-word; }
+.mkt-pv-html p { margin: 0 0 .6rem; }
+.mkt-pv-sms { font-family: var(--mono); color: var(--cream); font-size: .82rem; line-height: 1.6; background: rgba(0,0,0,.28); padding: .7rem .8rem; border-left: 3px solid var(--orange); word-break: break-word; }
+.mkt-cta { font-family: var(--mono); font-size: .75rem; color: var(--olive-300); letter-spacing: .05em; margin-top: .8rem; text-transform: uppercase; }
+
+.mkt-channel-row { display: flex; gap: 1.2rem; padding: .8rem 0; }
+.mkt-radio { display: inline-flex; align-items: center; gap: .5rem; color: var(--cream); font-size: .92rem; cursor: pointer; }
+.mkt-radio input { accent-color: var(--orange); }
+.mkt-radio.off { color: var(--olive-500); cursor: not-allowed; }
