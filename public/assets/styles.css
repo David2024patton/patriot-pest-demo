@@ -103,7 +103,7 @@ section{position:relative;z-index:1}
 }
 .cut{clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
 h1,h2,h3{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:1.06}
-h2{font-size:clamp(1.9rem,4.4vw,3.2rem);color:var(--cream)}
+h2{font-size:clamp(1.5rem,4.4vw,3.2rem);color:var(--cream)}
 h2 em,h1 em{font-style:normal;color:var(--orange)}
 .lead{color:var(--khaki);font-size:1.02rem;line-height:1.65;max-width:62ch}
 
@@ -133,7 +133,7 @@ h2 em,h1 em{font-style:normal;color:var(--orange)}
 .page-head .crumb{font-family:var(--mono);font-size:.64rem;letter-spacing:.24em;color:var(--olive-300);text-transform:uppercase;margin-bottom:1rem}
 .page-head .crumb a{color:var(--khaki);text-decoration:none}
 .page-head .crumb a:hover{color:var(--orange)}
-.page-head h1{font-size:clamp(2.2rem,5.6vw,4.2rem);color:var(--cream);letter-spacing:.01em}
+.page-head h1{font-size:clamp(1.5rem,5.6vw,4.2rem);color:var(--cream);letter-spacing:.01em}
 .page-head .sub{margin-top:1rem;color:var(--khaki);font-size:1.05rem;max-width:60ch;line-height:1.6}
 .page-head .head-tags{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem}
 .page-head .head-tags span{
@@ -479,7 +479,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .hero-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:clamp(1.5rem,4vw,4rem);align-items:end;padding-bottom:2.5rem}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr;align-items:start}}
 .kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;color:var(--khaki);text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem}
-#hero h1{font-size:clamp(2.6rem,7.4vw,6.2rem);line-height:.98;color:var(--cream)}
+#hero h1{font-size:clamp(2rem,7.4vw,6.2rem);line-height:.98;color:var(--cream)}
 #hero h1 .strike{color:var(--orange);position:relative;display:inline-block}
 #hero h1 .strike::after{content:"";position:absolute;left:-3%;bottom:8%;width:106%;height:.14em;background:var(--red);transform:scaleX(0);transform-origin:left}
 .hero-sub{margin-top:1.4rem;font-size:clamp(1rem,1.6vw,1.18rem);color:var(--khaki);max-width:56ch;line-height:1.55;font-weight:500}
@@ -512,7 +512,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 
 /* ---------- threat files (home horizontal) ---------- */
 #threats{background:var(--olive-900);overflow:hidden}
-.threats-head{padding:5.5rem 0 2.5rem}
+.threats-head{padding:5.5rem clamp(1rem,4vw,2.5rem) 2.5rem}
 .threat-pin{display:flex;align-items:stretch;will-change:transform}
 .threat-card{flex:0 0 320px;margin-right:1.4rem;background:var(--olive-800);border:1px solid var(--olive-700);padding:1.6rem 1.5rem 1.4rem;position:relative;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));transition:border-color .25s,transform .25s}
 .threat-card:hover{border-color:var(--orange);transform:translateY(-8px)}
@@ -603,4 +603,118 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 @media (prefers-reduced-motion:reduce){
   [data-reveal]{opacity:1;transform:none}
   .radar,.ticker-track,.grain,.blip::after,nav .brand .star{animation:none}
+}
+
+/* ============================================================
+   RESPONSIVE RETROFIT (2026-08-08)
+   Breakpoints: 1024 tablet-landscape, 900/960 existing, 768 tablet,
+   640 phone, 480 small phone, 360 narrow. Touch targets >= 44px,
+   no horizontal overflow, fluid type via existing clamp() scale.
+   ============================================================ */
+
+/* ---- nav: small phones ---- */
+@media(max-width:640px){
+  nav{padding:.6rem 1rem;gap:.6rem}
+  nav .brand{font-size:.82rem;letter-spacing:.03em}
+  nav .brand .star{font-size:.95rem}
+  #menu-btn{padding:.6rem .7rem;min-height:44px}
+  .nav-cta{font-size:.62rem;padding:.5rem .7rem}
+  .navlinks{top:64px}
+  .hud-top{top:64px;font-size:.56rem;letter-spacing:.14em}
+}
+@media(max-width:360px){
+  nav .brand{font-size:.72rem}
+  .nav-cta{display:none}
+}
+
+/* ---- nav drawer: touch targets ---- */
+@media(max-width:960px){
+  .navlinks a.nl{padding:.7rem 0;min-height:44px;display:flex;align-items:center}
+  .navlinks .nav-cta{margin-top:.4rem}
+}
+
+/* ---- hero ---- */
+@media(max-width:900px){
+  .scroll-cue{display:none}
+  #hero{padding-top:76px;min-height:auto;padding-bottom:2rem}
+  .hero-grid{padding-bottom:1.5rem}
+  .brief{margin-top:1.6rem}
+}
+@media(max-width:480px){
+  #hero h1{font-size:clamp(1.7rem,11vw,3rem)}
+  .hero-sub{font-size:.95rem}
+  .hero-ctas .btn{width:100%;justify-content:center}
+  .hero-badges{gap:.8rem 1.2rem;font-size:.6rem}
+  .hud-top{position:static;top:auto;flex-wrap:wrap;gap:.4rem;padding:.6rem 1rem 0}
+  #hero{padding-top:76px}
+  .brief{padding:1.1rem 1rem .9rem}
+  .brief .line{font-size:.62rem;letter-spacing:.02em}
+}
+
+/* ---- section rhythm on phones ---- */
+@media(max-width:640px){
+  .block{padding:3.4rem 0}
+  .page-head{padding:96px 0 44px}
+  .page-head h1{font-size:clamp(1.9rem,8.4vw,2.6rem)}
+  .page-head .sub{font-size:.95rem}
+  .cta-band{padding:3.4rem 0}
+  .threats-head{padding:3.4rem 0 2rem}
+  .stat-grid{grid-template-columns:1fr}
+  .form-panel{padding:1.3rem 1.1rem}
+  .dossier-file{padding:1.2rem;transform:none}
+  .drow{grid-template-columns:1fr;gap:.15rem}
+  .drow dt{padding-top:.4rem}
+  .report .declass{right:6px}
+  .bigquote{padding:1rem 1.1rem;font-size:1rem}
+}
+
+/* ---- threat board: native horizontal scroll below the gsap pin ---- */
+@media(max-width:900px){
+  #threats .wrap[style]{padding-right:clamp(1rem,4vw,2.5rem)!important}
+  .threat-pin{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:1rem;scroll-snap-type:x proximity}
+  .threat-card{scroll-snap-align:start;flex:0 0 min(320px,82vw)}
+  .threat-end{flex:0 0 min(300px,78vw)}
+}
+
+/* ---- pricing: kill the desktop scale-up on narrow screens ---- */
+@media(max-width:640px){
+  .plan.gold{transform:none}
+  .plan.gold:hover{transform:translateY(-8px)}
+  .plan .price{font-size:1.8rem}
+}
+
+/* ---- touch targets ---- */
+@media(max-width:768px){
+  nav .brand{min-height:44px}
+  .nav-cta{min-height:44px;display:inline-flex;align-items:center}
+  .chip{padding:.7rem .9rem;min-height:44px;display:inline-flex;align-items:center}
+  .blog-filters button{padding:.7rem .95rem;min-height:44px}
+  .card a.more{padding:.6rem 0;min-height:44px;display:inline-flex;align-items:center}
+  .foot-grid a{padding:.5rem 0;min-height:44px}
+  #areas .area-cities a{padding:.78rem 0 .78rem .95rem}
+  .faq-q{padding:1.15rem 1.1rem;min-height:52px}
+  .lt-item{padding:1.05rem 1.1rem}
+  .field input,.field select,.field textarea{padding:.95rem .9rem;min-height:48px}
+  .btn{padding:1rem 1.4rem}
+}
+
+/* ---- tables (admin + any future public table): scroll, never overflow ---- */
+@media(max-width:768px){
+  .ttable{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}
+}
+
+/* ---- footer ---- */
+@media(max-width:560px){
+  .foot-bottom{flex-direction:column;gap:.5rem}
+}
+
+/* ---- auth (login/verify): keep the headline inside narrow viewports ----
+   admin.css loads after styles.css on auth pages, so these need higher
+   specificity than the .authx-* rules there. */
+@media(max-width:480px){
+  .authx .authx-headline{font-size:clamp(1.7rem,9vw,2.4rem)}
+  .authx .authx-brand{padding:1.8rem 1.2rem 1.6rem}
+  .authx .authx-card2{padding:1.6rem 1.2rem}
+  .authx .authx-card2 h1{font-size:1.3rem}
+  .authx .authx-topline{font-size:.58rem;letter-spacing:.08em}
 }
