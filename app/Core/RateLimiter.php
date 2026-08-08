@@ -38,6 +38,24 @@ final class RateLimiter
     }
 
     /**
+     * Best-effort real client IP. Behind the Dokploy reverse proxy, REMOTE_ADDR
+     * is the proxy itself for every request, which would collapse all rate
+     * limit keys into one. Trust the leftmost X-Forwarded-For entry the proxy
+     * appends; fall back to REMOTE_ADDR when no proxy header exists.
+     */
+    public static function clientIp(): string
+    {
+        $xff = trim((string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? ''));
+        if ($xff !== '') {
+            $first = trim(explode(',', $xff)[0] ?? '');
+            if ($first !== '') {
+                return $first;
+            }
+        }
+        return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    }
+
+    /**
      * Record an attempt for $key.
      *
      * @param string $key     Identifier.
@@ -49,7 +67,7 @@ final class RateLimiter
         try {
             Database::instance()->insert('login_attempts', [
                 'identity'   => $key,
-                'ip'         => $ip ?? ($_SERVER['REMOTE_ADDR'] ?? null),
+                'ip'         => $ip ?? self::clientIp(),
                 'user_agent' => mb_substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255),
                 'success'    => $success ? 1 : 0,
                 'created_at' => date('Y-m-d H:i:s'),

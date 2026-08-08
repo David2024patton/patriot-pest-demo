@@ -72,8 +72,10 @@ class AuthController extends PageController
             exit;
         }
 
-        // --- Rate limit: 5 attempts per minute per IP ---
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        // --- Rate limit: 5 attempts per minute per client IP ---
+        // Uses X-Forwarded-For behind the reverse proxy (REMOTE_ADDR is the
+        // proxy itself there). Per-identity limiting lives in OtpAuth.
+        $ip = RateLimiter::clientIp();
         $rateKey = 'login:' . $ip;
         if (RateLimiter::tooMany($rateKey, 5, 60)) {
             $wait = RateLimiter::retryAfter($rateKey, 5, 60);
