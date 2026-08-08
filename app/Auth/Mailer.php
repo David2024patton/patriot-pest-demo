@@ -5,7 +5,8 @@
  * Two transports:
  *   - local / debug: writes the full message to storage/logs/mail-YYYY-MM-DD.log
  *     so OTP codes and campaigns can be inspected without a real mailbox
- *     (this is an intentional debugging affordance — codes are visible in dev).
+ *     (this is an intentional debugging affordance — codes are visible in dev, but
+ *     the log is gated behind Config::isLocal() so production never writes secrets).
  *   - production: sends over SMTP (SSL/TLS) using the MAIL_* config.
  *
  * The SMTP client here is deliberately small (EHLO/AUTH LOGIN/MAIL/RCPT/DATA).
@@ -35,8 +36,11 @@ final class Mailer
         $fromName = Config::get('MAIL_FROM_NAME', 'Patriot Pest Control');
         $host     = Config::get('MAIL_HOST', '');
 
-        // Always keep a local copy for debugging/auditing.
-        self::log($to, $subject, $body);
+        // Only log to disk in local/dev — production must never write OTP codes
+        // or other sensitive message bodies to storage/logs/mail-*.log.
+        if (Config::isLocal()) {
+            self::log($to, $subject, $body);
+        }
 
         // In local dev (or with no SMTP configured) we stop at the log — the
         // code/campaign is readable in storage/logs/mail-*.log.

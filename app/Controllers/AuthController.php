@@ -85,7 +85,7 @@ class AuthController extends PageController
         $db   = Database::instance();
         $dest = '/login/verify';
 
-        // 1) Staff (by email) — staff take priority so an admin email never
+        // 1) Staff (by email) - staff take priority so an admin email never
         //    accidentally resolves to a customer row.
         $staff = $db->fetch('SELECT id, email, name, role FROM staff WHERE email = ? AND active = 1', [$identifier]);
         if ($staff !== null) {
@@ -188,8 +188,19 @@ class AuthController extends PageController
     /* ============================== HELPERS ============================== */
 
     /** Issue a code and email it (dev mode logs it to storage/logs/mail-*.log). */
+    /** Issue a code and email it (dev mode logs it to storage/logs/mail-*.log). */
     private function issueAndEmail(string $email, string $who): void
     {
+        // --- Rate limit: 3 codes per identity per 5 minutes ---
+        $limitKey = 'otp_issue:' . $email;
+        if (RateLimiter::tooMany($limitKey, 3, 300)) {
+            $wait = RateLimiter::retryAfter($limitKey, 3, 300);
+            Session::flash('auth', ['error' => 'Too many code requests. Please wait ' . ceil($wait / 60) . ' minute(s) before requesting another.']);
+            header('Location: /login');
+            exit;
+        }
+        RateLimiter::hit($limitKey, false);
+
         $code = OtpAuth::issue($email, self::PURPOSE);
         $mins = (int) (Config::int('OTP_TTL', 600) / 60);
         Mailer::send(
