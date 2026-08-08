@@ -10,8 +10,14 @@
 # RewriteCond %{HTTPS} off
 # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# --- Front controller: send non-file requests to index.php ---
+# --- Subdomain routing for cost dashboard ---
 RewriteEngine On
+# If accessing cost.patriotpest.pro, route to cost subdirectory
+RewriteCond %{HTTP_HOST} ^cost\.patriotpest\.pro$ [NC]
+RewriteCond %{REQUEST_URI} !^/cost/
+RewriteRule ^(.*)$ /cost/$1 [L]
+
+# --- Front controller: send non-file requests to index.php ---
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]

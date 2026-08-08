@@ -12,6 +12,16 @@
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $file = __DIR__ . $path;
 
+// Subdomain routing for cost dashboard (mirrors .htaccess logic)
+$host = $_SERVER['HTTP_HOST'] ?? '';
+if (strpos($host, 'cost.patriotpest.pro') !== false || strpos($host, 'cost.localhost') !== false) {
+    // Route subdomain requests to cost subdirectory
+    if (strpos($path, '/cost/') !== 0) {
+        $path = '/cost' . $path;
+        $file = __DIR__ . $path;
+    }
+}
+
 // Let the built-in server handle existing static files as-is.
 if ($path !== '/' && is_file($file)) {
     return false;
