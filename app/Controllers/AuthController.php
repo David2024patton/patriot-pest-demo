@@ -29,6 +29,7 @@ use PPC\Core\Session;
 use PPC\Core\Csrf;
 use PPC\Core\Database;
 use PPC\Core\Logger;
+use PPC\Core\RateLimiter;
 use PPC\Core\Validator;
 use PPC\Core\Config;
 use PPC\Auth\OtpAuth;
@@ -58,7 +59,6 @@ class AuthController extends PageController
      * Identify the user and email a code. Staff are matched first (by email),
      * then customers (by email/phone/account). The resolved identity + type are
      * remembered in the session for STEP 2.
-     */
     public function loginRequest(): void
     {
         Csrf::verifyOrDie();
@@ -71,13 +71,25 @@ class AuthController extends PageController
             exit;
         }
 
+        // --- Rate limit: 5 attempts per minute per IP ---
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $rateKey = 'login:' . $ip;
+        if (RateLimiter::tooMany($rateKey, 5, 60)) {
+            $wait = RateLimiter::retryAfter($rateKey, 5, 60);
+            Session::flash('auth', ['error' => 'Too many login attempts. Please wait ' . ceil($wait / 60) . ' minute(s) before trying again.']);
+            header('Location: /login');
+            exit;
+        }
+        RateLimiter::hit($rateKey, false, $ip);
+
         $db   = Database::instance();
         $dest = '/login/verify';
 
-        // 1) Staff (by email) â€” staff take priority so an admin email never
+        // 1) Staff (by email) — staff take priority so an admin email never
         //    accidentally resolves to a customer row.
         $staff = $db->fetch('SELECT id, email, name, role FROM staff WHERE email = ? AND active = 1', [$identifier]);
         if ($staff !== null) {
+            RateLimiter::clear($rateKey);
             $this->issueAndEmail($staff['email'], 'staff');
             Session::put('pending_login_email', $staff['email']);
             Session::put('pending_login_type', 'staff');
@@ -93,6 +105,7 @@ class AuthController extends PageController
             [$identifier, $identifier, $identifier]
         );
         if ($customer !== null && !empty($customer['email'])) {
+            RateLimiter::clear($rateKey);
             $this->issueAndEmail($customer['email'], 'customer');
             Session::put('pending_login_email', $customer['email']);
             Session::put('pending_login_type', 'customer');
@@ -108,6 +121,7 @@ class AuthController extends PageController
         Session::flash('auth', ['sent' => true, 'to' => $this->maskEmail($identifier)]);
         header('Location: ' . $dest);
         exit;
+    }
     }
 
     /* ============================ STEP 2: VERIFY ============================ */

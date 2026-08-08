@@ -113,8 +113,9 @@ final class FieldRoutes
 
     /**
      * Map a FieldRoutes customer record onto the local cache row shape. We keep
-     * only identity fields here; local-only flags (is_no_call/dnc_reason) and
-     * last_service are managed by upsertCustomer(), never overwritten from FR.
+     * only identity fields here; local-only flags (is_no_call/dnc_reason) are
+     * managed by upsertCustomer() and never overwritten from FR.
+     * last_service is populated from FR's lastCompleted date when available.
      */
     private static function normalize(array $c, string $district): array
     {
@@ -136,18 +137,27 @@ final class FieldRoutes
             $status = 'cancelled';
         }
 
+        // Last service date from FR — the recency signal for reactivation.
+        $lastService = null;
+        $rawLast = $c['lastCompleted'] ?? $c['lastService'] ?? null;
+        if ($rawLast !== null && trim((string) $rawLast) !== '') {
+            $ts = strtotime((string) $rawLast);
+            $lastService = $ts ? date('Y-m-d H:i:s', $ts) : null;
+        }
+
         return [
             'fr_id'          => $id,
             'district'       => $district,
             'name'           => $name !== '' ? $name : ('Customer ' . $id),
             'email'          => $c['email'] ?? null,
-            'phone'          => $c['phone1'] ?? null,
+            'phone'          => self::normalizePhone($c['phone1'] ?? null),
             'account_number' => $id,                 // FR customerID is the account id
             'address'        => $c['address'] ?? null,
             'city'           => $c['city'] ?? null,
             'state'          => $c['state'] ?? null,
             'zip'            => $c['zip'] ?? null,
             'status'         => $status,
+            'last_service'   => $lastService,
         ];
     }
 
@@ -155,8 +165,8 @@ final class FieldRoutes
      * Upsert one normalized row into the local cache. Matches an existing row by
      * (fr_id + district) first, then by email against any UNLINKED row (so a
      * seeded fixture gets claimed by its real FR record), otherwise inserts.
-     * Local opt-out flags (is_no_call / dnc_reason) and last_service are NEVER
-     * touched on update — FieldRoutes does not own them.
+     * Local opt-out flags (is_no_call / dnc_reason) are NEVER touched on update
+     * — FieldRoutes does not own them. last_service is updated from FR data.
      *
      * @return string 'inserted' | 'updated' | 'skipped'
      */
@@ -191,6 +201,8 @@ final class FieldRoutes
             'state'          => $row['state'],
             'zip'            => $row['zip'],
             'status'         => $row['status'],
+            'source'         => 'fieldroutes',  // anything synced from FR is real book data, never seed
+            'last_service'   => $row['last_service'] ?? $existing['last_service'] ?? null,
             'updated_at'     => gmdate('Y-m-d H:i:s'),
         ];
 
@@ -312,6 +324,56 @@ final class FieldRoutes
     }
 
     /**
+     * Normalize a phone number to E.164 format (+1XXXXXXXXXX for US/Canada).
+     *
+     * Rules:
+     *   - Strips all non-digit characters.
+     *   - 10 digits (e.g. 5095551234) → +15095551234 (assumes US/CA +1 prefix).
+     *   - 11 digits starting with 1  → +15095551234.
+     *   - Already E.164 (+1...)       → returned as-is.
+     *   - Null / empty / garbage      → returns null (can't normalize what we
+     *     don't recognize; callers should handle null gracefully).
+     *
+     * @param string|null $raw Raw phone from FR or user input.
+     * @return string|null E.164 number or null if unparseable.
+     */
+    public static function normalizePhone(?string $raw): ?string
+    {
+        if ($raw === null || trim($raw) === '') {
+            return null;
+        }
+        $digits = preg_replace('/\D/', '', $raw);
+        $len = strlen($digits);
+
+        // Already E.164: "+1..." — strip the + and validate.
+        if (str_starts_with(trim($raw), '+')) {
+            $stripped = substr($digits, 0); // digits only, already extracted
+            if ($len >= 11 && $len <= 15) {
+                return '+' . $digits;
+            }
+            return null; // too short/long for E.164
+        }
+
+        // 11 digits starting with 1 → US/CA national format.
+        if ($len === 11 && $digits[0] === '1') {
+            return '+' . $digits;
+        }
+
+        // 10 digits → assume US/CA, prepend +1.
+        if ($len === 10) {
+            return '+1' . $digits;
+        }
+
+        // Anything else is not a recognizable US number — return as-is with +
+        // prefix if it looks like a country-coded number, otherwise null.
+        if ($len >= 7 && $len <= 15) {
+            return '+' . $digits;
+        }
+
+        return null;
+    }
+
+    /**
      * One GET against the FieldRoutes API. Returns the decoded envelope, or []
      * on any failure (logged). Auth is passed as query params per the API spec.
      */
@@ -345,15 +407,20 @@ final class FieldRoutes
     /** cURL if available, else stream context. Returns body string or false. */
     private static function httpGet(string $url): string|false
     {
+        $verifySsl = Config::bool('FIELDROUTES_SSL_VERIFY', true);
+
         if (function_exists('curl_init')) {
             $ch = curl_init($url);
-            curl_setopt_array($ch, [
+            $opts = [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_TIMEOUT        => self::TIMEOUT,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => 0,
                 CURLOPT_USERAGENT      => 'PatriotPest/1.0 (+fieldroutes-sync)',
-            ]);
+            ];
+            if (!$verifySsl) {
+                $opts[CURLOPT_SSL_VERIFYPEER] = false;
+                $opts[CURLOPT_SSL_VERIFYHOST] = 0;
+            }
+            curl_setopt_array($ch, $opts);
             $resp = curl_exec($ch);
             $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $err  = curl_error($ch);
@@ -364,10 +431,13 @@ final class FieldRoutes
             }
             return (string) $resp;
         }
-        $ctx = stream_context_create([
-            'http'  => ['method' => 'GET', 'timeout' => self::TIMEOUT, 'header' => "User-Agent: PatriotPest/1.0\r\n"],
-            'ssl'   => ['verify_peer' => false, 'verify_peer_name' => false],
-        ]);
+        $ctxOpts = [
+            'http' => ['method' => 'GET', 'timeout' => self::TIMEOUT, 'header' => "User-Agent: PatriotPest/1.0\r\n"],
+        ];
+        if (!$verifySsl) {
+            $ctxOpts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
+        }
+        $ctx  = stream_context_create($ctxOpts);
         $resp = @file_get_contents($url, false, $ctx);
         return $resp === false ? false : $resp;
     }
