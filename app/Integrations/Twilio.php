@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace PPC\Integrations;
 
+use PPC\Core\Compliance;
 use PPC\Core\Config;
 use PPC\Core\Database;
 use PPC\Core\Logger;
@@ -55,10 +56,11 @@ final class Twilio
     /**
      * Send an SMS message.
      *
-     * DNC gate: before sending, normalizes the phone to E.164 and checks
-     * customers.is_no_call + the unsubscribes table. Hard-refuses with an
-     * audit trail if the number is opted out. Gate is configurable via
-     * TWILIO_DNC_CHECK_ENABLED (default true).
+     * DNC gate: shared with voice (see Compliance::isBlocked). Checks
+     * customers.is_no_call + the unsubscribes table via multi-form phone
+     * matching (raw, digits, +1, trailing LIKE); hard-refuses with an
+     * sms.dnc_blocked audit trail before any API call. Gate is configurable
+     * via TWILIO_DNC_CHECK_ENABLED (default true).
      *
      * @param string $to Phone number in E.164 format
      * @param string $message Message body (max 1600 chars)
@@ -72,29 +74,14 @@ final class Twilio
             return ['success' => false, 'sid' => null, 'error' => 'Twilio not configured'];
         }
 
-        // --- DNC gate ---
+        // --- DNC gate (shared with voice, see Compliance::isBlocked) ---
         if (Config::bool('TWILIO_DNC_CHECK_ENABLED', true)) {
-            $normalized = \PPC\Integrations\FieldRoutes::normalizePhone($to);
-            if ($normalized !== null) {
-                $db = Database::instance();
-                // Check customer opt-out flag.
-                $dnc = $db->fetch(
-                    'SELECT id, name, is_no_call, dnc_reason FROM customers WHERE phone = ? AND is_no_call = 1 LIMIT 1',
-                    [$normalized]
-                );
-                if ($dnc) {
-                    self::logDncBlock($normalized, 'customer_no_call', $dnc['id'] ?? null, $dnc['dnc_reason'] ?? 'Customer flagged no-call');
-                    return ['success' => false, 'sid' => null, 'error' => 'DNC block: customer has opted out of calls/texts'];
-                }
-                // Check global unsubscribe list.
-                $unsub = $db->fetch(
-                    "SELECT id, customer_id, reason FROM unsubscribes WHERE phone = ? AND (channel = 'sms' OR channel = 'all') LIMIT 1",
-                    [$normalized]
-                );
-                if ($unsub) {
-                    self::logDncBlock($normalized, 'unsubscribe_list', $unsub['customer_id'] ?? null, $unsub['reason'] ?? 'Unsubscribed');
-                    return ['success' => false, 'sid' => null, 'error' => 'DNC block: number is on the unsubscribe list'];
-                }
+            $blocked = self::dncBlock($to, 'sms.dnc_blocked');
+            if ($blocked !== null) {
+                $msg = $blocked['reason'] === 'customer_is_no_call'
+                    ? 'DNC block: customer has opted out of calls/texts'
+                    : 'DNC block: number is on the unsubscribe list';
+                return ['success' => false, 'sid' => null, 'error' => $msg];
             }
         }
 
@@ -142,16 +129,52 @@ final class Twilio
     }
 
     /**
+     * Shared DNC gate for every outbound channel (SMS and voice).
+     *
+     * Delegates to Compliance::isBlocked(), whose multi-form phone matching
+     * (raw, digits-only, +1 canonical, trailing LIKE) catches legacy non-E.164
+     * cache rows that an exact normalized match would miss, and never skips on
+     * unparseable numbers. Blocked sends are audited before any Twilio API
+     * call. Returns the block detail array, or null when the send is allowed.
+     */
+    private static function dncBlock(string $to, string $auditAction): ?array
+    {
+        // Voice opt-outs are recorded as 'sms' or 'all' in unsubscribes
+        // (STOP keywords and global opt-outs), so the 'sms' channel check
+        // covers voice DNC too; is_no_call is channel-agnostic.
+        $blocked = Compliance::isBlocked('sms', null, $to);
+        if ($blocked === null) {
+            return null;
+        }
+
+        $source = $blocked['reason'] === 'customer_is_no_call' ? 'customer_no_call' : 'unsubscribe_list';
+        $reason = (string) ($blocked['detail'] ?? '');
+        if ($reason === '') {
+            $reason = $source === 'customer_no_call'
+                ? 'Customer flagged no-call'
+                : 'Number is on the unsubscribe list';
+        }
+        self::logDncBlock(
+            $to,
+            $source,
+            isset($blocked['customer_id']) ? (string) $blocked['customer_id'] : null,
+            $reason,
+            $auditAction
+        );
+        return $blocked;
+    }
+
+    /**
      * Log a DNC-blocked send attempt to the audit trail. Hard evidence
      * that the system respected an opt-out - essential for compliance.
      */
-    private static function logDncBlock(string $phone, string $source, ?string $customerId, string $reason): void
+    private static function logDncBlock(string $phone, string $source, ?string $customerId, string $reason, string $action = 'sms.dnc_blocked'): void
     {
         try {
             Database::instance()->insert('audit_log', [
                 'user_id'    => $customerId,
                 'user_type'  => 'system',
-                'action'     => 'sms.dnc_blocked',
+                'action'     => $action,
                 'entity'     => 'customer',
                 'entity_id'  => $customerId,
                 'meta_json'  => json_encode([
@@ -189,6 +212,12 @@ final class Twilio
     /**
      * Initiate a voice call.
      *
+     * DNC gate: TCPA applies to voice exactly as it does to SMS. Before any
+     * Calls.json request this checks customers.is_no_call + the unsubscribes
+     * table via the same shared Compliance::isBlocked() gate sendSms() uses,
+     * and audits the refusal as voice.dnc_blocked. Configurable via
+     * TWILIO_DNC_CHECK_ENABLED (default true).
+     *
      * @param string $to Phone number in E.164 format
      * @param string $url TwiML URL for call handling
      * @return array{success:bool, sid:string|null, error:string|null}
@@ -198,6 +227,17 @@ final class Twilio
         self::init();
         if (!self::isConfigured()) {
             return ['success' => false, 'sid' => null, 'error' => 'Twilio not configured'];
+        }
+
+        // --- DNC gate (shared with SMS, see Compliance::isBlocked) ---
+        if (Config::bool('TWILIO_DNC_CHECK_ENABLED', true)) {
+            $blocked = self::dncBlock($to, 'voice.dnc_blocked');
+            if ($blocked !== null) {
+                $msg = $blocked['reason'] === 'customer_is_no_call'
+                    ? 'DNC block: customer has opted out of calls/texts'
+                    : 'DNC block: number is on the unsubscribe list';
+                return ['success' => false, 'sid' => null, 'error' => $msg];
+            }
         }
 
         $params = [

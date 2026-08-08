@@ -59,7 +59,7 @@ final class Compliance
                 "SELECT id, name, dnc_reason FROM customers
                  WHERE is_no_call = 1 AND (phone IN ($ph) OR (phone IS NOT NULL AND phone LIKE ?))
                  LIMIT 1",
-                [...$phones, '%' . $digits]
+                [...$phones, self::likeSuffix($digits)]
             );
             if ($row !== null) {
                 return [
@@ -96,11 +96,11 @@ final class Compliance
         if ($phones !== []) {
             $ph      = implode(',', array_fill(0, count($phones), '?'));
             $conds[] = '(phone IN (' . $ph . ') OR (phone IS NOT NULL AND phone LIKE ?))';
-            $params  = array_merge($params, $phones, ['%' . $digits]);
+            $params  = array_merge($params, $phones, [self::likeSuffix($digits)]);
         }
         if ($conds !== []) {
             $row = $db->fetch(
-                "SELECT id, email, phone, channel, reason FROM unsubscribes
+                "SELECT id, customer_id, email, phone, channel, reason FROM unsubscribes
                  WHERE channel IN ('" . $channel . "', 'all') AND (" . implode(' OR ', $conds) . ")
                  ORDER BY id DESC LIMIT 1",
                 $params
@@ -112,6 +112,7 @@ final class Compliance
                     'detail'         => (string) ($row['reason'] ?? ''),
                     'channel'        => $row['channel'],
                     'unsubscribe_id' => (int) $row['id'],
+                    'customer_id'    => $row['customer_id'] !== null ? (int) $row['customer_id'] : null,
                 ];
             }
         }
@@ -255,7 +256,7 @@ final class Compliance
         return preg_replace('/\D+/', '', $phone) ?? '';
     }
 
-    /** Candidate forms of a phone for matching: raw, digits, canonical +1. */
+    /** Candidate forms of a phone for matching: raw, digits, canonical +1, national. */
     private static function phoneCandidates(?string $phone, string $digits): array
     {
         $cands = [];
@@ -266,9 +267,25 @@ final class Compliance
             $cands[] = $digits;
             if (strlen($digits) === 10) {
                 $cands[] = '+1' . $digits;
+            } elseif (strlen($digits) === 11 && $digits[0] === '1') {
+                // National form of a +1 number, so legacy rows stored without
+                // the country code (e.g. '5559876543') still match.
+                $cands[] = substr($digits, 1);
             }
         }
         return array_values(array_unique($cands));
+    }
+
+    /**
+     * Trailing-LIKE suffix for a phone lookup. Uses the national form when the
+     * input is a +1 E.164 number so legacy prefixed rows still match.
+     */
+    private static function likeSuffix(string $digits): string
+    {
+        if (strlen($digits) === 11 && $digits[0] === '1') {
+            return '%' . substr($digits, 1);
+        }
+        return '%' . $digits;
     }
 
     /** Lowercased email candidates (single; presence-checked). */
