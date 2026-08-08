@@ -55,6 +55,7 @@ use PPC\Controllers\AuthController;
 use PPC\Controllers\PortalController;
 use PPC\Controllers\StaffController;
 use PPC\Controllers\AdminController;
+use PPC\Controllers\TwilioController;
 use PPC\Controllers\WebhookController;
 
 // ---------- Marketing pages (public) ----------
@@ -126,6 +127,23 @@ Router::get('/admin/posts/{id}', [AdminController::class, 'postEdit'])->auth('st
 Router::post('/admin/posts/{id}',[AdminController::class, 'postUpdate'])->auth('staff')->role('admin');
 Router::get('/admin/media',      [AdminController::class, 'media'])->auth('staff')->role('admin');
 Router::get('/admin/content',    [AdminController::class, 'content'])->auth('staff')->role('admin');
+
+// ---------- Twilio admin (admin-guarded) ----------
+Router::get('/admin/twilio',                  [TwilioController::class, 'index'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/sms',              [TwilioController::class, 'sms'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/sms/new',          [TwilioController::class, 'smsNew'])->auth('staff')->role('admin');
+Router::post('/admin/twilio/sms/send',        [TwilioController::class, 'smsSend'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/sms/{id}',         [TwilioController::class, 'smsView'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/calls',            [TwilioController::class, 'calls'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/calls/new',        [TwilioController::class, 'callNew'])->auth('staff')->role('admin');
+Router::post('/admin/twilio/calls/initiate',  [TwilioController::class, 'callInitiate'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/calls/{id}',       [TwilioController::class, 'callView'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/voicemail',        [TwilioController::class, 'voicemail'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/voicemail/{id}',   [TwilioController::class, 'voicemailView'])->auth('staff')->role('admin');
+Router::post('/admin/twilio/voicemail/{id}/update', [TwilioController::class, 'voicemailUpdate'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/webhooks',         [TwilioController::class, 'webhooks'])->auth('staff')->role('admin');
+Router::get('/admin/twilio/webhooks/{id}',    [TwilioController::class, 'webhookView'])->auth('staff')->role('admin');
+Router::post('/admin/twilio/webhooks/process', [TwilioController::class, 'webhooksProcess'])->auth('staff')->role('admin');
 
 // ---------- Health check (public, no auth) ----------
 Router::get('/health', function () {

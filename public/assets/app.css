@@ -321,3 +321,73 @@ body.appshell-body .appshell-bar {
 }
 .appshell-signout .ico { width: 1.25rem; text-align: center; }
 .appshell-signout:hover { background: var(--shell-hover); color: #b23b26; }
+
+/* ---------- twilio admin components (Front One Part A) ----------
+   The Twilio templates ship their own component vocabulary
+   (stats-grid, nav-card, data-table, detail-row, form-card, ...).
+   Styled here against the light shell tokens so the ops console
+   reads clean all day. Scoped to the app shell so nothing leaks
+   into the dark marketing pages. */
+
+body.appshell-body .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.6rem; }
+@media (max-width: 1100px) { body.appshell-body .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px)  { body.appshell-body .stats-grid { grid-template-columns: 1fr; } }
+body.appshell-body .stat-card { background: #fff; border: 1px solid var(--shell-line); box-shadow: var(--shell-shadow); padding: 1.1rem 1.2rem; position: relative; }
+body.appshell-body .stat-card::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--shell-accent); }
+body.appshell-body .stat-label { font-family: var(--mono); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--shell-muted); }
+body.appshell-body .stat-value { font-family: var(--display); font-size: 1.9rem; color: var(--shell-ink); line-height: 1.15; margin-top: .2rem; }
+body.appshell-body .stat-sub { font-size: .78rem; color: var(--shell-muted); margin-top: .15rem; }
+
+body.appshell-body .nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 1100px) { body.appshell-body .nav-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px)  { body.appshell-body .nav-grid { grid-template-columns: 1fr; } }
+body.appshell-body .nav-card { display: block; background: #fff; border: 1px solid var(--shell-line); box-shadow: var(--shell-shadow); padding: 1.2rem 1.2rem 1.1rem; text-decoration: none; transition: border-color .2s, transform .2s; }
+body.appshell-body .nav-card:hover { border-color: var(--shell-accent); transform: translateY(-3px); }
+body.appshell-body .nav-icon { font-size: 1.6rem; margin-bottom: .5rem; }
+body.appshell-body .nav-title { font-family: var(--display); font-size: .92rem; letter-spacing: .03em; text-transform: uppercase; color: var(--shell-ink); }
+body.appshell-body .nav-desc { font-size: .8rem; color: var(--shell-muted); margin-top: .25rem; line-height: 1.45; }
+
+body.appshell-body .table-wrapper { overflow-x: auto; border: 1px solid var(--shell-line); background: #fff; box-shadow: var(--shell-shadow); }
+body.appshell-body table.data-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+body.appshell-body table.data-table th, body.appshell-body table.data-table td { text-align: left; padding: .75rem .9rem; border-bottom: 1px solid var(--shell-line); vertical-align: middle; color: var(--shell-ink); }
+body.appshell-body table.data-table th { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--shell-muted); background: #f0ede2; }
+body.appshell-body table.data-table tr:last-child td { border-bottom: 0; }
+body.appshell-body table.data-table tr:hover td { background: rgba(244, 119, 46, .06); }
+body.appshell-body td.truncate { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.appshell-body td.empty { text-align: center; color: var(--shell-muted); padding: 2rem 1rem; font-style: italic; }
+
+body.appshell-body .badge.success { color: #4c7a1f; border-color: #9db877; background: #eef3e2; }
+body.appshell-body .badge.warning { color: #8a4a1c; border-color: #f0c19c; background: #fdeee1; }
+body.appshell-body .badge.error   { color: #8a2c1c; border-color: #e0a89c; background: #fbeae6; }
+body.appshell-body .badge.info    { color: #1c5f8a; border-color: #9cc4e0; background: #e1f0fb; }
+
+body.appshell-body .btn-sm { padding: .35rem .7rem; font-size: .68rem; }
+body.appshell-body .pagination { display: flex; align-items: center; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap; }
+body.appshell-body .page-info { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: var(--shell-muted); }
+
+body.appshell-body .form-card { background: #fff; border: 1px solid var(--shell-line); box-shadow: var(--shell-shadow); padding: 1.6rem 1.5rem; max-width: 640px; }
+body.appshell-body .form-group { margin-bottom: 1.2rem; }
+body.appshell-body .form-group label { display: block; font-family: var(--mono); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--shell-muted); margin-bottom: .4rem; }
+body.appshell-body .form-card input, body.appshell-body .form-card textarea, body.appshell-body .form-card select { width: 100%; background: #fff; border: 1.5px solid var(--olive-500); color: var(--shell-ink); font-family: var(--body); font-size: .95rem; padding: .7rem .8rem; }
+body.appshell-body .form-card input:focus, body.appshell-body .form-card textarea:focus, body.appshell-body .form-card select:focus { outline: none; border-color: var(--shell-accent); box-shadow: 0 0 0 3px rgba(244, 119, 46, .18); }
+body.appshell-body .form-hint { font-size: .74rem; color: var(--shell-muted); margin-top: .35rem; }
+body.appshell-body .form-actions { display: flex; gap: .8rem; margin-top: 1.4rem; flex-wrap: wrap; }
+body.appshell-body .form-select { width: 100%; }
+
+body.appshell-body .detail-card { background: #fff; border: 1px solid var(--shell-line); box-shadow: var(--shell-shadow); padding: 1.4rem 1.5rem; margin-bottom: 1.4rem; }
+body.appshell-body .detail-section { margin-bottom: 1.6rem; }
+body.appshell-body .detail-section h2, body.appshell-body .detail-section h3 { font-family: var(--display); font-size: .95rem; letter-spacing: .04em; text-transform: uppercase; color: var(--shell-ink); margin-bottom: .8rem; }
+body.appshell-body .detail-row { display: grid; grid-template-columns: 170px 1fr; gap: 1rem; padding: .55rem 0; border-bottom: 1px dashed var(--shell-line); font-size: .9rem; }
+body.appshell-body .detail-row:last-child { border-bottom: 0; }
+body.appshell-body .detail-row .label { font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--shell-muted); padding-top: .15rem; }
+body.appshell-body .detail-row .value { color: var(--shell-ink); word-break: break-word; }
+body.appshell-body .mono { font-family: var(--mono); font-size: .85em; }
+
+body.appshell-body .audio-player { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+body.appshell-body .audio-player audio { flex: 1; min-width: 220px; }
+body.appshell-body .transcription-content, body.appshell-body .message-content { background: #fbfaf5; border: 1px solid var(--shell-line); padding: 1rem 1.1rem; font-size: .92rem; line-height: 1.6; color: var(--shell-ink); white-space: pre-wrap; }
+body.appshell-body .code-block { background: #23281c; border: 1px solid var(--shell-line); padding: 1rem 1.1rem; overflow-x: auto; }
+body.appshell-body .code-block pre { font-family: var(--mono); font-size: .78rem; line-height: 1.6; color: #ece4cd; margin: 0; white-space: pre-wrap; }
+body.appshell-body .media-preview { max-width: 320px; border: 1px solid var(--shell-line); display: block; }
+body.appshell-body .error-message { color: #8a2c1c; font-size: .85rem; margin-top: .4rem; }
+body.appshell-body .inline-form { display: inline-flex; align-items: center; gap: .6rem; }

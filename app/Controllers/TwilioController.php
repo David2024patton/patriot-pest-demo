@@ -38,7 +38,7 @@ class TwilioController extends PageController
             'webhooks'        => (int) $db->scalar('SELECT COUNT(*) FROM webhook_events'),
             'webhooks_pending'=> (int) $db->scalar("SELECT COUNT(*) FROM webhook_events WHERE processed = 0"),
         ];
-        echo View::page('twilio/index', ['stats' => $stats, 'flash' => $this->flash()], $this->meta('Twilio | Admin', 'Twilio integration management.', '/admin/twilio'));
+        echo View::page('admin/twilio/index', ['stats' => $stats, 'flash' => $this->flash()], $this->meta('Twilio | Admin', 'Twilio integration management.', '/admin/twilio'));
     }
 
     /** ==================== SMS MANAGEMENT ==================== */
@@ -54,7 +54,7 @@ class TwilioController extends PageController
         $total = Database::instance()->scalar('SELECT COUNT(*) FROM sms_logs');
         $pages = (int) ceil($total / $limit);
 
-        echo View::page('twilio/sms', [
+        echo View::page('admin/twilio/sms', [
             'logs'   => $logs,
             'page'   => $page,
             'pages'  => $pages,
@@ -66,7 +66,7 @@ class TwilioController extends PageController
     /** Send new SMS form. */
     public function smsNew(): void
     {
-        echo View::page('twilio/sms-send', [
+        echo View::page('admin/twilio/sms-send', [
             'flash' => $this->flash(),
         ], $this->meta('Send SMS | Twilio', 'Send a new SMS message.', '/admin/twilio/sms/new'));
     }
@@ -113,7 +113,7 @@ class TwilioController extends PageController
             \PPC\Core\Router::notFound();
         }
 
-        echo View::page('twilio/sms-view', [
+        echo View::page('admin/twilio/sms-view', [
             'sms'   => $sms,
             'flash' => $this->flash(),
         ], $this->meta('SMS Details | Twilio', 'SMS message details.', "/admin/twilio/sms/$id"));
@@ -132,7 +132,7 @@ class TwilioController extends PageController
         $total = Database::instance()->scalar('SELECT COUNT(*) FROM call_logs');
         $pages = (int) ceil($total / $limit);
 
-        echo View::page('twilio/calls', [
+        echo View::page('admin/twilio/calls', [
             'logs'   => $logs,
             'page'   => $page,
             'pages'  => $pages,
@@ -144,7 +144,7 @@ class TwilioController extends PageController
     /** Initiate new call form. */
     public function callNew(): void
     {
-        echo View::page('twilio/call-new', [
+        echo View::page('admin/twilio/call-new', [
             'flash' => $this->flash(),
         ], $this->meta('Initiate Call | Twilio', 'Start a new voice call.', '/admin/twilio/calls/new'));
     }
@@ -190,7 +190,7 @@ class TwilioController extends PageController
             \PPC\Core\Router::notFound();
         }
 
-        echo View::page('twilio/call-view', [
+        echo View::page('admin/twilio/call-view', [
             'call'  => $call,
             'flash' => $this->flash(),
         ], $this->meta('Call Details | Twilio', 'Voice call details and recording.', "/admin/twilio/calls/$id"));
@@ -209,7 +209,7 @@ class TwilioController extends PageController
         $total = Database::instance()->scalar('SELECT COUNT(*) FROM voicemails');
         $pages = (int) ceil($total / $limit);
 
-        echo View::page('twilio/voicemail', [
+        echo View::page('admin/twilio/voicemail', [
             'voicemails' => $voicemails,
             'page'       => $page,
             'pages'      => $pages,
@@ -234,7 +234,7 @@ class TwilioController extends PageController
             $vm['status'] = 'listened';
         }
 
-        echo View::page('twilio/voicemail-view', [
+        echo View::page('admin/twilio/voicemail-view', [
             'vm'    => $vm,
             'flash' => $this->flash(),
         ], $this->meta('Voicemail Details | Twilio', 'Voicemail playback and details.', "/admin/twilio/voicemail/$id"));
@@ -276,7 +276,7 @@ class TwilioController extends PageController
         $total = Database::instance()->scalar('SELECT COUNT(*) FROM webhook_events');
         $pages = (int) ceil($total / $limit);
 
-        echo View::page('twilio/webhooks', [
+        echo View::page('admin/twilio/webhooks', [
             'events' => $events,
             'page'   => $page,
             'pages'  => $pages,
@@ -298,7 +298,7 @@ class TwilioController extends PageController
         $payload = json_decode($event['payload'], true);
         $payloadFormatted = json_encode($payload, JSON_PRETTY_PRINT);
 
-        echo View::page('twilio/webhook-view', [
+        echo View::page('admin/twilio/webhook-view', [
             'event'           => $event,
             'payload'         => $payload,
             'payloadFormatted'=> $payloadFormatted,
