@@ -133,7 +133,7 @@ final class FieldRoutes
         } elseif ($text !== '' && str_contains($text, 'inactive')) {
             $status = 'inactive';
         }
-        if (!empty($c['dateCancelled'])) {
+        if (!empty($c['dateCancelled']) && !str_starts_with((string) $c['dateCancelled'], '0000-00-00')) {
             $status = 'cancelled';
         }
 
