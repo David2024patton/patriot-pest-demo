@@ -113,7 +113,7 @@
           $__order   = [$__primary, \PPC\Core\Geo::otherRegion()];
         ?>
         <?php foreach ($__order as $__r): $__line = \PPC\Core\Geo::REGIONS[$__r]; ?>
-          <a href="tel:<?= $view->e($__line['tel']) ?>"><?= $view->e($__line['display']) ?> — <?= $view->e($__line['label']) ?></a>
+          <a href="tel:<?= $view->e($__line['tel']) ?>"><?= $view->e($__line['display']) ?> · <?= $view->e($__line['label']) ?></a>
         <?php endforeach; ?>
         <a href="mailto:info@patriotpest.pro">info@patriotpest.pro</a>
         <a href="/contact">Spokane, WA 99201, United States</a>

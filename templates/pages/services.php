@@ -9,7 +9,7 @@ $pests = $data['pests'] ?? [];
   <div class="wrap">
     <div class="eyebrow">CAPABILITIES // SERVICES</div>
     <h1 style="font-family:var(--display);color:var(--cream);font-size:clamp(2rem,6vw,3rem);margin:.4rem 0 .8rem">Every pest. <em>One team.</em></h1>
-    <p class="lead">From ants to wildlife, we identify, treat, and prevent <?= count($pests) ?>+ pest categories across Washington, Idaho, Oregon &amp; Arizona — with eco-friendly, family- and pet-safe methods.</p>
+    <p class="lead">From ants to wildlife, we identify, treat, and prevent <?= count($pests) ?>+ pest categories across Washington, Idaho, Oregon, and Arizona. Methods are eco-friendly and safe for your family and pets.</p>
   </div>
 </section>
 

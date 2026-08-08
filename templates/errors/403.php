@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>403 — Restricted | Patriot Pest Control</title>
+  <title>403 Restricted | Patriot Pest Control</title>
   <meta name="robots" content="noindex">
   <style>
     :root{--olive-950:#0d0f08;--olive-800:#1b1e14;--khaki:#c9c2a6;--red:#c0392b;--cream:#f2efe2}

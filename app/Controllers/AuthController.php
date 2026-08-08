@@ -52,7 +52,7 @@ class AuthController extends PageController
         }
         echo View::page('auth/login', [
             'flash' => Session::pullFlash('auth'),
-        ], $this->meta('Sign In | Patriot Pest Control', 'One secure sign-in for customers and staff. No password — we email you a code and send you to the right dashboard.', '/login'));
+        ], $this->meta('Sign In | Patriot Pest Control', 'One secure sign-in for customers and staff. No password. We email you a code and send you to the right dashboard.', '/login'));
     }
 
     /**

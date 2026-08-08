@@ -16,7 +16,7 @@
       </div>
       <div class="card">
         <h3 style="font-family:var(--display);color:var(--cream)">🔐 Account Access</h3>
-        <p style="color:var(--khaki);line-height:1.7;margin:.5rem 0">Everyone signs in passwordless — we email a secure code and send you to the right dashboard. <a href="/login" style="color:var(--orange)">Go to sign in ▸</a></p>
+        <p style="color:var(--khaki);line-height:1.7;margin:.5rem 0">No passwords. We email you a secure code and send you to the right dashboard. <a href="/login" style="color:var(--orange)">Go to sign in ▸</a></p>
       </div>
       <div class="card">
         <h3 style="font-family:var(--display);color:var(--cream)">📅 Reschedule Service</h3>
@@ -24,7 +24,7 @@
       </div>
       <div class="card">
         <h3 style="font-family:var(--display);color:var(--cream)">♿ Accessibility</h3>
-        <p style="color:var(--khaki);line-height:1.7;margin:.5rem 0">We're committed to an accessible experience. If you need assistance using this site, call us and we'll help.</p>
+        <p style="color:var(--khaki);line-height:1.7;margin:.5rem 0">If you need help using this site, call us and we'll walk you through it.</p>
       </div>
       <div class="card">
         <h3 style="font-family:var(--display);color:var(--cream)">🛡️ Warranty Claims</h3>

@@ -12,7 +12,7 @@ $val     = fn(string $k) => $view->e($old[$k] ?? '');
   <div class="wrap">
     <div class="eyebrow">COMMS // CONTACT</div>
     <h1 style="font-family:var(--display);color:var(--cream);font-size:clamp(2rem,6vw,3rem);margin:.4rem 0 .8rem">Get your <em>free quote.</em></h1>
-    <p class="lead">Call the line or send the form — we respond within one business day (usually much faster). Same-day service available across all four states.</p>
+    <p class="lead">Call or send the form. We respond within one business day, usually faster. Same-day service available across all four states.</p>
   </div>
 </section>
 

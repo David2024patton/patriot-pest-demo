@@ -11,7 +11,7 @@ $posts = $data['posts'] ?? [];
   <div class="wrap">
     <div class="eyebrow">FIELD INTEL // THE BLOG</div>
     <h1 style="font-family:var(--display);color:var(--cream);font-size:clamp(2rem,6vw,3rem);margin:.4rem 0 .8rem">Pest Control <em>Intel &amp; Guides.</em></h1>
-    <p class="lead">Expert identification, seasonal guides, and prevention tips from our licensed technicians — written for homeowners across Washington, Idaho, Oregon &amp; Arizona.</p>
+    <p class="lead">Identification help, seasonal guides, and prevention tips from our licensed technicians. Written for homeowners across Washington, Idaho, Oregon, and Arizona.</p>
   </div>
 </section>
 

@@ -179,7 +179,7 @@ class CostReceiptRenderer {
 
     /* Grand total: display the full range after subtotals animate */
     setTimeout(() => {
-      if (grand) grand.textContent = this.formatCurrency(totalMin) + ' \u2014 ' + this.formatCurrency(totalMax);
+      if (grand) grand.textContent = this.formatCurrency(totalMin) + ' to ' + this.formatCurrency(totalMax);
     }, 2000);
   }
 

@@ -32,7 +32,7 @@ class BlogController extends PageController
         );
 
         echo View::page('pages/blog-index', ['posts' => $posts], $this->meta(
-            'Pest Control Blog & Tips — Seasonal Guides | Patriot Pest Control',
+            'Pest Control Blog & Tips: Seasonal Guides | Patriot Pest Control',
             'Expert pest control tips, seasonal guides, and identification help for WA, ID, OR, AZ. Written by licensed technicians.',
             '/blogs',
             ['crumb' => [['Home', '/'], ['Blog', '/blogs']]]

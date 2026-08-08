@@ -9,7 +9,7 @@ $slugify = fn(string $s): string => trim(preg_replace('/[^a-z0-9]+/', '-', strto
   <div class="wrap">
     <div class="eyebrow">AREA OF OPERATIONS</div>
     <h1 style="font-family:var(--display);color:var(--cream);font-size:clamp(2rem,6vw,3rem);margin:.4rem 0 .8rem">Four states. <em>One call.</em></h1>
-    <p class="lead">Same-day pest control across Washington, Idaho, Oregon &amp; Arizona. Find your community below — if we're not listed, call us; we likely still cover you.</p>
+    <p class="lead">Same-day pest control across Washington, Idaho, Oregon &amp; Arizona. Find your community below. Not listed? Call us. We probably still cover you.</p>
   </div>
 </section>
 
