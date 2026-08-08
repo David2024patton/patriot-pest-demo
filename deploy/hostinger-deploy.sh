@@ -36,6 +36,7 @@ stage_bundle() {
     cp -r "$REPO_ROOT/storage"    "$BUNDLE/storage"
     cp -r "$REPO_ROOT/templates"  "$BUNDLE/templates"
     cp -r "$REPO_ROOT/public/assets" "$BUNDLE/assets"
+    cp -r "$REPO_ROOT/public/cost"   "$BUNDLE/cost"   # marketing cost explainer standalone pages
 
     # front controller + router (public/ docroot is flattened to the subdomain root)
     cp "$REPO_ROOT/public/router.php" "$BUNDLE/router.php"
