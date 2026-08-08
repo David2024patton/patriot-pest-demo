@@ -59,6 +59,7 @@ class AuthController extends PageController
      * Identify the user and email a code. Staff are matched first (by email),
      * then customers (by email/phone/account). The resolved identity + type are
      * remembered in the session for STEP 2.
+     */
     public function loginRequest(): void
     {
         Csrf::verifyOrDie();
@@ -121,7 +122,6 @@ class AuthController extends PageController
         Session::flash('auth', ['sent' => true, 'to' => $this->maskEmail($identifier)]);
         header('Location: ' . $dest);
         exit;
-    }
     }
 
     /* ============================ STEP 2: VERIFY ============================ */

@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS customers (
     state          TEXT,
     zip            TEXT,
     status         TEXT DEFAULT 'active',  -- active | cancelled | inactive
+    source         TEXT NOT NULL DEFAULT 'fieldroutes', -- seed | fieldroutes | manual
     is_no_call     INTEGER NOT NULL DEFAULT 0, -- 1 = do NOT contact (synced to FR)
     dnc_reason     TEXT,                   -- why flagged (e.g. "requested no contact")
     last_service   TEXT,
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS customers (
 CREATE INDEX IF NOT EXISTS idx_cust_email ON customers(email);
 CREATE INDEX IF NOT EXISTS idx_cust_phone ON customers(phone);
 CREATE INDEX IF NOT EXISTS idx_cust_status ON customers(status, is_no_call);
+CREATE INDEX IF NOT EXISTS idx_cust_source ON customers(source);
 
 -- ---------- Messaging & support (carried over from existing app) ----------
 CREATE TABLE IF NOT EXISTS messages (

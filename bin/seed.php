@@ -31,13 +31,13 @@ $pests = [
     ['mosquitoes','Mosquitoes','Aedes aegypti','mosquitoes.jpg','insect',70,'Seasonal barrier treatments that take back your yard from peak spring through fall.'],
     ['wasps','Wasps & Hornets','Polistes spp.','wasps.jpg','insect',78,'Safe nest removal by suited technicians — eaves, attics, and ground nests.'],
     ['cockroaches','Cockroaches','Periplaneta americana','cockroaches.jpg','insect',75,'Gel-bait and IGR programs that break the breeding cycle for good.'],
-    ['fleas-ticks','Fleas & Ticks','Ctenocephalides spp.','fleas-ticks.jpg','insect',66,'Indoor and perimeter treatment that's tough on pests, safe for pets.'],
+    ['fleas-ticks','Fleas & Ticks','Ctenocephalides spp.','fleas-ticks.jpg','insect',66,'Indoor and perimeter treatment that\'s tough on pests, safe for pets.'],
     ['silverfish','Silverfish','Lepisma saccharina','silverfish.jpg','insect',40,'Moisture-loving invaders that damage books, clothing, and wallpaper.'],
     ['pantry-pests','Pantry Pests','Plodia interpunctella','pantry-pests.jpg','insect',45,'Indian meal moths, flour beetles, and weevils — kitchen invaders eliminated.'],
     ['bees','Bees','Apis mellifera','bees.jpg','insect',60,'Humane honeybee, carpenter bee & Africanized bee removal, prioritizing relocation.'],
     ['squirrels','Squirrels','Sciurus carolinensis','squirrels.jpg','wildlife',50,'Humane removal from attics, walls & chimneys with entry-point sealing.'],
     ['raccoons','Raccoons','Procyon lotor','raccoons.jpg','wildlife',55,'Safe removal & exclusion using humane trapping and one-way doors.'],
-    ['bats','Bats','Myotis lucifugus','bats.jpg','wildlife',58,'Professional one-way door exclusion — bats leave safely and can't return.'],
+    ['bats','Bats','Myotis lucifugus','bats.jpg','wildlife',58,'Professional one-way door exclusion — bats leave safely and can\'t return.'],
     ['scorpions','Scorpions','Centruroides spp.','scorpions.jpg','insect',85,'Bark scorpions & desert hairy scorpions — UV detection and targeted treatments.'],
     ['crickets','Crickets','Acheta domesticus','crickets.jpg','insect',35,'Camel, Jerusalem & field crickets — eliminate noisy infestations.'],
     ['pack-rats','Pack Rats','Neotoma spp.','pack-rats.jpg','rodent',62,'Desert woodrats that nest in attics, garages & vehicles.'],
@@ -91,6 +91,7 @@ foreach ($customers as [$fr,$name,$email,$phone,$addr,$city,$st,$zip,$status]) {
     $db->insert('customers', [
         'fr_id'=>$fr,'district'=>($st==='AZ'?'az':'wa'),'name'=>$name,'email'=>$email,'phone'=>$phone,
         'account_number'=>$fr,'address'=>$addr,'city'=>$city,'state'=>$st,'zip'=>$zip,'status'=>$status,
+        'source'=>'seed',  // fixtures are test data; excluded from all real-customer aggregates
         'is_no_call'=>($status==='cancelled'?1:0),'created_at'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s'),
     ]);
     $cc++;
@@ -103,11 +104,11 @@ $spidId = $db->scalar("SELECT id FROM pest_photos WHERE slug='spiders'");
 $rodId  = $db->scalar("SELECT id FROM pest_photos WHERE slug='rodents'");
 $now = date('Y-m-d H:i:s');
 $posts = [
-    ['why-ants-invade-in-spring','Why Ants Invade in Spring (and How to Stop Them)','Ants scout for food and water as temperatures rise. Here's how to cut them off before they establish a colony.',$antId,'spring','ants',
+    ['why-ants-invade-in-spring','Why Ants Invade in Spring (and How to Stop Them)','Ants scout for food and water as temperatures rise. Here\'s how to cut them off before they establish a colony.',$antId,'spring','ants',
      '<p>As soil temperatures climb, ant colonies send out scouts looking for food and water. A single scout that finds a reliable source lays a pheromone trail — and within days you have a highway into your kitchen.</p><h3>What to do</h3><ul><li>Seal cracks around the foundation and windows.</li><li>Store food in airtight containers.</li><li>Wipe down counters to remove scent trails.</li><li>Use baiting (not just sprays) so the colony is eliminated at the source.</li></ul>'],
     ['spiders-fall-guide','Why Spiders Come Inside During Fall','Cooler nights drive spiders indoors. Learn why and how to keep them out.',$spidId,'fall','spiders',
      '<p>When nights cool, spiders follow their prey indoors. Most are harmless, but black widows and hobo spiders warrant attention.</p><h3>Prevention</h3><ul><li>Remove webs and egg sacs from eaves and corners.</li><li>Seal entry points around doors and windows.</li><li>Reduce outdoor lighting that attracts prey insects.</li></ul>'],
-    ['rodent-proof-your-home','How to Rodent-Proof Your Home','Mice can squeeze through a gap the size of a dime. Here's a complete exclusion walkthrough.',$rodId,'winter','rodents',
+    ['rodent-proof-your-home','How to Rodent-Proof Your Home','Mice can squeeze through a gap the size of a dime. Here\'s a complete exclusion walkthrough.',$rodId,'winter','rodents',
      '<p>Rodents seek warmth and food as winter approaches. Exclusion is the only permanent fix.</p><h3>Checklist</h3><ul><li>Seal gaps larger than 1/4 inch around pipes and vents.</li><li>Store food and pet food in sealed containers.</li><li>Keep garbage in tightly sealed bins.</li><li>Trim vegetation away from the foundation.</li></ul>'],
 ];
 $pc = 0;

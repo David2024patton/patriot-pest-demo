@@ -32,10 +32,14 @@ COPY deploy/nginx/default.conf /etc/nginx/http.d/default.conf
 # Supervisord config
 COPY deploy/supervisord.conf /etc/supervisord.conf
 
+# Entrypoint: self-heal volume permissions at boot
+COPY deploy/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget -qO- http://127.0.0.1/health || exit 1
 
 EXPOSE 80
 
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+ENTRYPOINT ["/entrypoint.sh"]

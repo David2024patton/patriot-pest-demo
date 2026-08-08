@@ -32,7 +32,7 @@ class StaffController extends PageController
             'openTickets' => (int) $db->scalar("SELECT COUNT(*) FROM tickets WHERE status = 'open'"),
             'openCases'   => (int) $db->scalar("SELECT COUNT(*) FROM cases WHERE status = 'open'"),
             'staff'       => (int) $db->scalar('SELECT COUNT(*) FROM staff WHERE active = 1'),
-            'customers'   => (int) $db->scalar('SELECT COUNT(*) FROM customers'),
+            'customers'   => (int) $db->scalar("SELECT COUNT(*) FROM customers WHERE source != 'seed'"),
         ];
 
         echo View::page('dashboard/staff', [
@@ -57,7 +57,7 @@ class StaffController extends PageController
         $perPage = 50;
         $page = max(1, (int) ($_GET['page'] ?? 1));
 
-        $where  = [];
+        $where  = ["source != 'seed'"];   // seed fixtures never count toward the real book
         $params = [];
         if ($q !== '') {
             $where[]  = '(name LIKE ? OR phone LIKE ? OR email LIKE ? OR account_number LIKE ? OR city LIKE ?)';
@@ -91,7 +91,7 @@ class StaffController extends PageController
             'customers'    => $customers,
             'q'            => $q,
             'status'       => $status,
-            'total'        => (int) $db->scalar('SELECT COUNT(*) FROM customers'),
+            'total'        => (int) $db->scalar("SELECT COUNT(*) FROM customers WHERE source != 'seed'"),
             'matchCount'   => $matchCount,
             'page'         => $page,
             'perPage'      => $perPage,
@@ -182,7 +182,7 @@ class StaffController extends PageController
         $rows = $db->fetchAll(
             'SELECT id, name, phone, email, account_number, city, state, status
              FROM customers
-             WHERE name LIKE ? OR phone LIKE ? OR email LIKE ? OR account_number LIKE ? OR city LIKE ?
+             WHERE source != \'seed\' AND (name LIKE ? OR phone LIKE ? OR email LIKE ? OR account_number LIKE ? OR city LIKE ?)
              ORDER BY name LIMIT 12',
             [$like, $like, $like, $like, $like]
         );

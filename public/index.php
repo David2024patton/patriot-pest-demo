@@ -20,9 +20,34 @@
 
 declare(strict_types=1);
 
+// Cost dashboard route - serve directly without framework bootstrap
+// Doctrine: MODULAR FIRST - this can be unplugged without affecting main app
+if (strpos($_SERVER['REQUEST_URI'], '/cost') === 0) {
+    $costPath = __DIR__ . '/cost/index.php';
+    if (file_exists($costPath)) {
+        require $costPath;
+        exit;
+    }
+}
+
 require dirname(__DIR__) . '/app/bootstrap.php';
 
 use PPC\Core\Router;
+use PPC\Core\Config;
+
+// ---------- Force HTTPS in production ----------
+// Behind the Dokploy TLS terminator we trust X-Forwarded-Proto. Any plain-HTTP
+// request in production is 301-redirected so credentials and OTP codes never
+// cross the wire unencrypted.
+if (Config::isProduction()) {
+    $fwdProto = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
+    $isHttps  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $fwdProto === 'https';
+    if (!$isHttps) {
+        header('Location: https://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? ''), true, 301);
+        exit;
+    }
+}
+
 use PPC\Controllers\PageController;
 use PPC\Controllers\PestController;
 use PPC\Controllers\BlogController;
@@ -30,6 +55,7 @@ use PPC\Controllers\AuthController;
 use PPC\Controllers\PortalController;
 use PPC\Controllers\StaffController;
 use PPC\Controllers\AdminController;
+use PPC\Controllers\WebhookController;
 
 // ---------- Marketing pages (public) ----------
 Router::get('/',                 [PageController::class, 'home']);
@@ -112,6 +138,18 @@ Router::get('/health', function () {
         'php' => PHP_VERSION,
     ]);
 });
+
+// ---------- Twilio webhooks (public, HMAC signature-validated) ----------
+// Every handler first verifies X-Twilio-Signature; unsigned or spoofed
+// payloads get 401 before any state change.
+Router::post('/webhooks/twilio/sms',       [WebhookController::class, 'sms']);
+Router::post('/webhooks/twilio/status',    [WebhookController::class, 'status']);
+Router::post('/webhooks/twilio/voice',     [WebhookController::class, 'voice']);
+Router::post('/webhooks/twilio/voicemail', [WebhookController::class, 'voicemail']);
+
+// ---------- Public unsubscribe (HMAC-signed token, CSRF-exempt by design) ----------
+// The signed token in the URL is the proof of consent; it cannot be forged.
+Router::get('/unsubscribe', [WebhookController::class, 'unsubscribe']);
 
 // ---------- Dispatch ----------
 Router::dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
