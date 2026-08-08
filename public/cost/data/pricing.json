@@ -1,76 +1,84 @@
 {
-  "agency_range": {
-    "min": 75000,
-    "max": 150000,
-    "currency": "USD"
+  "hero": {
+    "eyebrow": "// MISSION BRIEF: MARKETING INTEL",
+    "title_pre": "What Does Marketing ",
+    "title_em": "Actually",
+    "title_post": " Cost?",
+    "sub": "Skyler, here is the real breakdown. No agency smoke, just numbers."
+  },
+  "three_k": {
+    "answer": "The $3,000/month agencies quote is their MANAGEMENT FEE ONLY. Ad spend is ALWAYS separate.",
+    "agency_fee": {
+      "label": "Agency Fee",
+      "range": "$2,500-$5,000/mo",
+      "desc": "Strategy, campaign setup, optimization, creative, reporting. Paid to the agency for managing the machine."
+    },
+    "ad_spend": {
+      "label": "Ad Spend",
+      "range": "$2,000-$10,000/mo",
+      "desc": "The actual money that buys clicks and leads. Paid to Google and Meta, on top of the fee."
+    },
+    "sources": "Sources: PestHound 2026, Bridgeway Digital, FieldRoutes"
   },
   "breakdown": [
-    {
-      "category": "Custom Framework Architecture",
-      "min": 15000,
-      "max": 25000,
-      "description": "Custom PHP 8.3 MVC framework with no off-the-shelf CMS",
-      "color": "#f4772e"
-    },
-    {
-      "category": "CRM Integrations",
-      "min": 10000,
-      "max": 20000,
-      "description": "FieldRoutes CRM + Twilio SMS, voice, voicemail, and webhooks",
-      "color": "#ff8c3b"
-    },
-    {
-      "category": "Payment Portal",
-      "min": 8000,
-      "max": 15000,
-      "description": "Customer payment portal with secure payment processing",
-      "color": "#c8b98c"
-    },
-    {
-      "category": "CMS and Blog System",
-      "min": 8000,
-      "max": 12000,
-      "description": "Content management system with integrated blog",
-      "color": "#8fa05e"
-    },
-    {
-      "category": "Admin and Customer Portals",
-      "min": 12000,
-      "max": 20000,
-      "description": "Admin dashboard with full management + customer self-service",
-      "color": "#5c6f3a"
-    },
-    {
-      "category": "Design and Branding",
-      "min": 10000,
-      "max": 18000,
-      "description": "Mobile-responsive tactical design with brand identity",
-      "color": "#334024"
-    },
-    {
-      "category": "SEO and Analytics",
-      "min": 7000,
-      "max": 12000,
-      "description": "Search optimization and analytics integration",
-      "color": "#26301c"
-    },
-    {
-      "category": "Testing and Deployment",
-      "min": 5000,
-      "max": 8000,
-      "description": "Quality assurance testing and production deployment",
-      "color": "#1c2415"
-    }
+    { "category": "Google Ads (PPC)", "min": 1000, "max": 5000, "description": "33% of typical spend. CPC $8-$40+, CPL $20-$50", "color": "#f4772e" },
+    { "category": "Local Services Ads (LSA)", "min": 400, "max": 1500, "description": "$15-$60 per lead, $46-$92 per booked job", "color": "#ff8c3b" },
+    { "category": "Facebook/Instagram Ads", "min": 300, "max": 2500, "description": "Retargeting plus social prospecting", "color": "#c8b98c" },
+    { "category": "SEO Retainer", "min": 500, "max": 3500, "description": "Local search, area pages, citations", "color": "#8fa05e" },
+    { "category": "Website + Hosting", "min": 50, "max": 500, "description": "Hosting, SSL, maintenance", "color": "#5c6f3a" },
+    { "category": "Content/Blog", "min": 200, "max": 2000, "description": "Seasonal pest content, service pages", "color": "#334024" },
+    { "category": "Social Media Management", "min": 400, "max": 3000, "description": "Posts, reviews, reputation management", "color": "#26301c" },
+    { "category": "Agency Management Fee", "min": 2500, "max": 5000, "description": "The retainer. Billed on top of all ad spend", "color": "#1c2415" }
   ],
-  "timeline": {
-    "agency": "3-6 months"
+  "totals": {
+    "realistic_label": "Realistic growth range",
+    "realistic_min": 5000,
+    "realistic_max": 8500
   },
-  "factors": [
-    "Senior developer rates: $150-$250 per hour",
-    "Project management overhead included",
-    "Multiple specialists: frontend, backend, integrations, design",
-    "Agency profit margin: 50-100% standard markup",
-    "Ongoing maintenance and support contracts typical",
-    "Hosting, SSL, and infrastructure costs additional"
+  "charts": {
+    "stacked": {
+      "low": { "fee": 2500, "spend": 2850 },
+      "high": { "fee": 5000, "spend": 18000 }
+    }
+  },
+  "competitive": {
+    "patriot_all_in": 6250,
+    "patriot_note": "Patriot at $6,250/mo all-in sits in the mid-market band, but covers management AND ad spend. Agencies at that price cover the fee only, and the spend lands on top.",
+    "tiers": [
+      { "tier": "Freelancer", "min": 1000, "max": 2500, "covers": "DIY ads, no strategy team" },
+      { "tier": "Boutique Agency", "min": 2500, "max": 5000, "covers": "Management fee only, spend extra" },
+      { "tier": "Mid-Market Agency", "min": 5000, "max": 10000, "covers": "Fee plus modest ad spend" },
+      { "tier": "Full-Service Agency", "min": 10000, "max": 25000, "covers": "Fee plus heavy ad spend" }
+    ]
+  },
+  "lead_response": {
+    "headline": "What about responding to leads instantly?",
+    "body": "Patriot already has Twilio SMS and voice wired into the website. Leads hit the system the moment they submit. No 5-hour Facebook delay.",
+    "cta": "Run a test lead",
+    "link": "/contact"
+  },
+  "footer": {
+    "cta_pre": "Ready to deploy? Call ",
+    "phone": "(509) 471-5767",
+    "phone_href": "tel:+15094715767",
+    "stamp": "APPROVED<br>FOR DEPLOYMENT"
+  },
+  "receipt": {
+    "report_number": "PPC-2026-002",
+    "classification": "UNCLASSIFIED // MARKETING INTEL",
+    "stamp": "NO SMOKE<br>DETECTED",
+    "notes": [
+      "AD SPEND: billed by Google and Meta directly, or passed through at cost. Never bundled into the retainer.",
+      "AGENCY FEE: the management slice on top. Flat retainer or 10-20% of spend.",
+      "CROSS-CHECK: FieldRoutes puts average all-in pest spend at $4,376-$7,376/mo. PestHound puts a full agency operation at $4,000-$15,000/mo."
+    ]
+  },
+  "sources": [
+    "thepesthound.com/pest-control-marketing-cost-2026",
+    "nevermisshq.com/blog/pest-control-marketing-roi-breakdown (FieldRoutes)",
+    "sproutsagesolutions.com/pest-control-marketing-cost",
+    "bridgewaydigital.com/blog/ppc-agency-pricing-guide-2026",
+    "northcountrygrowth.com/blog/ppc-management-fees",
+    "socialpilot.co/blog/social-media-management-cost"
   ]
 }

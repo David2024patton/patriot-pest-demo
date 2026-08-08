@@ -1,6 +1,6 @@
 <?php
 /**
- * Cost Dashboard - Project Valuation Receipt
+ * Cost Dashboard - Marketing Cost Explainer
  * Patriot Pest Control - Tactical Theme
  *
  * Doctrine: FEATURE TOGGLES IN SETTINGS
@@ -23,7 +23,7 @@ if ($enabled === 'false' || $enabled === '0') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Valuation Receipt | Patriot Pest Control</title>
+  <title>Marketing Cost Explainer | Patriot Pest Control</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Black+Ops+One&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -43,37 +43,44 @@ if ($enabled === 'false' || $enabled === '0') {
 
   <section class="cost-hero">
     <div class="wrap">
-      <div class="eyebrow">// QUARTERMASTER REPORT</div>
-      <h1>Project <em>Valuation</em> Receipt</h1>
-      <p class="sub">Hostile invoice incoming. This is what a custom web application with CRM integration, payment processing, and tactical design actually costs on the open market. No fluff, no hidden fees — just the raw numbers.</p>
+      <div class="eyebrow" id="hero-eyebrow">// MISSION BRIEF</div>
+      <h1 id="hero-title">What Does Marketing <em>Actually</em> Cost?</h1>
+      <p class="sub" id="hero-sub">Skyler, here is the real breakdown. No agency smoke, just numbers.</p>
     </div>
   </section>
 
   <section class="cost-content">
     <div class="wrap">
 
-      <!-- Two big summary cards -->
-      <div class="summary-cards">
-        <div class="summary-card">
-          <div class="label">Agency Floor</div>
-          <div class="value" id="val-min">$75,000</div>
-          <div class="sub">Entry-Level Quote</div>
+      <!-- SECTION 1: THE $3K QUESTION -->
+      <div class="explainer-section">
+        <div class="section-tag">SECTION 01 // THE $3K QUESTION</div>
+        <div class="big-answer" id="three-k-answer">The $3,000/month agencies quote is their MANAGEMENT FEE ONLY. Ad spend is ALWAYS separate.</div>
+        <div class="two-col">
+          <div class="col-card fee">
+            <div class="col-label" id="fee-label">Agency Fee</div>
+            <div class="col-range" id="fee-range">$2,500-$5,000/mo</div>
+            <div class="col-desc" id="fee-desc">Strategy, campaign setup, optimization, creative, reporting. Paid to the agency for managing the machine.</div>
+          </div>
+          <div class="col-vs">VS</div>
+          <div class="col-card spend">
+            <div class="col-label" id="spend-label">Ad Spend</div>
+            <div class="col-range" id="spend-range">$2,000-$10,000/mo</div>
+            <div class="col-desc" id="spend-desc">The actual money that buys clicks and leads. Paid to Google and Meta, on top of the fee.</div>
+          </div>
         </div>
-        <div class="summary-card">
-          <div class="label">Agency Ceiling</div>
-          <div class="value" id="val-max">$150,000</div>
-          <div class="sub">Premium Market Rate</div>
-        </div>
+        <div class="source-line" id="three-k-sources">Sources: PestHound 2026, Bridgeway Digital, FieldRoutes</div>
       </div>
 
-      <!-- Receipt card -->
+      <!-- SECTION 2: MONTHLY COST BREAKDOWN (receipt) -->
+      <div class="section-tag">SECTION 02 // MONTHLY MARKETING COST BREAKDOWN</div>
       <div class="receipt">
         <div class="receipt-header">
           <div class="receipt-logo">★ PATRIOT PEST CONTROL</div>
           <div class="receipt-meta">
-            <span>REPORT #: PPC-2026-001</span>
+            <span>REPORT #: <span id="receipt-number">PPC-2026-002</span></span>
             <span>DATE: <span id="receipt-date"></span></span>
-            <span>CLASSIFICATION: UNCLASSIFIED</span>
+            <span id="receipt-classification">UNCLASSIFIED // MARKETING INTEL</span>
           </div>
           <div class="hazard" style="margin:0.8rem 0 0 0"></div>
         </div>
@@ -81,8 +88,8 @@ if ($enabled === 'false' || $enabled === '0') {
         <div class="receipt-body">
           <div class="receipt-headings">
             <span class="rh-cat">LINE ITEM</span>
-            <span class="rh-desc">SCOPE OF WORK</span>
-            <span class="rh-cost">COST RANGE</span>
+            <span class="rh-desc">SCOPE</span>
+            <span class="rh-cost">COST RANGE / MO</span>
             <span class="rh-meter">THREAT METER</span>
           </div>
 
@@ -93,41 +100,104 @@ if ($enabled === 'false' || $enabled === '0') {
           <div class="receipt-totals">
             <div class="total-row">
               <span>SUBTOTAL (LOW ESTIMATE)</span>
-              <span class="total-amt" id="subtotal-low">$75,000</span>
+              <span class="total-amt" id="subtotal-low">$5,350</span>
             </div>
             <div class="total-row">
               <span>SUBTOTAL (HIGH ESTIMATE)</span>
-              <span class="total-amt" id="subtotal-high">$150,000</span>
+              <span class="total-amt" id="subtotal-high">$23,000</span>
             </div>
             <div class="total-divider"></div>
             <div class="total-row grand">
               <span>GRAND TOTAL RANGE</span>
-              <span class="total-amt grand-amt" id="grand-total">$75,000 — $150,000</span>
+              <span class="total-amt grand-amt" id="grand-total">$5,350 - $23,000</span>
+            </div>
+            <div class="total-row grand">
+              <span id="realistic-label">REALISTIC GROWTH RANGE</span>
+              <span class="total-amt grand-amt" id="realistic-range">$5,000-$8,500</span>
             </div>
             <div class="stamp-row">
-              <span class="stamp">APPROVED<br>FOR REVIEW</span>
+              <span class="stamp" id="receipt-stamp">NO SMOKE<br>DETECTED</span>
             </div>
           </div>
         </div>
 
-        <div class="receipt-footer">
-          <p><strong>PAYMENT TERMS:</strong> Net 30 upon contract signing. 50% upfront, 50% on delivery.</p>
-          <p><strong>TIMELINE:</strong> <span id="receipt-timeline">3-6 months</span> — Full agency team deployment.</p>
-          <p><strong>WARRANTY:</strong> 90-day bug-free guarantee. Pests and pixel bugs eliminated.</p>
+        <div class="receipt-footer" id="receipt-notes">
+          <!-- Populated by JS -->
         </div>
       </div>
 
-      <!-- Pricing factors -->
-      <div class="factors-section">
-        <h3>Field Notes: Agency Pricing Factors</h3>
-        <ul class="factors-list" id="factors-list">
-          <!-- Populated by JS -->
-        </ul>
+      <!-- SECTION 3: THE CHARTS -->
+      <div class="explainer-section">
+        <div class="section-tag">SECTION 03 // THE CHARTS</div>
+        <div class="chart-grid">
+          <div class="chart-panel">
+            <h3>Fee vs Spend: Low End and High End</h3>
+            <p class="chart-note">Ad spend is the bigger line item at both ends. The fee is just the cover charge.</p>
+            <div class="chart-box"><canvas id="chart-stacked" aria-label="Stacked bar chart of agency fee versus ad spend"></canvas></div>
+          </div>
+          <div class="chart-panel">
+            <h3>Monthly Categories, Ranked</h3>
+            <p class="chart-note">High end of each range, largest to smallest. Google Ads wins the crown.</p>
+            <div class="chart-box tall"><canvas id="chart-rank" aria-label="Horizontal bar chart of monthly marketing categories ranked by high end"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: COMPETITIVE CONTEXT -->
+      <div class="explainer-section">
+        <div class="section-tag">SECTION 04 // WHERE PATRIOT FITS</div>
+        <div class="summary-cards">
+          <div class="summary-card">
+            <div class="label">Patriot All-In</div>
+            <div class="value" id="patriot-all-in">$6,250</div>
+            <div class="sub">Management + Ad Spend, one number</div>
+          </div>
+          <div class="summary-card">
+            <div class="label">Typical Agency At Same Price</div>
+            <div class="value" id="agency-same">Fee Only</div>
+            <div class="sub">Ad spend billed on top</div>
+          </div>
+        </div>
+        <div class="comp-table-wrap">
+          <table class="comp-table" id="comp-table">
+            <thead>
+              <tr><th>TIER</th><th>MONTHLY RANGE</th><th>WHAT IT COVERS</th></tr>
+            </thead>
+            <tbody><!-- Populated by JS --></tbody>
+          </table>
+        </div>
+        <p class="comp-note" id="patriot-note"></p>
+      </div>
+
+      <!-- SECTION 5: LEAD RESPONSE -->
+      <div class="lead-callout">
+        <div class="lead-icon">⚡</div>
+        <div class="lead-body">
+          <h3 id="lead-headline">What about responding to leads instantly?</h3>
+          <p id="lead-text">Patriot already has Twilio SMS and voice wired into the website. Leads hit the system the moment they submit. No 5-hour Facebook delay.</p>
+          <a class="btn-lead" id="lead-cta" href="/contact">Run a test lead</a>
+        </div>
+      </div>
+
+      <!-- SOURCES -->
+      <div class="source-block" id="source-block">
+        <!-- Populated by JS -->
       </div>
 
     </div>
   </section>
 
+  <footer class="cost-footer">
+    <div class="wrap">
+      <div class="hazard"></div>
+      <div class="footer-inner">
+        <div class="footer-cta" id="footer-cta">Ready to deploy? Call <a href="tel:+15094715767">(509) 471-5767</a></div>
+        <span class="stamp" id="footer-stamp">APPROVED<br>FOR DEPLOYMENT</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="./assets/js/cost.js"></script>
 </body>
 </html>
