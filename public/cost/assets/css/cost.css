@@ -534,3 +534,41 @@ section { position: relative; z-index: 1; }
 .compare-table td.cmp-edge { color: var(--khaki); }
 .cmp-yes { color: var(--olive-300); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; }
 .cmp-no { color: var(--red); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; opacity: 0.8; }
+
+/* ============================================================
+   Mobile hardening: kill page-level horizontal overflow.
+   Horizontal scroll lives inside table wrappers only,
+   never the page. Flex and grid children get min-width:0
+   so scrollable content cannot widen its parents.
+   ============================================================ */
+.cost-content, .cost-content .wrap, .explainer-section, #intel-board,
+.intel-controls, .compare-bar, .compare-wrap, .chart-grid, .chart-panel { min-width: 0; }
+
+#compare-status { white-space: normal; overflow-wrap: anywhere; }
+.section-tag, .cost-hero .eyebrow { min-width: 0; overflow-wrap: anywhere; }
+.comp-table-wrap, .compare-scroll { max-width: 100%; }
+
+/* Chart canvases sit absolute inside fixed-height boxes so
+   Chart.js intrinsic sizes can never widen the layout. */
+.chart-box { overflow: hidden; }
+.chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+@media (max-width: 768px) {
+  .cost-hero .eyebrow { flex-wrap: wrap; letter-spacing: .18em; row-gap: .3rem; }
+}
+
+@media (max-width: 640px) {
+  .cost-hero .eyebrow, .section-tag { flex-wrap: wrap; letter-spacing: .12em; row-gap: .3rem; }
+  .cost-hero h1 { font-size: clamp(1.5rem, 7.6vw, 2.1rem); }
+  .cost-hero .sub { font-size: .95rem; }
+  .receipt-logo { font-size: .95rem; letter-spacing: .03em; }
+  .receipt-meta { font-size: .55rem; letter-spacing: .1em; gap: .6rem; }
+  .cost-nav { flex-wrap: wrap; row-gap: .2rem; }
+  .cost-nav .back-link { font-size: .58rem; letter-spacing: .1em; }
+  .intel-controls input[type="search"], .intel-controls select { font-size: .72rem; }
+  .ac-band { font-size: 1.2rem; }
+  .ac-meta { font-size: .55rem; letter-spacing: .05em; }
+  .intel-lede { font-size: .92rem; }
+  .comp-note { font-size: .82rem; }
+}
+
