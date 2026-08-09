@@ -53,24 +53,38 @@ if ($enabled === 'false' || $enabled === '0') {
   <section class="cost-content">
     <div class="wrap">
 
-      <!-- SECTION 1: THE $3K QUESTION -->
-      <div class="explainer-section">
-        <div class="section-tag">SECTION 01 // THE $3K QUESTION</div>
-        <div class="big-answer" id="three-k-answer">The $3,000/month agencies quote is their MANAGEMENT FEE ONLY. Ad spend is ALWAYS separate.</div>
-        <div class="two-col">
-          <div class="col-card fee">
-            <div class="col-label" id="fee-label">Agency Fee</div>
-            <div class="col-range" id="fee-range">$2,500-$5,000/mo</div>
-            <div class="col-desc" id="fee-desc">Strategy, campaign setup, optimization, creative, reporting. Paid to the agency for managing the machine.</div>
+      <!-- SECTION 1: AGENCY INTEL BOARD (15-company recon, client-safe) -->
+      <div class="explainer-section" id="intel-board">
+        <div class="section-tag">SECTION 01 // AGENCY INTEL BOARD</div>
+        <p class="intel-lede">We surveyed 15 marketing agencies, from SMB specialists to enterprise globals. Filter by tier, service, or AI strength. Tick two boxes to run a side-by-side compare. Estimated bands are management fees only; ad spend is always separate.</p>
+
+        <div class="intel-controls" role="group" aria-label="Agency filters">
+          <label class="ic-search"><span>SEARCH</span><input id="intel-q" type="search" placeholder="Agency name" autocomplete="off"></label>
+          <label class="ic-select"><span>TIER</span><select id="intel-tier"><option value="">All tiers</option></select></label>
+          <label class="ic-select"><span>AI STRENGTH</span><select id="intel-ai"><option value="">Any AI signal</option></select></label>
+          <label class="ic-select"><span>SERVICE</span><select id="intel-svc"><option value="">All services</option></select></label>
+          <label class="ic-check"><input type="checkbox" id="intel-published"> Published pricing only</label>
+          <button class="ic-reset" id="intel-reset" type="button">Reset</button>
+          <span class="intel-count" id="intel-count" aria-live="polite"></span>
+        </div>
+
+        <div class="intel-grid" id="intel-grid"><!-- Populated by JS --></div>
+
+        <div class="compare-bar" id="compare-bar" hidden>
+          <span id="compare-status">Select two agencies to compare.</span>
+          <button class="ic-reset" id="compare-open" type="button" disabled>Compare side by side</button>
+          <button class="ic-reset" id="compare-clear" type="button">Clear</button>
+        </div>
+
+        <div class="compare-wrap" id="compare-wrap" hidden>
+          <div class="compare-head">
+            <div class="section-tag">SIDE-BY-SIDE // FIELD REPORT</div>
+            <button class="ic-reset" id="compare-close" type="button">Close</button>
           </div>
-          <div class="col-vs">VS</div>
-          <div class="col-card spend">
-            <div class="col-label" id="spend-label">Ad Spend</div>
-            <div class="col-range" id="spend-range">$2,000-$10,000/mo</div>
-            <div class="col-desc" id="spend-desc">The actual money that buys clicks and leads. Paid to Google and Meta, on top of the fee.</div>
+          <div class="compare-scroll">
+            <table class="compare-table" id="compare-table"><!-- Populated by JS --></table>
           </div>
         </div>
-        <div class="source-line" id="three-k-sources">Sources: PestHound 2026, Bridgeway Digital, FieldRoutes</div>
       </div>
 
       <!-- SECTION 2: MONTHLY COST BREAKDOWN (receipt) -->
@@ -200,5 +214,6 @@ if ($enabled === 'false' || $enabled === '0') {
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="./assets/js/cost.js"></script>
+  <script src="./assets/js/intel.js"></script>
 </body>
 </html>

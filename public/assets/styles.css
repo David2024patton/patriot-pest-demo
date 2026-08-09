@@ -466,7 +466,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 
 /* ---------- hero (home) ---------- */
 #hero{
-  min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:90px;position:relative;
+  min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start;padding-top:clamp(118px,16vh,170px);position:relative;
   background:
     radial-gradient(1100px 500px at 78% 12%,rgba(92,111,58,.28),transparent 60%),
     radial-gradient(800px 600px at 8% 90%,rgba(244,119,46,.08),transparent 55%),
@@ -476,7 +476,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .hud-top .live{color:var(--orange)}
 .hud-top .live::before{content:"●";animation:blink 1.4s infinite;margin-right:.4rem}
 @keyframes blink{50%{opacity:.15}}
-.hero-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:clamp(1.5rem,4vw,4rem);align-items:end;padding-bottom:2.5rem}
+.hero-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:clamp(1.5rem,4vw,4rem);align-items:end;padding-bottom:2.5rem;margin-top:auto}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr;align-items:start}}
 .kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;color:var(--khaki);text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem}
 #hero h1{font-size:clamp(2.6rem,7.4vw,6.2rem);line-height:.98;color:var(--cream)}
