@@ -14,10 +14,12 @@
 declare(strict_types=1);
 
 // Project root (this file lives in app/).
-define('BASE_PATH', dirname(__DIR__));
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', dirname(__DIR__));
+}
 
 // --- Configuration -------------------------------------------------------
-require BASE_PATH . '/app/Core/Config.php';
+require_once BASE_PATH . '/app/Core/Config.php'; // require_once: tests may have loaded it already
 \PPC\Core\Config::load(BASE_PATH . '/.env');
 
 // --- PSR-4 autoloader: PPC\Foo\Bar => app/Foo/Bar.php --------------------
@@ -44,32 +46,36 @@ Logger::setDir(BASE_PATH . '/storage/logs');
 // --- Error / exception handling -----------------------------------------
 // Log every error; only show details when debugging (local). Production gets
 // a generic message so attackers learn nothing from stack traces.
-set_error_handler(function (int $severity, string $message, string $file, int $line): bool {
-    if (!(error_reporting() & $severity)) {
-        return false; // respect @-suppression / error_reporting level
-    }
-    Logger::warning('PHP error', ['msg' => $message, 'file' => $file, 'line' => $line]);
-    return false; // let PHP's normal handling continue
-});
+if (!defined('PPC_ROUTES_ONLY')) {
+    set_error_handler(function (int $severity, string $message, string $file, int $line): bool {
+        if (!(error_reporting() & $severity)) {
+            return false; // respect @-suppression / error_reporting level
+        }
+        Logger::warning('PHP error', ['msg' => $message, 'file' => $file, 'line' => $line]);
+        return false; // let PHP's normal handling continue
+    });
 
-set_exception_handler(function (\Throwable $e): void {
-    Logger::error('Uncaught exception', [
-        'msg'  => $e->getMessage(),
-        'file' => $e->getFile(),
-        'line' => $e->getLine(),
-    ]);
-    http_response_code(500);
-    if (Config::debug()) {
-        header('Content-Type: text/plain; charset=utf-8');
-        echo "APPLICATION ERROR (debug)\n\n" . $e->getMessage() . "\n\n" . $e->getTraceAsString();
-    } else {
-        header('Content-Type: text/html; charset=utf-8');
-        echo '<h1>Something went wrong</h1><p>Please try again shortly.</p>';
-    }
-});
+    set_exception_handler(function (\Throwable $e): void {
+        Logger::error('Uncaught exception', [
+            'msg'  => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+        http_response_code(500);
+        if (Config::debug()) {
+            header('Content-Type: text/plain; charset=utf-8');
+            echo "APPLICATION ERROR (debug)\n\n" . $e->getMessage() . "\n\n" . $e->getTraceAsString();
+        } else {
+            header('Content-Type: text/html; charset=utf-8');
+            echo '<h1>Something went wrong</h1><p>Please try again shortly.</p>';
+        }
+    });
+} // end PPC_ROUTES_ONLY guard (error/exception handlers)
 
 // --- View templates base -------------------------------------------------
 View::setBase(BASE_PATH . '/templates');
 
 // --- Session (hardened) --------------------------------------------------
-Session::start();
+if (!defined('PPC_ROUTES_ONLY')) {
+    Session::start();
+}
