@@ -176,6 +176,7 @@ class ApiController
     /** /api/v1/services — public pest catalog (no auth required). */
     public function services(): void
     {
+        self::ipRateLimit('services');
         $db = Database::instance();
         self::ok(['data' => $db->fetchAll('SELECT * FROM pest_photos ORDER BY name')]);
         exit;
@@ -318,7 +319,7 @@ class ApiController
     private static function ipRateLimit(string $endpoint): void
     {
         try {
-            $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+            $ip = RateLimiter::clientIp();
             RateLimiter::checkOrDie('api_ip:' . $ip . ':' . $endpoint, 120, 60);
         } catch (\Throwable) {
             self::err(429, 'Rate limit exceeded. Retry after 60 seconds.');

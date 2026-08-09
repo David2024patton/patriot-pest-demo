@@ -43,8 +43,13 @@ class ApiKeyController
         }
 
         $key = ApiAuth::createKey($name, $scopes, (int) (Session::get('user_id') ?? 0));
+        $created = ApiAuth::lastKeyRow() ?? [];
 
-        self::auditLifecycle('api_key.create', null, ['name' => $name, 'scopes' => $scopes]);
+        self::auditLifecycle('api_key.create', isset($created['id']) ? (int) $created['id'] : null, [
+            'name'   => $name,
+            'prefix' => $created['key_prefix'] ?? '',
+            'scopes' => $scopes,
+        ]);
 
         // Show the raw key once.
         echo \PPC\Core\View::page('admin/api-key-show', [
@@ -59,10 +64,15 @@ class ApiKeyController
     public function revoke(string $id): void
     {
         Csrf::verifyOrDie();
+        $row = Database::instance()->fetch('SELECT id, name, key_prefix, scopes FROM api_keys WHERE id = ?', [$id]);
         $ok = ApiAuth::revokeKey((int) $id);
         if ($ok) {
             Session::flash('api_keys', ['success' => 'API key revoked.']);
-            self::auditLifecycle('api_key.revoke', (int)$id, []);
+            self::auditLifecycle('api_key.revoke', (int)$id, [
+                'name'          => $row['name'] ?? '',
+                'prefix'        => $row['key_prefix'] ?? '',
+                'scopes_before' => json_decode($row['scopes'] ?? '[]', true) ?: [],
+            ]);
         } else {
             Session::flash('api_keys', ['errors' => ['key' => ['Key not found or already revoked.']]]);
         }
@@ -74,9 +84,17 @@ class ApiKeyController
     public function rotate(string $id): void
     {
         Csrf::verifyOrDie();
+        $old = Database::instance()->fetch('SELECT id, name, key_prefix, scopes FROM api_keys WHERE id = ?', [$id]);
         $newKey = ApiAuth::rotateKey((int) $id, (int) (Session::get('user_id') ?? 0));
         if ($newKey) {
-            self::auditLifecycle('api_key.rotate', (int)$id, []);
+            $rotated = ApiAuth::lastKeyRow() ?? [];
+            self::auditLifecycle('api_key.rotate', (int)$id, [
+                'name'           => $old['name'] ?? '',
+                'prefix'         => $old['key_prefix'] ?? '',
+                'scopes_before'  => json_decode($old['scopes'] ?? '[]', true) ?: [],
+                'new_key_id'     => $rotated['id'] ?? null,
+                'new_key_prefix' => $rotated['key_prefix'] ?? '',
+            ]);
             echo \PPC\Core\View::page('admin/api-key-show', [
                 'rawKey'  => $newKey,
                 'name'    => 'Rotated key',
@@ -96,7 +114,7 @@ class ApiKeyController
     {
         Csrf::verifyOrDie();
         $db = Database::instance();
-        $row = $db->fetch('SELECT id FROM api_keys WHERE id = ? AND revoked_at IS NULL', [$id]);
+        $row = $db->fetch('SELECT id, name, key_prefix, scopes FROM api_keys WHERE id = ? AND revoked_at IS NULL', [$id]);
         if (!$row) {
             Session::flash('api_keys', ['errors' => ['key' => ['Key not found or revoked.']]]);
             header('Location: /admin/api-keys');
@@ -111,7 +129,12 @@ class ApiKeyController
         }
 
         $db->update('api_keys', ['scopes' => json_encode($scopes)], ['id' => $id]);
-        self::auditLifecycle('api_key.scopes', (int)$id, ['scopes' => $scopes]);
+        self::auditLifecycle('api_key.scopes', (int)$id, [
+            'name'          => $row['name'] ?? '',
+            'prefix'        => $row['key_prefix'] ?? '',
+            'scopes_before' => json_decode($row['scopes'] ?? '[]', true) ?: [],
+            'scopes_after'  => $scopes,
+        ]);
         Session::flash('api_keys', ['success' => 'Scopes updated.']);
         header('Location: /admin/api-keys');
         exit;

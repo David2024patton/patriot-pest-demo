@@ -27,6 +27,9 @@ final class ApiAuth
     /** @var array|null Decoded key row after successful auth. */
     private static ?array $keyRow = null;
 
+    /** @var array|null Last inserted key row (create/rotate) for lifecycle audit linkage. */
+    private static ?array $lastKeyRow = null;
+
     /**
      * Authenticate the current request. Returns the key row on success,
      * sends a JSON error response and exits on failure.
@@ -147,7 +150,7 @@ final class ApiAuth
         $prefix  = substr($raw, 0, 12);
         $hash    = hash('sha256', $fullKey);
 
-        Database::instance()->insert('api_keys', [
+        $id = Database::instance()->insert('api_keys', [
             'name'       => $name,
             'key_prefix' => $prefix,
             'key_hash'   => $hash,
@@ -155,6 +158,7 @@ final class ApiAuth
             'created_by' => $createdBy,
             'created_at' => gmdate('Y-m-d H:i:s'),
         ]);
+        self::$lastKeyRow = ['id' => $id, 'name' => $name, 'key_prefix' => $prefix, 'scopes' => $scopes];
 
         return $fullKey;
     }
@@ -200,7 +204,7 @@ final class ApiAuth
             $prefix  = substr($raw, 0, 12);
             $hash    = hash('sha256', $fullKey);
 
-            $db->insert('api_keys', [
+            $newId = $db->insert('api_keys', [
                 'name'       => $name,
                 'key_prefix' => $prefix,
                 'key_hash'   => $hash,
@@ -208,6 +212,7 @@ final class ApiAuth
                 'created_by' => $byStaffId,
                 'created_at' => gmdate('Y-m-d H:i:s'),
             ]);
+            self::$lastKeyRow = ['id' => $newId, 'name' => $name, 'key_prefix' => $prefix, 'scopes' => $scopes];
 
             $db->commit();
             return $fullKey;
@@ -276,6 +281,14 @@ final class ApiAuth
         } catch (\Throwable) {
             // Non-fatal.
         }
+    }
+
+    /**
+     * Get the last inserted key row (create/rotate) for lifecycle audit linkage.
+     */
+    public static function lastKeyRow(): ?array
+    {
+        return self::$lastKeyRow;
     }
 
     /**
