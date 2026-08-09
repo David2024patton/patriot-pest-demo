@@ -6,6 +6,7 @@ use PPC\Core\Database;
 use PPC\Core\Session;
 use PPC\Core\Csrf;
 use PPC\Core\Logger;
+use PPC\Core\RateLimiter;
 
 class ApiKeyController
 {
@@ -43,7 +44,7 @@ class ApiKeyController
 
         $key = ApiAuth::createKey($name, $scopes, (int) (Session::get('user_id') ?? 0));
 
-        Logger::info('API key created', ['by' => Session::get('user_id'), 'name' => $name, 'scopes' => $scopes]);
+        self::auditLifecycle('api_key.create', null, ['name' => $name, 'scopes' => $scopes]);
 
         // Show the raw key once.
         echo \PPC\Core\View::page('admin/api-key-show', [
@@ -61,7 +62,7 @@ class ApiKeyController
         $ok = ApiAuth::revokeKey((int) $id);
         if ($ok) {
             Session::flash('api_keys', ['success' => 'API key revoked.']);
-            Logger::info('API key revoked', ['key_id' => $id, 'by' => Session::get('user_id')]);
+            self::auditLifecycle('api_key.revoke', (int)$id, []);
         } else {
             Session::flash('api_keys', ['errors' => ['key' => ['Key not found or already revoked.']]]);
         }
@@ -75,7 +76,7 @@ class ApiKeyController
         Csrf::verifyOrDie();
         $newKey = ApiAuth::rotateKey((int) $id, (int) (Session::get('user_id') ?? 0));
         if ($newKey) {
-            Logger::info('API key rotated', ['old_key_id' => $id, 'by' => Session::get('user_id')]);
+            self::auditLifecycle('api_key.rotate', (int)$id, []);
             echo \PPC\Core\View::page('admin/api-key-show', [
                 'rawKey'  => $newKey,
                 'name'    => 'Rotated key',
@@ -110,10 +111,33 @@ class ApiKeyController
         }
 
         $db->update('api_keys', ['scopes' => json_encode($scopes)], ['id' => $id]);
-        Logger::info('API key scopes updated', ['key_id' => $id, 'scopes' => $scopes, 'by' => Session::get('user_id')]);
+        self::auditLifecycle('api_key.scopes', (int)$id, ['scopes' => $scopes]);
         Session::flash('api_keys', ['success' => 'Scopes updated.']);
         header('Location: /admin/api-keys');
         exit;
+    }
+
+    /** Write a lifecycle audit log entry for key admin actions. */
+    private static function auditLifecycle(string $action, ?int $keyId, array $meta): void
+    {
+        try {
+            Database::instance()->insert('audit_log', [
+                'user_id'   => 'staff:' . (Session::get('user_id') ?? '0'),
+                'user_type' => 'staff',
+                'action'    => $action,
+                'entity'    => 'api_keys',
+                'entity_id' => $keyId !== null ? (string)$keyId : 'new',
+                'meta_json' => json_encode($meta),
+                'ip'         => RateLimiter::clientIp(),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        } catch (\Throwable) {
+            // Non-fatal; fall back to file log.
+            Logger::warning('Failed to write audit_log for key action', [
+                'action' => $action,
+                'key_id' => $keyId,
+            ]);
+        }
     }
 
     private function meta(string $title, string $description, string $url): array

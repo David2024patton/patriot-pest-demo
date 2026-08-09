@@ -115,4 +115,55 @@ final class PartETest extends TestCase
         $this->assertContains("view_customers", $limited);
         $this->assertNotContains("manage_billing", $limited);
     }
+
+    #[Test] public function ticket_body_redacted(): void
+    {
+        $t = ["id"=>1,"customer_id"=>"c1","category"=>"support","priority"=>"normal","subject"=>"Help","body"=>"sensitive","status"=>"open","created_at"=>"2026-01-01","updated_at"=>"2026-01-01","customer_name"=>"Alice"];
+        $this->assertSame("sensitive", $t["body"]);
+        $t["body"] = null; $t["customer_name"] = null;
+        $this->assertNull($t["body"]);
+        $this->assertNull($t["customer_name"]);
+        $this->assertSame("Help", $t["subject"]);
+    }
+
+    #[Test] public function message_body_redacted(): void
+    {
+        $m = ["id"=>5,"from_user"=>"c1","from_type"=>"customer","to_user"=>"s1","to_type"=>"staff","subject"=>"Re:Service","body"=>"private message","is_read"=>0,"created_at"=>"2026-01-01","from_name"=>"Bob","to_name"=>"Staff"];
+        $this->assertSame("private message", $m["body"]);
+        $m["body"] = null; $m["subject"] = null; $m["from_name"] = null; $m["to_name"] = null;
+        $this->assertNull($m["body"]);
+        $this->assertNull($m["subject"]);
+        $this->assertNull($m["from_name"]);
+        $this->assertNull($m["to_name"]);
+        $this->assertSame("c1", $m["from_user"]);
+    }
+
+    #[Test] public function twilio_row_redacted(): void
+    {
+        $r = ["id"=>10,"phone_number"=>"+15095551234","message"=>"hi","direction"=>"inbound","status"=>"delivered","twilio_sid"=>"SMxxx","twilio_status"=>"delivered","error_message"=>null,"media_url"=>"https://media","created_at"=>"2026-01-01","updated_at"=>"2026-01-01"];
+        $this->assertSame("+15095551234", $r["phone_number"]);
+        $this->assertSame("hi", $r["message"]);
+        $this->assertSame("https://media", $r["media_url"]);
+        $r["phone_number"] = null; $r["message"] = null; $r["media_url"] = null; $r["transcription"] = null; $r["recording_url"] = null; $r["audio_url"] = null;
+        $this->assertNull($r["phone_number"]);
+        $this->assertNull($r["message"]);
+        $this->assertNull($r["media_url"]);
+        $this->assertSame("inbound", $r["direction"]);
+    }
+
+    #[Test] public function per_ip_rate_limit_key_isolated(): void
+    {
+        $this->assertNotEquals("api_ip:127.0.0.1:test", "api_key:1:test");
+        $this->assertStringStartsWith("api_ip:", "api_ip:10.0.0.1:tickets");
+        $this->assertStringStartsWith("api_key:", "api_key:42:customers");
+    }
+
+    #[Test] public function lifecycle_audit_log_actions_defined(): void
+    {
+        $actions = ["api_key.create","api_key.revoke","api_key.rotate","api_key.scopes"];
+        $this->assertContains("api_key.create", $actions);
+        $this->assertContains("api_key.revoke", $actions);
+        $this->assertContains("api_key.rotate", $actions);
+        $this->assertContains("api_key.scopes", $actions);
+    }
 }

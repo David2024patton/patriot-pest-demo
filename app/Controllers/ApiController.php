@@ -10,7 +10,7 @@ class ApiController
     /** /api/v1/health — always available when API_ENABLED=true, no scope required. */
     public function health(): void
     {
-        self::rateLimit('health');
+        self::ipRateLimit('health');
         self::ok([
             'status'  => 'ok',
             'service' => 'patriot-pest-control-api',
@@ -23,8 +23,9 @@ class ApiController
     /** /api/v1/customers — paginated list, scoped field visibility. */
     public function customers(): void
     {
+        self::ipRateLimit('customers');
         ApiAuth::requireAuth('customer:read');
-        self::rateLimit('customers');
+        self::keyRateLimit('customers');
 
         $db = Database::instance();
         $q      = trim((string) ($_GET['q'] ?? ''));
@@ -53,7 +54,7 @@ class ApiController
         );
 
         $full = ApiAuth::hasScopes(['customer:read-full']);
-        $data = array_map(fn($c) => self::redact($c, $full), $rows);
+        $data = array_map(fn($c) => self::redactCustomer($c, $full), $rows);
 
         self::ok([
             'data'       => $data,
@@ -68,8 +69,9 @@ class ApiController
     /** /api/v1/customers/{id} — single customer. */
     public function customerById(string $id): void
     {
+        self::ipRateLimit('customers');
         ApiAuth::requireAuth('customer:read');
-        self::rateLimit('customers');
+        self::keyRateLimit('customers');
 
         $db  = Database::instance();
         $row = $db->fetch('SELECT * FROM customers WHERE id = ?', [$id]);
@@ -77,16 +79,17 @@ class ApiController
             self::err(404, 'Customer not found');
         }
         self::ok([
-            'data' => self::redact($row, ApiAuth::hasScopes(['customer:read-full'])),
+            'data' => self::redactCustomer($row, ApiAuth::hasScopes(['customer:read-full'])),
         ]);
         exit;
     }
 
-    /** /api/v1/tickets — paginated tickets. */
+    /** /api/v1/tickets -- paginated tickets, PII redacted without customer:read-full. */
     public function tickets(): void
     {
+        self::ipRateLimit('tickets');
         ApiAuth::requireAuth('ticket:read');
-        self::rateLimit('tickets');
+        self::keyRateLimit('tickets');
 
         $db    = Database::instance();
         $cid   = trim((string) ($_GET['customer_id'] ?? ''));
@@ -102,10 +105,22 @@ class ApiController
         $whereSql = ' WHERE ' . implode(' AND ', $where);
 
         $total = (int) $db->scalar('SELECT COUNT(*) FROM tickets' . $whereSql, $params);
-        $rows  = $db->fetchAll(
-            'SELECT * FROM tickets' . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
-            $params
-        );
+
+        $full = ApiAuth::hasScopes(['customer:read-full']);
+        if ($full) {
+            $rows = $db->fetchAll(
+                'SELECT * FROM tickets' . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
+                $params
+            );
+        } else {
+            $rows = $db->fetchAll(
+                'SELECT id, customer_id, category, priority, subject, status, created_at, updated_at'
+                . ' FROM tickets' . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
+                $params
+            );
+            $rows = array_map(fn($t) => self::redactTicket($t), $rows);
+        }
+
         self::ok([
             'data' => $rows, 'total' => $total,
             'page' => $page, 'limit' => $limit, 'page_count' => (int) ceil($total / $limit),
@@ -113,11 +128,12 @@ class ApiController
         exit;
     }
 
-    /** /api/v1/messages — paginated messages. */
+    /** /api/v1/messages -- paginated messages, PII redacted without customer:read-full. */
     public function messages(): void
     {
+        self::ipRateLimit('messages');
         ApiAuth::requireAuth('message:read');
-        self::rateLimit('messages');
+        self::keyRateLimit('messages');
 
         $db    = Database::instance();
         $cid   = trim((string) ($_GET['customer_id'] ?? ''));
@@ -134,10 +150,22 @@ class ApiController
         $whereSql = ' WHERE ' . implode(' AND ', $where);
 
         $total = (int) $db->scalar('SELECT COUNT(*) FROM messages' . $whereSql, $params);
-        $rows  = $db->fetchAll(
-            'SELECT * FROM messages' . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
-            $params
-        );
+
+        $full = ApiAuth::hasScopes(['customer:read-full']);
+        if ($full) {
+            $rows = $db->fetchAll(
+                'SELECT * FROM messages' . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
+                $params
+            );
+        } else {
+            $rows = $db->fetchAll(
+                'SELECT id, from_user, from_type, to_user, to_type, is_read, created_at'
+                . ' FROM messages' . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
+                $params
+            );
+            $rows = array_map(fn($m) => self::redactMessage($m), $rows);
+        }
+
         self::ok([
             'data' => $rows, 'total' => $total,
             'page' => $page, 'limit' => $limit, 'page_count' => (int) ceil($total / $limit),
@@ -153,11 +181,12 @@ class ApiController
         exit;
     }
 
-    /** /api/v1/twilio/logs — Twilio logs (admin scope). */
+    /** /api/v1/twilio/logs -- Twilio logs, PII redacted without customer:read-full. */
     public function twilioLogs(): void
     {
+        self::ipRateLimit('twilio');
         ApiAuth::requireAuth('twilio:read');
-        self::rateLimit('twilio');
+        self::keyRateLimit('twilio');
 
         $db    = Database::instance();
         $type  = trim((string) ($_GET['type'] ?? 'sms'));
@@ -178,10 +207,22 @@ class ApiController
         $whereSql = ' WHERE ' . implode(' AND ', $where);
 
         $total = (int) $db->scalar('SELECT COUNT(*) FROM ' . $table . $whereSql, $params);
-        $rows  = $db->fetchAll(
-            'SELECT * FROM ' . $table . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
-            $params
-        );
+
+        $full = ApiAuth::hasScopes(['customer:read-full']);
+        if ($full) {
+            $rows = $db->fetchAll(
+                'SELECT * FROM ' . $table . $whereSql . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
+                $params
+            );
+        } else {
+            $rows = $db->fetchAll(
+                self::twilioColumnList($type) . ' FROM ' . $table . $whereSql
+                . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset,
+                $params
+            );
+            $rows = array_map(fn($r) => self::redactTwilioRow($r, $type), $rows);
+        }
+
         self::ok([
             'data' => $rows, 'total' => $total,
             'page' => $page, 'limit' => $limit, 'page_count' => (int) ceil($total / $limit),
@@ -192,8 +233,9 @@ class ApiController
     /** /api/v1/staff — staff roster (admin scope, emails redacted). */
     public function staff(): void
     {
+        self::ipRateLimit('staff');
         ApiAuth::requireAuth('staff:read');
-        self::rateLimit('staff');
+        self::keyRateLimit('staff');
 
         $db = Database::instance();
         $rows = $db->fetchAll(
@@ -220,7 +262,8 @@ class ApiController
         exit;
     }
 
-    private static function redact(array $c, bool $full): array
+    /** Redact customer PII fields: phone, email, address, zip. */
+    private static function redactCustomer(array $c, bool $full): array
     {
         if ($full) { return $c; }
         $c['phone'] = null;
@@ -230,15 +273,67 @@ class ApiController
         return $c;
     }
 
-    private static function rateLimit(string $endpoint): void
+    /** Redact ticket body and customer_name. */
+    private static function redactTicket(array $t): array
+    {
+        $t['body'] = null;
+        $t['customer_name'] = null;
+        return $t;
+    }
+
+    /** Redact message body, subject, and name fields. */
+    private static function redactMessage(array $m): array
+    {
+        $m['body'] = null;
+        $m['subject'] = null;
+        $m['from_name'] = null;
+        $m['to_name'] = null;
+        return $m;
+    }
+
+    /** Build a column whitelist for the given Twilio table type (non-full scope). */
+    private static function twilioColumnList(string $type): string
+    {
+        return match ($type) {
+            'sms' => 'SELECT id, direction, status, twilio_sid, twilio_status, error_message, created_at, updated_at',
+            'call' => 'SELECT id, direction, duration, status, twilio_sid, twilio_status, error_message, created_at, updated_at',
+            'voicemail' => 'SELECT id, call_sid, duration, status, created_at',
+            default => 'SELECT *',
+        };
+    }
+
+    /** Redact Twilio PII: phone_number, message body, transcription, media/recording/audio URLs. */
+    private static function redactTwilioRow(array $r, string $type): array
+    {
+        $r['phone_number'] = null;
+        $r['message'] = null;
+        $r['transcription'] = null;
+        $r['media_url'] = null;
+        $r['recording_url'] = null;
+        $r['audio_url'] = null;
+        return $r;
+    }
+
+    /** Per-IP rate limit -- runs BEFORE auth to throttle unauthenticated brute-force. */
+    private static function ipRateLimit(string $endpoint): void
+    {
+        try {
+            $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+            RateLimiter::checkOrDie('api_ip:' . $ip . ':' . $endpoint, 120, 60);
+        } catch (\Throwable) {
+            self::err(429, 'Rate limit exceeded. Retry after 60 seconds.');
+            exit;
+        }
+    }
+
+    /** Per-key rate limit -- runs AFTER auth, scoped by key id. */
+    private static function keyRateLimit(string $endpoint): void
     {
         try {
             $keyId = ApiAuth::keyId();
-            $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
             if ($keyId !== null) {
                 RateLimiter::checkOrDie('api_key:' . $keyId . ':' . $endpoint, 60, 60);
             }
-            RateLimiter::checkOrDie('api_ip:' . $ip . ':' . $endpoint, 120, 60);
         } catch (\Throwable) {
             self::err(429, 'Rate limit exceeded. Retry after 60 seconds.');
             exit;

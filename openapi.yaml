@@ -134,7 +134,37 @@ paths:
             type: integer
       responses:
         "200":
-          description: Paginated tickets
+          description: Paginated tickets. Without customer:read-full scope, body and customer_name are excluded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        customer_id: { type: string }
+                        category: { type: string }
+                        priority: { type: string }
+                        subject: { type: string }
+                        status: { type: string }
+                        created_at: { type: string }
+                        updated_at: { type: string }
+                        body:
+                          type: string
+                          description: Available only with customer:read-full scope
+                        customer_name:
+                          type: string
+                          description: Available only with customer:read-full scope
+        "401":
+          description: Invalid or missing API key
+        "403":
+          description: Insufficient scope
+        "429":
+          description: Rate limit exceeded
   /messages:
     get:
       operationId: listMessages
@@ -157,7 +187,42 @@ paths:
             type: integer
       responses:
         "200":
-          description: Paginated messages
+          description: Paginated messages. Without customer:read-full scope, body, subject, and name fields are excluded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        from_user: { type: string }
+                        from_type: { type: string }
+                        to_user: { type: string }
+                        to_type: { type: string }
+                        is_read: { type: integer }
+                        created_at: { type: string }
+                        body:
+                          type: string
+                          description: Available only with customer:read-full scope
+                        subject:
+                          type: string
+                          description: Available only with customer:read-full scope
+                        from_name:
+                          type: string
+                          description: Available only with customer:read-full scope
+                        to_name:
+                          type: string
+                          description: Available only with customer:read-full scope
+        "401":
+          description: Invalid or missing API key
+        "403":
+          description: Insufficient scope
+        "429":
+          description: Rate limit exceeded
   /services:
     get:
       operationId: listServices
@@ -195,7 +260,23 @@ paths:
             type: integer
       responses:
         "200":
-          description: Paginated Twilio logs
+          description: Paginated Twilio logs. Without customer:read-full scope, phone_number, message body, transcription, and media URLs are excluded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      description: Column whitelist per log type unless customer:read-full scope grants full fields.
+        "401":
+          description: Invalid or missing API key
+        "403":
+          description: Insufficient scope
+        "429":
+          description: Rate limit exceeded
   /staff:
     get:
       operationId: listStaff
