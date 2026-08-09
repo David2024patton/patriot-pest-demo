@@ -57,6 +57,8 @@ use PPC\Controllers\StaffController;
 use PPC\Controllers\AdminController;
 use PPC\Controllers\TwilioController;
 use PPC\Controllers\WebhookController;
+use PPC\Controllers\ApiController;
+use PPC\Controllers\ApiKeyController;
 
 // ---------- Marketing pages (public) ----------
 Router::get('/',                 [PageController::class, 'home']);

@@ -23,7 +23,7 @@
     <div class="panel" style="margin-bottom:1.6rem">
       <h3>Create New Key</h3>
       <form method="post" action="/admin/api-keys" style="margin-top:.8rem">
-        <input type="hidden" name="csrf_token" value="<?= $view->e(\PPC\Core\Csrf::token()) ?>">
+        <?= $view->csrf() ?>
         <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
           <div>
             <label style="color:var(--cream);font-size:.82rem">Key Name</label>
@@ -59,15 +59,15 @@
             <td style="display:flex;gap:.3rem;flex-wrap:wrap">
 <?php if (!$revoked && !$expired): ?>
               <form method="post" action="/admin/api-keys/<?= (int)$k['id'] ?>/scopes" style="display:inline">
-                <input type="hidden" name="csrf_token" value="<?= $view->e(\PPC\Core\Csrf::token()) ?>">
+                <?= $view->csrf() ?>
                 <input type="hidden" name="scopes" value="<?= $view->e(implode(",", json_decode($k['scopes'] ?? '[]', true) ?: [])) ?>">
               </form>
               <form method="post" action="/admin/api-keys/<?= (int)$k['id'] ?>/rotate" style="display:inline">
-                <input type="hidden" name="csrf_token" value="<?= $view->e(\PPC\Core\Csrf::token()) ?>">
+                <?= $view->csrf() ?>
                 <button class="btn btn-ghost" style="font-size:.7rem;padding:.2rem .5rem" type="submit">Rotate</button>
               </form>
               <form method="post" action="/admin/api-keys/<?= (int)$k['id'] ?>/revoke" style="display:inline">
-                <input type="hidden" name="csrf_token" value="<?= $view->e(\PPC\Core\Csrf::token()) ?>">
+                <?= $view->csrf() ?>
                 <button class="btn btn-ghost" style="font-size:.7rem;padding:.2rem .5rem;color:var(--orange)" type="submit">Revoke</button>
               </form>
 <?php endif; ?>
