@@ -419,6 +419,15 @@ class StaffController extends PageController
         exit;
     }
 
+    /**
+     * Testable seam: checks whether a staff member can be deactivated.
+     * Super-user accounts are immutable — extracted so tests can verify the guard.
+     */
+    protected function isStaffDeactivatable(array $staffMember): bool
+    {
+        return ($staffMember['role'] ?? '') !== 'super-user';
+    }
+
     /** Toggle staff active/inactive (admin only). */
     public function staffToggle(string $id): void
     {
@@ -430,7 +439,7 @@ class StaffController extends PageController
         }
 
         // Immutability guard: super-user accounts cannot be deactivated.
-        if (($staffMember['role'] ?? '') === 'super-user') {
+        if (!$this->isStaffDeactivatable($staffMember)) {
             Session::flash('staff_crud', ['errors' => ['name' => ['Super-user accounts cannot be deactivated.']]]);
             header('Location: /admin/staff');
             exit;

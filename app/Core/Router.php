@@ -103,6 +103,15 @@ final class Router
         return self::$routes;
     }
 
+    /**
+     * Clear all registered routes (test seam).
+     * Allows tests to re-register routes under different toggle states.
+     */
+    public static function reset(): void
+    {
+        self::$routes = [];
+    }
+
     /** Match the current request and invoke its handler. */
     public static function dispatch(string $method, string $uri): void
     {
