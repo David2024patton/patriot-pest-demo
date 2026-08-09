@@ -186,7 +186,7 @@ Router::get('/unsubscribe', [WebhookController::class, 'unsubscribe']);
 
 // ---------- API v1 (bearer-token guarded) ----------
 // API_ENABLED toggle checked inside ApiAuth. Off = 404 for all /api/v1/*
-if (PPCCoreConfig::bool("API_ENABLED", false)) {
+if (\PPC\Core\Config::bool("API_ENABLED", false)) {
     Router::get("/api/v1/health",    [ApiController::class, "health"]);
     Router::get("/api/v1/customers", [ApiController::class, "customers"]);
     Router::get("/api/v1/customers/{id}", [ApiController::class, "customerById"]);
