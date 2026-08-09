@@ -339,10 +339,7 @@ class CostExplainerRenderer {
 
   renderFooter(data) {
     const f = data.footer || {};
-    const cta = document.getElementById('footer-cta');
-    if (cta && f.cta_pre && f.phone) {
-      cta.innerHTML = this.escapeHtml(f.cta_pre) + '<a href="' + this.escapeHtml(f.phone_href || 'tel:' + f.phone) + '">' + this.escapeHtml(f.phone) + '</a>';
-    }
+    // Footer CTA (phone number) removed per David's directive; stamp only.
     const stamp = document.getElementById('footer-stamp');
     if (stamp && f.stamp) stamp.innerHTML = f.stamp;
   }
