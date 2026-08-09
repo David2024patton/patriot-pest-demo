@@ -136,6 +136,13 @@ Router::get('/admin/staff/{id}',     [StaffController::class, 'staffEdit'])->aut
 Router::post('/admin/staff/{id}',    [StaffController::class, 'staffUpdate'])->auth('staff')->role('admin');
 Router::post('/admin/staff/{id}/toggle', [StaffController::class, 'staffToggle'])->auth('staff')->role('admin');
 
+// ---------- API Key management (admin-guarded) ----------
+Router::get("/admin/api-keys",          [ApiKeyController::class, "index"])->auth("staff")->role("admin");
+Router::post("/admin/api-keys",         [ApiKeyController::class, "create"])->auth("staff")->role("admin");
+Router::post("/admin/api-keys/{id}/revoke",  [ApiKeyController::class, "revoke"])->auth("staff")->role("admin");
+Router::post("/admin/api-keys/{id}/rotate",  [ApiKeyController::class, "rotate"])->auth("staff")->role("admin");
+Router::post("/admin/api-keys/{id}/scopes",  [ApiKeyController::class, "updateScopes"])->auth("staff")->role("admin");
+
 // ---------- Twilio admin (admin-guarded) ----------
 Router::get('/admin/twilio',                  [TwilioController::class, 'index'])->auth('staff')->role('admin');
 Router::get('/admin/twilio/sms',              [TwilioController::class, 'sms'])->auth('staff')->role('admin');
@@ -176,6 +183,19 @@ Router::post('/webhooks/twilio/voicemail', [WebhookController::class, 'voicemail
 // ---------- Public unsubscribe (HMAC-signed token, CSRF-exempt by design) ----------
 // The signed token in the URL is the proof of consent; it cannot be forged.
 Router::get('/unsubscribe', [WebhookController::class, 'unsubscribe']);
+
+// ---------- API v1 (bearer-token guarded) ----------
+// API_ENABLED toggle checked inside ApiAuth. Off = 404 for all /api/v1/*
+if (PPCCoreConfig::bool("API_ENABLED", false)) {
+    Router::get("/api/v1/health",    [ApiController::class, "health"]);
+    Router::get("/api/v1/customers", [ApiController::class, "customers"]);
+    Router::get("/api/v1/customers/{id}", [ApiController::class, "customerById"]);
+    Router::get("/api/v1/tickets",   [ApiController::class, "tickets"]);
+    Router::get("/api/v1/messages",  [ApiController::class, "messages"]);
+    Router::get("/api/v1/services",  [ApiController::class, "services"]);
+    Router::get("/api/v1/twilio/logs", [ApiController::class, "twilioLogs"]);
+    Router::get("/api/v1/staff",     [ApiController::class, "staff"]);
+}
 
 // ---------- Dispatch ----------
 Router::dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

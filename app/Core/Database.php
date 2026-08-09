@@ -94,7 +94,7 @@ final class Database
         $stmt->execute(['schema_version']);
         $current = (int) ($stmt->fetchColumn() ?: 0);
 
-        $target = 2; // bump when schema.sql changes structurally
+        $target = 3; // bump when schema.sql changes structurally
         if ($current < $target) {
             $sql = file_get_contents($schemaFile);
             if ($sql !== false && trim($sql) !== '') {

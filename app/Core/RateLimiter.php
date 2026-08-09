@@ -109,4 +109,12 @@ final class RateLimiter
         $unlock = strtotime((string) $last) + $window;
         return max(0, $unlock - time());
     }
+
+    public static function checkOrDie(string $key, int $maxAttempts, int $window): void
+    {
+        self::hit($key);
+        if (self::tooMany($key, $maxAttempts, $window)) {
+            throw new RuntimeException("Rate limit exceeded for " . $key);
+        }
+    }
 }

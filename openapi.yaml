@@ -1,0 +1,214 @@
+openapi: "3.0.3"
+info:
+  title: Patriot Pest Control API
+  description: Authenticated API for AI and agent access to Patriot Pest Control data.
+  version: "1.0.0"
+  contact:
+    name: Patriot Pest Control
+    url: https://patriotpest.pro
+servers:
+  - url: https://test.patriotpest.pro/api/v1
+    description: Production server
+security:
+  - BearerAuth: []
+tags:
+  - name: Health
+  - name: Customers
+  - name: Tickets
+  - name: Messages
+  - name: Services
+  - name: Twilio
+  - name: Staff
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      summary: API health check
+      description: Available when API_ENABLED=true. No authentication required.
+      tags: [Health]
+      security: []
+      responses:
+        "200":
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: patriot-pest-control-api
+                  version:
+                    type: string
+                    example: "1.0"
+                  time:
+                    type: string
+                    format: date-time
+  /customers:
+    get:
+      operationId: listCustomers
+      summary: List customers
+      tags: [Customers]
+      security:
+        - BearerAuth: [customer:read]
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Search query (name, phone, email, account, city)
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, cancelled, inactive]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        "200":
+          description: Paginated customer list
+        "401":
+          description: Invalid or missing API key
+        "403":
+          description: Insufficient scope
+        "404":
+          description: API not enabled
+        "429":
+          description: Rate limit exceeded
+  /customers/{id}:
+    get:
+      operationId: getCustomer
+      summary: Get a single customer
+      tags: [Customers]
+      security:
+        - BearerAuth: [customer:read]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Customer record
+        "401":
+          description: Invalid or missing API key
+        "404":
+          description: Customer not found
+  /tickets:
+    get:
+      operationId: listTickets
+      summary: List tickets
+      tags: [Tickets]
+      security:
+        - BearerAuth: [ticket:read]
+      parameters:
+        - name: customer_id
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, closed]
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Paginated tickets
+  /messages:
+    get:
+      operationId: listMessages
+      summary: List messages
+      tags: [Messages]
+      security:
+        - BearerAuth: [message:read]
+      parameters:
+        - name: customer_id
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Paginated messages
+  /services:
+    get:
+      operationId: listServices
+      summary: List pest services
+      tags: [Services]
+      security: []
+      responses:
+        "200":
+          description: Pest catalog
+  /twilio/logs:
+    get:
+      operationId: twilioLogs
+      summary: Twilio communication logs
+      tags: [Twilio]
+      security:
+        - BearerAuth: [twilio:read]
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [sms, call, voicemail]
+            default: sms
+        - name: phone
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Paginated Twilio logs
+  /staff:
+    get:
+      operationId: listStaff
+      summary: Staff roster
+      tags: [Staff]
+      security:
+        - BearerAuth: [staff:read]
+      responses:
+        "200":
+          description: Active staff list (no emails)
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key in Bearer token format. Prefix ppc_live_ followed by 64 hex characters.

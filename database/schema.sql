@@ -519,3 +519,20 @@ CREATE TABLE IF NOT EXISTS webhook_events (
 CREATE INDEX IF NOT EXISTS idx_webhook_type ON webhook_events(event_type, created_at);
 CREATE INDEX IF NOT EXISTS idx_webhook_processed ON webhook_events(processed, created_at);
 CREATE INDEX IF NOT EXISTS idx_webhook_sid ON webhook_events(twilio_sid);
+
+-- ---------- API Keys (AI/Agent access) ----------
+-- Keys are crypto-random, never stored raw. key_prefix is a public lookup id;
+-- key_hash is SHA-256 of the full raw key. Raw key shown once at creation.
+CREATE TABLE IF NOT EXISTS api_keys (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    name         TEXT NOT NULL,                -- human label for this key
+    key_prefix   TEXT NOT NULL UNIQUE,          -- public id (first 12 chars after ppc_live_)
+    key_hash     TEXT NOT NULL,                 -- SHA-256 of full raw key
+    scopes       TEXT NOT NULL DEFAULT '[]',    -- JSON array of granted scopes
+    created_by   INTEGER REFERENCES staff(id),
+    last_used_at TEXT,
+    expires_at   TEXT,
+    revoked_at   TEXT,
+    created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_apikey_prefix ON api_keys(key_prefix);
