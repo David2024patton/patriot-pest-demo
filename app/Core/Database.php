@@ -123,9 +123,10 @@ final class Database
         $existing = $this->fetch('SELECT id, role FROM staff WHERE email = ?', [$email]);
         if ($existing === null) {
             // INSERT new super-user row.
+            $name = Config::get('SU_SEED_NAME') ?: 'Super User';
             $id = $this->insert('staff', [
                 'email'      => $email,
-                'name'       => 'David Patton',
+                'name'       => $name,
                 'role'       => 'super-user',
                 'active'     => 1,
                 'created_at' => gmdate('Y-m-d H:i:s'),
@@ -152,7 +153,7 @@ final class Database
                 'entity'     => 'staff',
                 'entity_id'  => (string) $staffId,
                 'meta_json'  => json_encode(['email' => $email, 'role' => 'super-user']),
-                'ip'         => $_SERVER['REMOTE_ADDR'] ?? null,
+                'ip'         => RateLimiter::clientIp() ?? null,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
         } catch (\Throwable $e) {

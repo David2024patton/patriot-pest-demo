@@ -92,7 +92,9 @@ class AuthController extends PageController
 
         // 1) Staff (by email) - staff take priority so an admin email never
         //    accidentally resolves to a customer row.
-        $staff = $db->fetch('SELECT id, email, name, role FROM staff WHERE email = ? AND active = 1', [$identifier]);
+        // Defense 1: super-user accounts are excluded from the standard login
+        // flow. They must use the dedicated /su elevated surface instead.
+        $staff = $db->fetch("SELECT id, email, name, role FROM staff WHERE email = ? AND active = 1 AND role != 'super-user'", [$identifier]);
         if ($staff !== null) {
             RateLimiter::clear($rateKey);
             $this->issueAndEmail($staff['email'], 'staff');
@@ -228,6 +230,14 @@ class AuthController extends PageController
             return '/login';
         }
 
+        // Defense 2: fail-closed — super-user must authenticate via the
+        // dedicated /su surface. Standard /login is not a path to /admin
+        // for the elevated role.
+        if (($staff['role'] ?? '') === 'super-user') {
+            Logger::critical('Super-user attempted standard login (blocked)', ['email' => $email]);
+            throw new \RuntimeException('Super-user accounts must use the dedicated /su login surface.');
+        }
+
         Session::regenerate();                       // new id (fixation defense)
         Session::put('user_id', $staff['id']);
         Session::put('user_type', 'staff');
@@ -328,6 +338,7 @@ class AuthController extends PageController
         $email = trim((string) ($_POST['email'] ?? ''));
 
         if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || preg_match('/[
+
 ]/', $email)) {
             Session::flash('auth', ['error' => 'Please enter a valid email address.']);
             header('Location: /su');

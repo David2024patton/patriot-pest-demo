@@ -319,12 +319,6 @@ class StaffController extends PageController
     public function staffCreate(): void
     {
         Csrf::verifyOrDie();
-        // Immutability guard: super-user accounts cannot be modified through staff CRUD.
-        if (($staffMember['role'] ?? '') === 'super-user') {
-            Session::flash('staff_crud', ['errors' => ['role' => ['Super-user accounts cannot be modified.']]]);
-            header('Location: /admin/staff');
-            exit;
-        }
 
         $errors = Validator::make($_POST, [
             'name'  => ['required', 'max:200'],

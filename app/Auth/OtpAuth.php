@@ -40,7 +40,7 @@ final class OtpAuth
     public static function issue(string $identity, string $purpose, int $length = 6): string
     {
         $db  = Database::instance();
-        $ttl = Config::int('OTP_TTL', 600);
+        $ttl = self::ttlFor($purpose);
 
         // Invalidate older unused codes for this identity+purpose.
         $db->execute(
@@ -64,7 +64,7 @@ final class OtpAuth
             'created_at' => date('Y-m-d H:i:s'),
         ]);
 
-        Logger::info('OTP issued', ['identity' => $identity, 'purpose' => $purpose]);
+        Logger::info('OTP issued', ['identity' => $identity, 'purpose' => $purpose, 'ttl' => $ttl]);
         return $code;
     }
 
@@ -80,8 +80,8 @@ final class OtpAuth
     public static function verify(string $identity, string $purpose, string $code): bool
     {
         $db          = Database::instance();
-        $maxAttempts = Config::int('OTP_MAX_ATTEMPTS', 5);
-        $window      = Config::int('OTP_TTL', 600);
+        $maxAttempts = self::maxAttemptsFor($purpose);
+        $window      = self::ttlFor($purpose);
         $limitKey    = "otp:$purpose:$identity";
 
         // Brute-force guard: too many recent failures → reject outright.
@@ -127,8 +127,32 @@ final class OtpAuth
      */
     public static function retryAfter(string $identity, string $purpose): int
     {
-        $maxAttempts = Config::int('OTP_MAX_ATTEMPTS', 5);
-        $window      = Config::int('OTP_TTL', 600);
+        $maxAttempts = self::maxAttemptsFor($purpose);
+        $window      = self::ttlFor($purpose);
         return RateLimiter::retryAfter("otp:$purpose:$identity", $maxAttempts, $window);
+    }
+
+    /**
+     * TTL (seconds) for a given purpose.
+     * 'super-login' -> SU_OTP_TTL (default 300); everything else -> OTP_TTL (default 600).
+     */
+    public static function ttlFor(string $purpose): int
+    {
+        if ($purpose === 'super-login') {
+            return Config::int('SU_OTP_TTL', 300);
+        }
+        return Config::int('OTP_TTL', 600);
+    }
+
+    /**
+     * Max verify attempts for a given purpose.
+     * 'super-login' -> SU_OTP_MAX_ATTEMPTS (default 3); everything else -> OTP_MAX_ATTEMPTS (default 5).
+     */
+    public static function maxAttemptsFor(string $purpose): int
+    {
+        if ($purpose === 'super-login') {
+            return Config::int('SU_OTP_MAX_ATTEMPTS', 3);
+        }
+        return Config::int('OTP_MAX_ATTEMPTS', 5);
     }
 }
