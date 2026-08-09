@@ -57,12 +57,6 @@
     "cta": "Run a test lead",
     "link": "/contact"
   },
-  "footer": {
-    "cta_pre": "Ready to deploy? Call ",
-    "phone": "(509) 471-5767",
-    "phone_href": "tel:+15094715767",
-    "stamp": "APPROVED<br>FOR DEPLOYMENT"
-  },
   "receipt": {
     "report_number": "PPC-2026-002",
     "classification": "UNCLASSIFIED // MARKETING INTEL",

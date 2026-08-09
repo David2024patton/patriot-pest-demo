@@ -192,7 +192,6 @@ if ($enabled === 'false' || $enabled === '0') {
     <div class="wrap">
       <div class="hazard"></div>
       <div class="footer-inner">
-        <div class="footer-cta" id="footer-cta">Ready to deploy? Call <a href="tel:+15094715767">(509) 471-5767</a></div>
         <span class="stamp" id="footer-stamp">APPROVED<br>FOR DEPLOYMENT</span>
       </div>
     </div>
