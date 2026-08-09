@@ -45,6 +45,21 @@ class CostExplainerRenderer {
     }
   }
 
+  /* Hero crosshair - tactical targeting reticle */
+  initCrosshair() {
+    const hero = document.getElementById('cost-hero');
+    if (!hero || !window.matchMedia('(pointer:fine)').matches) return;
+    const xhv = document.getElementById('xh-v'), xhh = document.getElementById('xh-h'), xhr = document.getElementById('xh-ring');
+    if (xhv) {
+      hero.addEventListener('mousemove', (e) => {
+        const r = hero.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+        xhv.style.left = x + 'px'; xhh.style.top = y + 'px'; xhr.style.left = x + 'px'; xhr.style.top = y + 'px';
+        hero.classList.add('aim');
+      });
+      hero.addEventListener('mouseleave', () => hero.classList.remove('aim'));
+    }
+  }
+
   /* Bugfield canvas - ambient insect particles */
   initBugfield() {
     const canvas = document.getElementById('bugfield');
@@ -334,6 +349,7 @@ class CostExplainerRenderer {
 
   async init() {
     this.initBugfield();
+    this.initCrosshair();
     this.setReceiptDate();
 
     const data = await this.loadData();

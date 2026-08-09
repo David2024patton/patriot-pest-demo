@@ -40,6 +40,7 @@
   color: var(--cream);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  cursor: crosshair;
 }
 
 /* ambient layers */
@@ -105,6 +106,16 @@
 }
 .cost-hero h1 em { font-style: normal; color: var(--orange); }
 .cost-hero .sub { color: var(--khaki); font-size: 1.05rem; max-width: 60ch; line-height: 1.6; }
+
+/* hero crosshair */
+#xh-v,#xh-h{position:absolute;background:rgba(244,119,46,.35);pointer-events:none;z-index:2;opacity:0;transition:opacity .3s}
+#xh-v{top:0;bottom:0;width:1px}
+#xh-h{left:0;right:0;height:1px}
+#xh-ring{position:absolute;width:46px;height:46px;border:1px solid rgba(244,119,46,.7);border-radius:50%;pointer-events:none;z-index:2;opacity:0;transition:opacity .3s;transform:translate(-50%,-50%)}
+#xh-ring::before,#xh-ring::after{content:"";position:absolute;background:rgba(244,119,46,.7)}
+#xh-ring::before{left:50%;top:-8px;bottom:-8px;width:1px}
+#xh-ring::after{top:50%;left:-8px;right:-8px;height:1px}
+#cost-hero.aim #xh-v,#cost-hero.aim #xh-h,#cost-hero.aim #xh-ring{opacity:1}
 
 /* shared */
 section { position: relative; z-index: 1; }
