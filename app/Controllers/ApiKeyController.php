@@ -140,6 +140,43 @@ class ApiKeyController
         exit;
     }
 
+    /** Audit trail for key lifecycle actions, filterable per key. */
+    public function audit(): void
+    {
+        $db = Database::instance();
+        $keyFilter = trim((string) ($_GET['key'] ?? ''));
+
+        $sql = 'SELECT * FROM audit_log WHERE entity = ? AND action IN (?, ?, ?, ?)';
+        $params = ['api_keys', 'api_key.create', 'api_key.revoke', 'api_key.rotate', 'api_key.scopes'];
+        if ($keyFilter !== '') {
+            $sql .= ' AND (entity_id = ? OR meta_json LIKE ?)';
+            $params[] = $keyFilter;
+            $params[] = '%"prefix":"' . $keyFilter . '"%';
+        }
+        $sql .= ' ORDER BY id DESC LIMIT 200';
+        $rows = $db->fetchAll($sql, $params);
+
+        foreach ($rows as &$row) {
+            $meta = json_decode($row['meta_json'] ?? '{}', true) ?: [];
+            $row['meta'] = $meta;
+            $name = (string) ($meta['name'] ?? '');
+            $prefix = (string) ($meta['prefix'] ?? '');
+            $row['key_label'] = $name !== ''
+                ? $name . ($prefix !== '' ? ' (ppc_live_' . $prefix . '...)' : '')
+                : 'key #' . $row['entity_id'];
+        }
+        unset($row);
+
+        $keys = $db->fetchAll('SELECT id, name, key_prefix FROM api_keys ORDER BY created_at DESC');
+
+        echo \PPC\Core\View::page('admin/api-key-audit', [
+            'rows'      => $rows,
+            'keys'      => $keys,
+            'keyFilter' => $keyFilter,
+            'isAdmin'   => Session::isAdmin(),
+        ], $this->meta('API Key Audit Trail | Patriot Pest Control', 'Lifecycle audit trail for API keys.', '/admin/api-keys/audit'));
+    }
+
     /** Write a lifecycle audit log entry for key admin actions. */
     private static function auditLifecycle(string $action, ?int $keyId, array $meta): void
     {

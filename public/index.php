@@ -140,6 +140,7 @@ Router::post('/admin/staff/{id}/toggle', [StaffController::class, 'staffToggle']
 
 // ---------- API Key management (admin-guarded) ----------
 Router::get("/admin/api-keys",          [ApiKeyController::class, "index"])->auth("staff")->role("admin");
+Router::get("/admin/api-keys/audit",   [ApiKeyController::class, "audit"])->auth("staff")->role("admin");
 Router::post("/admin/api-keys",         [ApiKeyController::class, "create"])->auth("staff")->role("admin");
 Router::post("/admin/api-keys/{id}/revoke",  [ApiKeyController::class, "revoke"])->auth("staff")->role("admin");
 Router::post("/admin/api-keys/{id}/rotate",  [ApiKeyController::class, "rotate"])->auth("staff")->role("admin");
