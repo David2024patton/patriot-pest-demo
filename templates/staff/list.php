@@ -48,7 +48,7 @@ $flash     = $data['flash'] ?? null;
             <td class="num"><?= $view->e($s['last_login'] ? date('M j, Y', strtotime($s['last_login'])) : 'Never') ?></td>
             <td>
               <form method="post" action="/admin/staff/<?= $view->e($s['id']) ?>/toggle" style="display:inline">
-                <input type="hidden" name="csrf_token" value="<?= $view->e(\PPC\Core\Csrf::token()) ?>">
+                <?= $view->csrf() ?>
                 <button class="btn btn-ghost" style="font-size:.75rem;padding:.2rem .6rem" type="submit">
                   <?= $s['active'] ? 'Deactivate' : 'Activate' ?>
                 </button>
