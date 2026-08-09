@@ -39,6 +39,8 @@ class AuthController extends PageController
 {
     /** OTP purpose shared by the unified login (keyed per email). */
     private const PURPOSE = 'login';
+    /** OTP purpose for the super-user elevated surface (isolated from standard login). */
+    private const SU_PURPOSE = 'super-login';
 
     /* ============================ STEP 1: IDENTIFY ============================ */
 
@@ -269,7 +271,7 @@ class AuthController extends PageController
     private function dashboardFor(?string $userType, ?string $role): string
     {
         if ($userType === 'staff') {
-            return $role === 'admin' ? '/admin' : '/staff-dashboard';
+            return ($role === 'admin' || $role === 'super-user') ? '/admin' : '/staff-dashboard';
         }
         return '/customer-dashboard';
     }
@@ -296,11 +298,170 @@ class AuthController extends PageController
                 'user_type'  => $userType,
                 'action'     => $action,
                 'meta_json'  => $meta ? json_encode($meta) : null,
-                'ip'         => $_SERVER['REMOTE_ADDR'] ?? null,
+                'ip'         => RateLimiter::clientIp(),
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
         } catch (\Throwable $e) {
             Logger::warning('Audit write failed', ['action' => $action]);
         }
+    }
+
+    /* ======================= SUPERUSER LOGIN ======================== */
+
+    /** Superuser login form (GET /su). */
+    public function superLoginForm(): void
+    {
+        if (Session::authenticated() && Session::isSuperUser()) {
+            header('Location: /admin');
+            exit;
+        }
+        echo View::page('auth/super-login', [
+            'flash' => Session::pullFlash('auth'),
+        ], $this->meta('Superuser Sign In | Patriot Pest Control', 'Elevated authentication for system administrators.', '/su'));
+    }
+
+    /** Superuser login request (POST /su). */
+    public function superLoginRequest(): void
+    {
+        Csrf::verifyOrDie();
+
+        $email = trim((string) ($_POST['email'] ?? ''));
+
+        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || preg_match('/[
+]/', $email)) {
+            Session::flash('auth', ['error' => 'Please enter a valid email address.']);
+            header('Location: /su');
+            exit;
+        }
+        if (strlen($email) > 254) {
+            Session::flash('auth', ['error' => 'Please enter a valid email address.']);
+            header('Location: /su');
+            exit;
+        }
+
+        $ip = RateLimiter::clientIp();
+        $rateKey = 'su_login:' . $ip;
+        if (RateLimiter::tooMany($rateKey, 3, 60)) {
+            $wait = RateLimiter::retryAfter($rateKey, 3, 60);
+            Session::flash('auth', ['error' => 'Too many attempts. Please wait ' . ceil($wait / 60) . ' minute(s).']);
+            header('Location: /su');
+            exit;
+        }
+        RateLimiter::hit($rateKey, false, $ip);
+
+        $db = Database::instance();
+        $staff = $db->fetch(
+            "SELECT id, email, name, role FROM staff WHERE email = ? AND role = 'super-user' AND active = 1",
+            [$email]
+        );
+
+        if ($staff !== null) {
+            RateLimiter::clear($rateKey);
+            $this->issueAndEmailSuper($staff['email']);
+            Session::put('pending_login_email', $staff['email']);
+            Session::put('pending_login_type', 'staff');
+            Session::put('pending_login_id', $staff['id']);
+        }
+
+        Session::flash('auth', ['sent' => true, 'to' => $this->maskEmail($email)]);
+        header('Location: /su/verify');
+        exit;
+    }
+
+    /** Superuser code-entry form (GET /su/verify). */
+    public function superLoginVerifyForm(): void
+    {
+        echo View::page('auth/verify', [
+            'purpose' => 'super-login',
+            'action'  => '/su/verify',
+            'sentTo'  => Session::pullFlash('auth'),
+        ], $this->meta('Enter Your Code | Patriot Pest Control', 'Enter the 8-digit code we emailed you.', '/su/verify'));
+    }
+
+    /** Verify superuser code, establish session. */
+    public function superLoginVerify(): void
+    {
+        Csrf::verifyOrDie();
+
+        $email = Session::get('pending_login_email');
+        $type  = Session::get('pending_login_type');
+        $code  = trim((string) ($_POST['code'] ?? ''));
+
+        if (!$email || !$type || $code === '') {
+            Session::flash('auth', ['error' => 'Please start over and request a new code.']);
+            header('Location: /su');
+            exit;
+        }
+
+        if (!OtpAuth::verify($email, self::SU_PURPOSE, $code)) {
+            $wait = OtpAuth::retryAfter($email, self::SU_PURPOSE);
+            Session::flash('auth', ['error' => $wait > 0
+                ? 'Too many attempts. Try again in about ' . ceil($wait / 60) . ' minute(s).'
+                : 'That code is incorrect or has expired. Please try again.']);
+            header('Location: /su/verify');
+            exit;
+        }
+
+        $dest = $this->startSuperSession($email);
+
+        Session::forget('pending_login_email');
+        Session::forget('pending_login_type');
+        Session::forget('pending_login_id');
+
+        header('Location: ' . $dest);
+        exit;
+    }
+
+    /** Issue and email a superuser code (8 digits, shorter TTL). */
+    private function issueAndEmailSuper(string $email): void
+    {
+        $limitKey = 'su_otp_issue:' . $email;
+        if (RateLimiter::tooMany($limitKey, 2, 300)) {
+            $wait = RateLimiter::retryAfter($limitKey, 2, 300);
+            Session::flash('auth', ['error' => 'Too many code requests. Please wait ' . ceil($wait / 60) . ' minute(s).']);
+            header('Location: /su');
+            exit;
+        }
+        RateLimiter::hit($limitKey, false);
+
+        $code = OtpAuth::issue($email, self::SU_PURPOSE, 8);
+        $mins = (int) (Config::int('SU_OTP_TTL', 300) / 60);
+        Mailer::send(
+            $email,
+            'Your Patriot Pest Control superuser sign-in code',
+            Mailer::template(
+                'Your superuser sign-in code',
+                '<p style="font-size:32px;letter-spacing:8px;font-weight:bold;color:#c8a24a">' . $code . '</p>'
+                . '<p>This code expires in ' . $mins . ' minutes and works once. If you didn' . "'" . 't request it, you can safely ignore this email.</p>'
+            )
+        );
+    }
+
+    /** Build a superuser session; return /admin. */
+    private function startSuperSession(string $email): string
+    {
+        $db = Database::instance();
+        $staff = $db->fetch(
+            "SELECT id, email, name, role FROM staff WHERE email = ? AND role = 'super-user' AND active = 1",
+            [$email]
+        );
+        if ($staff === null) {
+            Session::flash('auth', ['error' => 'This account is no longer active.']);
+            return '/su';
+        }
+
+        Session::regenerate();
+        Session::put('user_id', $staff['id']);
+        Session::put('user_type', 'staff');
+        Session::put('staff_id', $staff['id']);
+        Session::put('staff_role', $staff['role']);
+        Session::put('display_name', $staff['name']);
+        Session::put('_last_activity', time());
+
+        $db->execute("UPDATE staff SET last_login = datetime('now') WHERE id = ?", [$staff['id']]);
+        $this->audit('super-login', 'staff', $staff['id'], ['role' => $staff['role']]);
+        Logger::info('Super-user logged in', ['email' => $email]);
+
+        return '/admin';
     }
 }

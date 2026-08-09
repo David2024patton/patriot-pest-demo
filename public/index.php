@@ -163,6 +163,14 @@ Router::get('/admin/twilio/webhooks',         [TwilioController::class, 'webhook
 Router::get('/admin/twilio/webhooks/{id}',    [TwilioController::class, 'webhookView'])->auth('staff')->role('admin');
 Router::post('/admin/twilio/webhooks/process', [TwilioController::class, 'webhooksProcess'])->auth('staff')->role('admin');
 
+// ---------- Superuser login (toggleable, elevated surface) ----------
+if (\PPC\Core\Config::bool("SUPERUSER_ENABLED", false)) {
+    Router::get("/su",             [AuthController::class, "superLoginForm"]);
+    Router::post("/su",            [AuthController::class, "superLoginRequest"]);
+    Router::get("/su/verify",      [AuthController::class, "superLoginVerifyForm"]);
+    Router::post("/su/verify",     [AuthController::class, "superLoginVerify"]);
+}
+
 // ---------- Health check (public, no auth) ----------
 Router::get('/health', function () {
     header('Content-Type: application/json');

@@ -104,6 +104,82 @@ final class Database
             $up->execute(['schema_version', (string) $target]);
             Logger::info('Database schema applied', ['version' => $target]);
         }
+
+        $this->seedSuperUser();
+        $this->upgrade(); // existence-guarded v2->v3 migrations
+    }
+
+    /**
+     * Idempotent super-user seed: promote or create the account identified by
+     * SU_SEED_EMAIL (if configured). Re-running is a no-op.
+     */
+    private function seedSuperUser(): void
+    {
+        $email = Config::get('SU_SEED_EMAIL');
+        if (!$email || trim($email) === '') {
+            return; // No-op when SU_SEED_EMAIL is empty/absent.
+        }
+
+        $existing = $this->fetch('SELECT id, role FROM staff WHERE email = ?', [$email]);
+        if ($existing === null) {
+            // INSERT new super-user row.
+            $id = $this->insert('staff', [
+                'email'      => $email,
+                'name'       => 'David Patton',
+                'role'       => 'super-user',
+                'active'     => 1,
+                'created_at' => gmdate('Y-m-d H:i:s'),
+            ]);
+            $this->auditGrant($id, $email);
+            Logger::info('Super-user created via seed', ['email' => $email, 'staff_id' => $id]);
+        } elseif (($existing['role'] ?? '') !== 'super-user') {
+            // UPDATE existing row to super-user.
+            $this->execute("UPDATE staff SET role = 'super-user' WHERE id = ?", [$existing['id']]);
+            $this->auditGrant($existing['id'], $email);
+            Logger::info('Super-user promoted via seed', ['email' => $email, 'staff_id' => $existing['id']]);
+        }
+        // else: already super-user, no-op (idempotent).
+    }
+
+    /** Write a superuser.grant audit row. */
+    private function auditGrant(int $staffId, string $email): void
+    {
+        try {
+            $this->insert('audit_log', [
+                'user_id'    => null,
+                'user_type'  => 'system',
+                'action'     => 'superuser.grant',
+                'entity'     => 'staff',
+                'entity_id'  => (string) $staffId,
+                'meta_json'  => json_encode(['email' => $email, 'role' => 'super-user']),
+                'ip'         => $_SERVER['REMOTE_ADDR'] ?? null,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        } catch (\Throwable $e) {
+            Logger::warning('Super-user grant audit failed', ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Existence-guarded v2->v3 upgrades. Runs after the schema script so we
+     * can add columns/indexes that CREATE TABLE IF NOT EXISTS cannot handle
+     * on existing databases.
+     */
+    private function upgrade(): void
+    {
+        // v2->v3: customers.source column (added in schema v3, missing on v2 DBs).
+        // Guard: only add if the column does not exist yet.
+        try {
+            $this->pdo->exec("ALTER TABLE customers ADD COLUMN source TEXT NOT NULL DEFAULT 'fieldroutes'");
+        } catch (\Throwable) {
+            // Column already exists, no-op (idempotent across restarts).
+        }
+        // v2->v3: idx_cust_source may fail if schema.sql already created it.
+        try {
+            $this->pdo->exec('CREATE INDEX IF NOT EXISTS idx_cust_source ON customers(source)');
+        } catch (\Throwable) {
+            Logger::warning('idx_cust_source creation skipped (may already exist)');
+        }
     }
 
     /** Expose raw PDO only where genuinely needed (e.g. transactions). */

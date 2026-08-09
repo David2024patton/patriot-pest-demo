@@ -36,8 +36,10 @@ final class RouteRegistrationTest extends TestCase
         // them. Also force APP_ENV=local so the production HTTPS-force
         // redirect in the front controller can never fire and exit.
         $prevApi = getenv('API_ENABLED');
+        $prevSu  = getenv('SUPERUSER_ENABLED');
         $prevEnv = getenv('APP_ENV');
         putenv('API_ENABLED=true');
+        putenv('SUPERUSER_ENABLED=true');
         putenv('APP_ENV=local');
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -81,6 +83,11 @@ final class RouteRegistrationTest extends TestCase
                 putenv('API_ENABLED');
             } else {
                 putenv('API_ENABLED=' . $prevApi);
+            }
+            if ($prevSu === false) {
+                putenv('SUPERUSER_ENABLED');
+            } else {
+                putenv('SUPERUSER_ENABLED=' . $prevSu);
             }
             if ($prevEnv === false) {
                 putenv('APP_ENV');

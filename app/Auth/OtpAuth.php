@@ -37,7 +37,7 @@ final class OtpAuth
      * @param string $purpose  e.g. 'staff_login', 'customer_login', 'sms_verify'.
      * @return string The plaintext 6-digit code (hand this to the Mailer/SMS).
      */
-    public static function issue(string $identity, string $purpose): string
+    public static function issue(string $identity, string $purpose, int $length = 6): string
     {
         $db  = Database::instance();
         $ttl = Config::int('OTP_TTL', 600);
@@ -49,8 +49,10 @@ final class OtpAuth
             [$identity, $purpose]
         );
 
-        // Cryptographically random 6-digit code (100000-999999).
-        $code = (string) random_int(100000, 999999);
+        // Cryptographically random N-digit code ($length defaults to 6 for backward compat).
+        $min = 10 ** ($length - 1);
+        $max = (10 ** $length) - 1;
+        $code = (string) random_int($min, $max);
 
         $db->insert('otp_codes', [
             'identity'   => $identity,
@@ -58,7 +60,7 @@ final class OtpAuth
             'code_hash'  => password_hash($code, PASSWORD_DEFAULT),
             'attempts'   => 0,
             'expires_at' => date('Y-m-d H:i:s', time() + $ttl),
-            'ip'         => $_SERVER['REMOTE_ADDR'] ?? null,
+            'ip'         => RateLimiter::clientIp(),
             'created_at' => date('Y-m-d H:i:s'),
         ]);
 

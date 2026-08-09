@@ -71,7 +71,9 @@ final class Session
         $type    = $_SESSION['user_type'] ?? 'guest';
         $timeout = $type === 'customer'
             ? Config::int('SESSION_LIFETIME_CUSTOMER', 900)
-            : Config::int('SESSION_LIFETIME_STAFF', 7200);
+            : (($_SESSION['staff_role'] ?? null) === 'super-user'
+                ? 3600
+                : Config::int('SESSION_LIFETIME_STAFF', 7200));
 
         if (time() - (int) $last > $timeout) {
             self::destroy();
@@ -157,10 +159,17 @@ final class Session
         return ($_SESSION['user_type'] ?? null) === 'staff' ? ($_SESSION['staff_role'] ?? null) : null;
     }
 
-    /** True if the current staff user is an admin. */
+    /** True if the current staff user is an admin or super-user. */
+    public static function isSuperUser(): bool
+    {
+        return self::staffRole() === 'super-user';
+    }
+
+    /** True if the current staff user is an admin or super-user. */
     public static function isAdmin(): bool
     {
-        return self::staffRole() === 'admin';
+        $role = self::staffRole();
+        return $role === 'admin' || $role === 'super-user';
     }
 
     /**

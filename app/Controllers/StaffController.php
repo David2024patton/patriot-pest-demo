@@ -319,6 +319,13 @@ class StaffController extends PageController
     public function staffCreate(): void
     {
         Csrf::verifyOrDie();
+        // Immutability guard: super-user accounts cannot be modified through staff CRUD.
+        if (($staffMember['role'] ?? '') === 'super-user') {
+            Session::flash('staff_crud', ['errors' => ['role' => ['Super-user accounts cannot be modified.']]]);
+            header('Location: /admin/staff');
+            exit;
+        }
+
         $errors = Validator::make($_POST, [
             'name'  => ['required', 'max:200'],
             'email' => ['required', 'email', 'max:254'],
@@ -380,6 +387,13 @@ class StaffController extends PageController
             \PPC\Core\Router::notFound();
         }
 
+        // Immutability guard: super-user accounts cannot be modified through staff CRUD.
+        if (($staffMember['role'] ?? '') === 'super-user') {
+            Session::flash('staff_crud', ['errors' => ['role' => ['Super-user accounts cannot be modified.']]]);
+            header('Location: /admin/staff');
+            exit;
+        }
+
         $errors = Validator::make($_POST, [
             'name'  => ['required', 'max:200'],
             'email' => ['required', 'email', 'max:254'],
@@ -419,6 +433,13 @@ class StaffController extends PageController
         $staffMember = $db->fetch('SELECT * FROM staff WHERE id = ?', [$id]);
         if (!$staffMember) {
             \PPC\Core\Router::notFound();
+        }
+
+        // Immutability guard: super-user accounts cannot be deactivated.
+        if (($staffMember['role'] ?? '') === 'super-user') {
+            Session::flash('staff_crud', ['errors' => ['name' => ['Super-user accounts cannot be deactivated.']]]);
+            header('Location: /admin/staff');
+            exit;
         }
 
         // Prevent deactivating yourself.

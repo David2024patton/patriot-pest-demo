@@ -363,6 +363,7 @@ CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id, user_type);
 
 -- ---------- Seed: default roles ----------
 INSERT OR IGNORE INTO roles (role, label, permissions) VALUES
+    ('super-user',  'Super User',     '["all"]'),
     ('admin',       'Administrator', '["all"]'),
     ('tech_support','Tech Support',  '["view_customers","search_customers","manage_appointments","view_tickets","respond_tickets","send_messages"]'),
     ('accounts',    'Accounts',      '["view_customers","search_customers","manage_billing","view_tickets","respond_tickets","send_messages"]'),
