@@ -36,7 +36,7 @@ $action      = $isNew ? '/admin/staff' : '/admin/staff/' . $staffMember['id'];
 
     <div class="panel" style="max-width:600px">
       <form method="post" action="<?= $view->e($action) ?>">
-        <input type="hidden" name="csrf_token" value="<?= $view->e(\PPC\Core\Csrf::token()) ?>">
+        <?= $view->csrf() ?>
 
         <div class="field" style="margin-bottom:1rem">
           <label for="name" style="color:var(--cream)">Name</label>

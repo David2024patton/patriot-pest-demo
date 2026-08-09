@@ -258,7 +258,7 @@ final class FieldRoutes
         foreach ($appts as $a) {
             $cachedAppts[] = [
                 'when'         => trim(self::fmtDate($a['date'] ?? '') . ' ' . (string) ($a['start'] ?? '')),
-                'type'         => $a['type'] ?? '\u2014',
+                'type'         => $a['type'] ?? '—',
                 'status_label' => self::apptStatusLabel($a),
                 'status_kind'  => self::apptStatusKind($a),
                 'notes'        => $a['notes'] ?? '',
@@ -285,7 +285,7 @@ final class FieldRoutes
             $cachedSubs[] = [
                 'status_label' => !empty($s['activeText']) ? $s['activeText'] : ((int) ($s['active'] ?? 0) === 1 ? 'Active' : 'Inactive'),
                 'status_kind'  => (int) ($s['active'] ?? 0) === 1 ? 'active' : 'cancelled',
-                'charge'       => isset($s['recurringCharge']) && $s['recurringCharge'] !== '' ? '$' . number_format((float) $s['recurringCharge'], 2) : '\u2014',
+                'charge'       => isset($s['recurringCharge']) && $s['recurringCharge'] !== '' ? '$' . number_format((float) $s['recurringCharge'], 2) : '—',
                 'freq_label'   => self::freqLabel($s['billingFrequency'] ?? null),
                 'next'         => self::fmtDate($s['nextService'] ?? ''),
                 'last'         => self::fmtDate($s['lastCompleted'] ?? ''),
@@ -297,6 +297,117 @@ final class FieldRoutes
         }
 
         return ['appointments' => $cachedAppts, 'subscriptions' => $cachedSubs];
+    }
+
+    /**
+     * Map an FR customer id + district code to the local customers.id.
+     * Used to key the local cache tables (appointments, subscriptions).
+     */
+    private static function localCustomerId(string $frId, string $districtCode): ?string
+    {
+        $db  = \PPC\Core\Database::instance();
+        $row = $db->fetch(
+            'SELECT id FROM customers WHERE fr_id = ? AND district = ? LIMIT 1',
+            [$frId, $districtCode]
+        );
+        return isset($row['id']) ? (string) $row['id'] : null;
+    }
+
+    /**
+     * Insert or update a locally cached appointment, keyed by FR id + district.
+     * The schema has no UNIQUE index, so we check-then-update to avoid dupes.
+     */
+    private static function cacheAppointment(array $a, string $customerId, string $districtCode): void
+    {
+        $apptId = (string) ($a['id'] ?? $a['appointmentID'] ?? $a['appointmentId'] ?? '');
+        if ($apptId === '') {
+            return;
+        }
+        $db    = \PPC\Core\Database::instance();
+        $sched = trim(self::fmtDate($a['date'] ?? '') . ' ' . (string) ($a['start'] ?? ''));
+        $type  = $a['type'] ?? '';
+        $label = self::apptStatusLabel($a);
+        $kind  = self::apptStatusKind($a);
+        $notes = $a['notes'] ?? '';
+
+        $existing = $db->fetch(
+            'SELECT id FROM appointments WHERE fr_appointment_id = ? AND district = ? LIMIT 1',
+            [$apptId, $districtCode]
+        );
+        if ($existing) {
+            $db->update('appointments', [
+                'scheduled'    => $sched,
+                'type'         => $type,
+                'status_label' => $label,
+                'status_kind'  => $kind,
+                'notes'        => $notes,
+                'updated_at'   => gmdate('Y-m-d H:i:s'),
+            ], ['id' => $existing['id']]);
+            return;
+        }
+        $db->insert('appointments', [
+            'fr_appointment_id' => $apptId,
+            'customer_id'       => $customerId,
+            'district'          => $districtCode,
+            'scheduled'         => $sched,
+            'type'              => $type,
+            'status_label'      => $label,
+            'status_kind'       => $kind,
+            'notes'             => $notes,
+        ]);
+    }
+
+    /**
+     * Insert or update a locally cached subscription, keyed by FR id + district.
+     * Check-then-update; the schema has only a regular index on (fr_subscription_id, district).
+     */
+    private static function cacheSubscription(array $s, string $customerId, string $districtCode): void
+    {
+        $subId = (string) ($s['id'] ?? $s['subscriptionID'] ?? $s['subscriptionId'] ?? '');
+        if ($subId === '') {
+            return;
+        }
+        $db      = \PPC\Core\Database::instance();
+        $status  = (int) ($s['active'] ?? 0) === 1 ? 'active' : 'inactive';
+        $label   = !empty($s['activeText']) ? $s['activeText'] : ucfirst($status);
+        $charge  = isset($s['recurringCharge']) && $s['recurringCharge'] !== ''
+            ? '$' . number_format((float) $s['recurringCharge'], 2)
+            : '—';
+        $freq    = self::freqLabel($s['billingFrequency'] ?? null);
+        $next    = self::fmtDate($s['nextService'] ?? '');
+        $last    = self::fmtDate($s['lastCompleted'] ?? '');
+        $added   = self::fmtDate($s['dateAdded'] ?? '');
+
+        $existing = $db->fetch(
+            'SELECT id FROM subscriptions WHERE fr_subscription_id = ? AND district = ? LIMIT 1',
+            [$subId, $districtCode]
+        );
+        if ($existing) {
+            $db->update('subscriptions', [
+                'customer_id'   => $customerId,
+                'status'        => $status,
+                'status_label'  => $label,
+                'charge'        => $charge,
+                'freq_label'    => $freq,
+                'next_service'  => $next,
+                'last_service'  => $last,
+                'date_added'    => $added,
+                'updated_at'    => gmdate('Y-m-d H:i:s'),
+            ], ['id' => $existing['id']]);
+            return;
+        }
+        $db->insert('subscriptions', [
+            'fr_subscription_id' => $subId,
+            'customer_id'        => $customerId,
+            'district'           => $districtCode,
+            'status'             => $status,
+            'status_label'       => $label,
+            'charge'             => $charge,
+            'freq_label'         => $freq,
+            'next_service'       => $next,
+            'last_service'       => $last,
+            'date_added'         => $added,
+        ]);
     }
 
     /** billingFrequency code → human label (per FR spec). */
