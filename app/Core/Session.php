@@ -162,4 +162,39 @@ final class Session
     {
         return self::staffRole() === 'admin';
     }
+
+    /**
+     * Check whether the current staff user has a specific permission.
+     * Admins always return true (they have "all"). Otherwise, the staff
+     * record's role is looked up in the roles table and the permissions
+     * JSON column is checked. Returns false for non-staff users.
+     */
+    public static function hasPermission(string $permission): bool
+    {
+        if (self::isAdmin()) {
+            return true;
+        }
+        if (self::userType() !== 'staff') {
+            return false;
+        }
+        $roleName = self::staffRole();
+        if ($roleName === null) {
+            return false;
+        }
+        // Look up the role permissions from the DB.
+        try {
+            $db   = \PPC\Core\Database::instance();
+            $role = $db->fetch('SELECT permissions FROM roles WHERE role = ?', [$roleName]);
+            if (!$role) {
+                return false;
+            }
+            $perms = json_decode($role['permissions'], true);
+            if (!is_array($perms)) {
+                return false;
+            }
+            return in_array('all', $perms, true) || in_array($permission, $perms, true);
+        } catch (\Throwable) {
+            return false;
+        }
+    }
 }

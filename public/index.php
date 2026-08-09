@@ -109,11 +109,11 @@ Router::get('/customer-dashboard', [PortalController::class, 'dashboard'])->auth
 Router::get('/staff-dashboard',  [StaffController::class, 'dashboard'])->auth('staff');
 
 // ---------- Staff tools: customer book, profiles, messages, search ----------
-Router::get('/staff/customers',      [StaffController::class, 'customers'])->auth('staff');
-Router::get('/staff/customers/{id}', [StaffController::class, 'customerProfile'])->auth('staff');
-Router::get('/staff/messages',       [StaffController::class, 'messages'])->auth('staff');
-Router::post('/staff/customers/sync', [StaffController::class, 'syncCustomers'])->auth('staff');
-Router::get('/api/customer-search',  [StaffController::class, 'searchCustomers'])->auth('staff');
+Router::get('/staff/customers',      [StaffController::class, 'customers'])->auth('staff')->permission('view_customers');
+Router::get('/staff/customers/{id}', [StaffController::class, 'customerProfile'])->auth('staff')->permission('view_customers');
+Router::get('/staff/messages',       [StaffController::class, 'messages'])->auth('staff')->permission('send_messages');
+Router::post('/staff/customers/sync', [StaffController::class, 'syncCustomers'])->auth('staff')->permission('view_customers');
+Router::get('/api/customer-search',  [StaffController::class, 'searchCustomers'])->auth('staff')->permission('search_customers');
 
 // ---------- Self-service account (any authenticated user) ----------
 Router::get('/account', [StaffController::class, 'account'])->auth('*');
@@ -127,6 +127,14 @@ Router::get('/admin/posts/{id}', [AdminController::class, 'postEdit'])->auth('st
 Router::post('/admin/posts/{id}',[AdminController::class, 'postUpdate'])->auth('staff')->role('admin');
 Router::get('/admin/media',      [AdminController::class, 'media'])->auth('staff')->role('admin');
 Router::get('/admin/content',    [AdminController::class, 'content'])->auth('staff')->role('admin');
+
+// ---------- Staff CRUD (admin-guarded) ----------
+Router::get('/admin/staff',          [StaffController::class, 'staffList'])->auth('staff')->role('admin');
+Router::get('/admin/staff/new',      [StaffController::class, 'staffNew'])->auth('staff')->role('admin');
+Router::post('/admin/staff',         [StaffController::class, 'staffCreate'])->auth('staff')->role('admin');
+Router::get('/admin/staff/{id}',     [StaffController::class, 'staffEdit'])->auth('staff')->role('admin');
+Router::post('/admin/staff/{id}',    [StaffController::class, 'staffUpdate'])->auth('staff')->role('admin');
+Router::post('/admin/staff/{id}/toggle', [StaffController::class, 'staffToggle'])->auth('staff')->role('admin');
 
 // ---------- Twilio admin (admin-guarded) ----------
 Router::get('/admin/twilio',                  [TwilioController::class, 'index'])->auth('staff')->role('admin');

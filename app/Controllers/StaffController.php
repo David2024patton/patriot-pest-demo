@@ -18,6 +18,7 @@ use PPC\Core\Session;
 use PPC\Core\Database;
 use PPC\Core\Csrf;
 use PPC\Core\Logger;
+use PPC\Core\Validator;
 use PPC\Integrations\FieldRoutes;
 
 class StaffController extends PageController
@@ -279,5 +280,161 @@ class StaffController extends PageController
             'role'    => Session::staffRole(),
             'isAdmin' => Session::isAdmin(),
         ], $this->meta('My Account | Patriot Pest Control', 'Your account details.', '/account'));
+    }
+
+    // ========================== STAFF CRUD (admin-only) ==========================
+
+    /** List all staff with roles. Admin-only via route guard. */
+    public function staffList(): void
+    {
+        $db = Database::instance();
+        $staff = $db->fetchAll(
+            'SELECT s.id, s.email, s.name, s.role, s.active, s.last_login, s.created_at, r.label AS role_label
+             FROM staff s LEFT JOIN roles r ON r.role = s.role ORDER BY s.name'
+        );
+        $roles = $db->fetchAll('SELECT * FROM roles ORDER BY label');
+
+        echo View::page('staff/list', [
+            'staff'   => $staff,
+            'roles'   => $roles,
+            'isAdmin' => Session::isAdmin(),
+            'flash'   => Session::pullFlash('staff_crud'),
+        ], $this->meta('Staff | Patriot Pest Control', 'Manage staff accounts.', '/admin/staff'));
+    }
+
+    /** New staff form (admin only). */
+    public function staffNew(): void
+    {
+        $db = Database::instance();
+        $roles = $db->fetchAll('SELECT * FROM roles ORDER BY label');
+        echo View::page('staff/edit', [
+            'staffMember' => null,
+            'roles'       => $roles,
+            'isAdmin'     => Session::isAdmin(),
+            'flash'       => Session::pullFlash('staff_crud'),
+        ], $this->meta('New Staff | Patriot Pest Control', 'Add a staff member.', '/admin/staff/new'));
+    }
+
+    /** Create a staff member. */
+    public function staffCreate(): void
+    {
+        Csrf::verifyOrDie();
+        $errors = Validator::make($_POST, [
+            'name'  => ['required', 'max:200'],
+            'email' => ['required', 'email', 'max:254'],
+            'role'  => ['required', 'in:admin,tech_support,accounts,sales,staff'],
+        ]);
+        if ($errors) {
+            Session::flash('staff_crud', ['errors' => $errors]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/admin/staff'));
+            exit;
+        }
+
+        $db = Database::instance();
+        $email = trim(strtolower(Validator::clean($_POST['email'])));
+        $existing = $db->fetch('SELECT id FROM staff WHERE email = ? COLLATE NOCASE', [$email]);
+        if ($existing) {
+            Session::flash('staff_crud', ['errors' => ['email' => ['A staff member with that email already exists.']]]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/admin/staff/new'));
+            exit;
+        }
+
+        $id = $db->insert('staff', [
+            'name'       => Validator::clean($_POST['name']),
+            'email'      => $email,
+            'role'       => Validator::clean($_POST['role']),
+            'active'     => 1,
+            'created_at' => gmdate('Y-m-d H:i:s'),
+        ]);
+
+        Logger::info('Staff created', ['staff_id' => $id, 'by' => Session::get('user_id')]);
+        Session::flash('staff_crud', ['success' => 'Staff member added. They can log in with their email - no password needed.']);
+        header('Location: /admin/staff');
+        exit;
+    }
+
+    /** Edit form for a staff member (admin only). */
+    public function staffEdit(string $id): void
+    {
+        $db = Database::instance();
+        $staffMember = $db->fetch('SELECT * FROM staff WHERE id = ?', [$id]);
+        if (!$staffMember) {
+            \PPC\Core\Router::notFound();
+        }
+        $roles = $db->fetchAll('SELECT * FROM roles ORDER BY label');
+        echo View::page('staff/edit', [
+            'staffMember' => $staffMember,
+            'roles'       => $roles,
+            'isAdmin'     => Session::isAdmin(),
+            'flash'       => Session::pullFlash('staff_crud'),
+        ], $this->meta('Edit Staff | Patriot Pest Control', 'Edit staff member.', "/admin/staff/{$id}"));
+    }
+
+    /** Update a staff member. */
+    public function staffUpdate(string $id): void
+    {
+        Csrf::verifyOrDie();
+        $db = Database::instance();
+        $staffMember = $db->fetch('SELECT * FROM staff WHERE id = ?', [$id]);
+        if (!$staffMember) {
+            \PPC\Core\Router::notFound();
+        }
+
+        $errors = Validator::make($_POST, [
+            'name'  => ['required', 'max:200'],
+            'email' => ['required', 'email', 'max:254'],
+            'role'  => ['required', 'in:admin,tech_support,accounts,sales,staff'],
+        ]);
+        if ($errors) {
+            Session::flash('staff_crud', ['errors' => $errors]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? "/admin/staff/{$id}"));
+            exit;
+        }
+
+        $email = trim(strtolower(Validator::clean($_POST['email'])));
+        $existing = $db->fetch('SELECT id FROM staff WHERE email = ? COLLATE NOCASE AND id != ?', [$email, $id]);
+        if ($existing) {
+            Session::flash('staff_crud', ['errors' => ['email' => ['Another staff member already uses that email.']]]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? "/admin/staff/{$id}"));
+            exit;
+        }
+
+        $db->update('staff', [
+            'name'  => Validator::clean($_POST['name']),
+            'email' => $email,
+            'role'  => Validator::clean($_POST['role']),
+        ], ['id' => $id]);
+
+        Logger::info('Staff updated', ['staff_id' => $id, 'by' => Session::get('user_id')]);
+        Session::flash('staff_crud', ['success' => 'Staff member updated.']);
+        header('Location: /admin/staff');
+        exit;
+    }
+
+    /** Toggle staff active/inactive (admin only). */
+    public function staffToggle(string $id): void
+    {
+        Csrf::verifyOrDie();
+        $db = Database::instance();
+        $staffMember = $db->fetch('SELECT * FROM staff WHERE id = ?', [$id]);
+        if (!$staffMember) {
+            \PPC\Core\Router::notFound();
+        }
+
+        // Prevent deactivating yourself.
+        if ((int) $id === (int) (Session::get('user_id') ?? 0)) {
+            Session::flash('staff_crud', ['errors' => ['name' => ['You cannot deactivate your own account.']]]);
+            header('Location: /admin/staff');
+            exit;
+        }
+
+        $newActive = $staffMember['active'] ? 0 : 1;
+        $db->update('staff', ['active' => $newActive], ['id' => $id]);
+
+        $action = $newActive ? 'activated' : 'deactivated';
+        Logger::info("Staff {$action}", ['staff_id' => $id, 'by' => Session::get('user_id')]);
+        Session::flash('staff_crud', ['success' => "Staff member {$action}."]);
+        header('Location: /admin/staff');
+        exit;
     }
 }

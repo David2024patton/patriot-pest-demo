@@ -28,6 +28,8 @@ final class Route
 {
     public ?string $auth = null; // required user_type ('*' = any authenticated)
     public ?string $role = null; // required staff role
+    /** @var string[] Extra permissions required on top of role (e.g. 'view_customers'). */
+    public array $permissions = [];
 
     public function __construct(
         public string $method,
@@ -47,6 +49,16 @@ final class Route
     public function role(string $role): self
     {
         $this->role = $role;
+        return $this;
+    }
+
+    /**
+     * Require one or more specific permissions beyond role.
+     * Admin users bypass all permission checks.
+     */
+    public function permission(string ...$perms): self
+    {
+        $this->permissions = array_merge($this->permissions, $perms);
         return $this;
     }
 }
@@ -107,7 +119,7 @@ final class Router
         self::notFound();
     }
 
-    /** Enforce auth/role guards before the handler runs. */
+    /** Enforce auth/role/permission guards before the handler runs. */
     private static function enforceGuards(Route $route): void
     {
         if ($route->auth !== null) {
@@ -119,6 +131,15 @@ final class Router
         }
         if ($route->role !== null) {
             if (Session::staffRole() !== $route->role && !Session::isAdmin()) {
+                http_response_code(403);
+                echo View::render('errors/403');
+                exit;
+            }
+        }
+        // Permission checks: each required permission must be held.
+        // Admins bypass by definition; Session::hasPermission handles that.
+        foreach ($route->permissions as $perm) {
+            if (!Session::hasPermission($perm)) {
                 http_response_code(403);
                 echo View::render('errors/403');
                 exit;

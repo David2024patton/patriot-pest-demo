@@ -251,15 +251,26 @@ final class FieldRoutes
         }
         usort($appts, fn($x, $y) => strcmp((string) ($y['date'] ?? ''), (string) ($x['date'] ?? '')));
         $appts = array_slice($appts, 0, 25);
-        $appts = array_map(fn($a) => [
-            'when'         => trim(self::fmtDate($a['date'] ?? '') . ' ' . (string) ($a['start'] ?? '')),
-            'type'         => $a['type'] ?? '—',
-            'status_label' => self::apptStatusLabel($a),
-            'status_kind'  => self::apptStatusKind($a),
-            'notes'        => $a['notes'] ?? '',
-        ], $appts);
+
+        // Cache appointments locally. Match by fr_appointment_id + district.
+        $localCustomerId = self::localCustomerId($frId, $district['code']);
+        $cachedAppts = [];
+        foreach ($appts as $a) {
+            $cachedAppts[] = [
+                'when'         => trim(self::fmtDate($a['date'] ?? '') . ' ' . (string) ($a['start'] ?? '')),
+                'type'         => $a['type'] ?? '\u2014',
+                'status_label' => self::apptStatusLabel($a),
+                'status_kind'  => self::apptStatusKind($a),
+                'notes'        => $a['notes'] ?? '',
+            ];
+            if ($localCustomerId) {
+                self::cacheAppointment($a, $localCustomerId, $district['code']);
+            }
+        }
 
         // Subscriptions: /search returns IDs only, then /get the records.
+        // FR scoping bug: search may return all district subscriptions regardless
+        // of customerID. We filter by customerID field from each record.
         $subs = [];
         $sSearch = self::request($district, 'subscription/search', ['customerID' => $frId]);
         $sIds = $sSearch['subscriptionIDs'] ?? [];
@@ -267,17 +278,25 @@ final class FieldRoutes
             $sGet = self::request($district, 'subscription/get', ['subscriptionIDs' => implode(',', $sIds)]);
             $subs = $sGet['subscriptions'] ?? [];
         }
-        $subs = array_map(fn($s) => [
-            'status_label' => !empty($s['activeText']) ? $s['activeText'] : ((int) ($s['active'] ?? 0) === 1 ? 'Active' : 'Inactive'),
-            'status_kind'  => (int) ($s['active'] ?? 0) === 1 ? 'active' : 'cancelled',
-            'charge'       => isset($s['recurringCharge']) && $s['recurringCharge'] !== '' ? '$' . number_format((float) $s['recurringCharge'], 2) : '—',
-            'freq_label'   => self::freqLabel($s['billingFrequency'] ?? null),
-            'next'         => self::fmtDate($s['nextService'] ?? ''),
-            'last'         => self::fmtDate($s['lastCompleted'] ?? ''),
-            'added'        => self::fmtDate($s['dateAdded'] ?? ''),
-        ], $subs);
+        // Filter by customerID to mitigate scoping bug.
+        $subs = array_values(array_filter($subs, fn($s) => (string) ($s['customerID'] ?? '') === $frId));
+        $cachedSubs = [];
+        foreach ($subs as $s) {
+            $cachedSubs[] = [
+                'status_label' => !empty($s['activeText']) ? $s['activeText'] : ((int) ($s['active'] ?? 0) === 1 ? 'Active' : 'Inactive'),
+                'status_kind'  => (int) ($s['active'] ?? 0) === 1 ? 'active' : 'cancelled',
+                'charge'       => isset($s['recurringCharge']) && $s['recurringCharge'] !== '' ? '$' . number_format((float) $s['recurringCharge'], 2) : '\u2014',
+                'freq_label'   => self::freqLabel($s['billingFrequency'] ?? null),
+                'next'         => self::fmtDate($s['nextService'] ?? ''),
+                'last'         => self::fmtDate($s['lastCompleted'] ?? ''),
+                'added'        => self::fmtDate($s['dateAdded'] ?? ''),
+            ];
+            if ($localCustomerId) {
+                self::cacheSubscription($s, $localCustomerId, $district['code']);
+            }
+        }
 
-        return ['appointments' => $appts, 'subscriptions' => $subs];
+        return ['appointments' => $cachedAppts, 'subscriptions' => $cachedSubs];
     }
 
     /** billingFrequency code → human label (per FR spec). */

@@ -369,6 +369,91 @@ INSERT OR IGNORE INTO roles (role, label, permissions) VALUES
     ('sales',       'Sales',         '["view_customers","search_customers","create_customers","manage_subscriptions","send_messages"]'),
     ('staff',       'Staff',         '["view_customers","search_customers","send_messages"]');
 
+-- ---------- Subscriptions (local cache of FieldRoutes subscriptions) ----------
+-- FR subscription/search has a known per-customer scoping bug (returns all
+-- district subscriptions). We cache here during sync so the customer portal
+-- can show reliable per-customer data from the local DB.
+CREATE TABLE IF NOT EXISTS subscriptions (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    fr_subscription_id TEXT,                -- FieldRoutes subscription ID
+    customer_id       INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+    district          TEXT,                 -- 'wa' | 'az'
+    status            TEXT DEFAULT 'active', -- Active | Inactive | Cancelled
+    status_label      TEXT,                 -- FR activeText
+    charge            TEXT,                 -- recurring charge amount
+    freq_label        TEXT,                 -- human-readable billing frequency
+    next_service      TEXT,                 -- next service date
+    last_service      TEXT,                 -- last completed service date
+    date_added        TEXT,                 -- subscription start date
+    created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_sub_customer ON subscriptions(customer_id);
+CREATE INDEX IF NOT EXISTS idx_sub_fr ON subscriptions(fr_subscription_id, district);
+
+-- ---------- Appointments (local cache of FieldRoutes appointments) ----------
+CREATE TABLE IF NOT EXISTS appointments (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    fr_appointment_id TEXT,                 -- FieldRoutes appointment ID
+    customer_id      INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+    district         TEXT,                  -- 'wa' | 'az'
+    scheduled        TEXT,                  -- when (date + start time)
+    type             TEXT,                  -- appointment type
+    status_label     TEXT,                  -- Pending | Completed | Scheduled | Cancelled
+    status_kind      TEXT,                  -- open | closed | cancelled | scheduled
+    notes            TEXT,
+    created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_appt_customer ON appointments(customer_id);
+CREATE INDEX IF NOT EXISTS idx_appt_fr ON appointments(fr_appointment_id, district);
+
+-- ---------- Payment methods, invoices, payments (local billing cache) ----------
+-- Billing data from FieldRoutes; no payment processing exists in-app yet.
+-- These tables mirror the FR billing entities for offline dashboard display.
+CREATE TABLE IF NOT EXISTS payment_methods (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    fr_payment_method_id TEXT,              -- FieldRoutes payment method ID
+    customer_id       INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+    method_type       TEXT,                 -- credit_card | ach | check | cash
+    last_four         TEXT,                 -- last 4 digits of card/account
+    exp_month         TEXT,
+    exp_year          TEXT,
+    is_default        INTEGER NOT NULL DEFAULT 0,
+    created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_pm_customer ON payment_methods(customer_id);
+
+CREATE TABLE IF NOT EXISTS invoices (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    fr_invoice_id     TEXT,                 -- FieldRoutes invoice ID
+    customer_id       INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+    invoice_number    TEXT,
+    amount            TEXT,                 -- total amount due
+    balance           TEXT,                 -- remaining balance
+    status            TEXT DEFAULT 'open',   -- open | paid | overdue | void
+    due_date          TEXT,
+    paid_date         TEXT,
+    created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_inv_customer ON invoices(customer_id);
+
+CREATE TABLE IF NOT EXISTS payments (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    fr_payment_id     TEXT,                 -- FieldRoutes payment ID
+    customer_id       INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+    invoice_id        INTEGER REFERENCES invoices(id) ON DELETE SET NULL,
+    amount            TEXT,                 -- amount paid
+    payment_date      TEXT,
+    payment_method    TEXT,                 -- credit_card | ach | cash | check
+    status            TEXT DEFAULT 'completed',
+    created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_pay_customer ON payments(customer_id);
+
 -- ---------- Twilio Integration (NEW) ----------
 -- SMS message logs for tracking all SMS activity
 CREATE TABLE IF NOT EXISTS sms_logs (

@@ -1,12 +1,19 @@
 <?php
 /**
  * dashboard/customer.php — the customer portal overview.
- * Vars: $customer (row|null), $tickets, $messages, $name.
+ * Vars: $customer (row|null), $tickets, $messages, $appointments, $subscriptions,
+ *       $paymentMethods, $invoices, $payments, $frData, $name.
  */
-$customer = $data['customer'] ?? null;
-$tickets  = $data['tickets'] ?? [];
-$messages = $data['messages'] ?? [];
-$name     = $data['name'] ?? 'Customer';
+$customer       = $data['customer'] ?? null;
+$tickets        = $data['tickets'] ?? [];
+$messages       = $data['messages'] ?? [];
+$appointments   = $data['appointments'] ?? [];
+$subscriptions  = $data['subscriptions'] ?? [];
+$paymentMethods = $data['paymentMethods'] ?? [];
+$invoices       = $data['invoices'] ?? [];
+$payments       = $data['payments'] ?? [];
+$frData         = $data['frData'] ?? ['configured' => false, 'linked' => false];
+$name           = $data['name'] ?? 'Customer';
 ?>
 <div class="app">
   <div class="wrap">
@@ -77,6 +84,102 @@ $name     = $data['name'] ?? 'Customer';
             </div>
             <?php endforeach; ?>
           </div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <?php if ($appointments): ?>
+    <div class="panel" style="margin-top:1.6rem">
+      <h3>Upcoming Appointments</h3>
+      <div class="table-wrap" style="margin-top:.8rem"><table class="data">
+        <thead><tr><th>When</th><th>Type</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <?php foreach ($appointments as $a): ?>
+          <tr>
+            <td><?= $view->e($a['when'] ?? $a['scheduled'] ?? '—') ?></td>
+            <td><?= $view->e($a['type'] ?? '—') ?></td>
+            <td><span class="badge <?= $view->e($a['status_kind'] ?? 'open') ?>"><?= $view->e($a['status_label'] ?? '—') ?></span></td>
+            <td><?= $view->e(mb_substr($a['notes'] ?? '', 0, 60)) ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table></div>
+    </div>
+    <?php endif; ?>
+
+    <div class="grid g2" style="margin-top:1.6rem">
+      <div class="panel">
+        <h3>Active Subscriptions</h3>
+        <?php if (!$subscriptions): ?>
+          <p class="empty">No active subscriptions on file. <a href="/contact" style="color:var(--orange)">Contact us to set up service ▸</a></p>
+        <?php else: ?>
+          <div class="table-wrap" style="margin-top:.8rem"><table class="data">
+            <thead><tr><th>Status</th><th>Charge</th><th>Frequency</th><th>Next Service</th></tr></thead>
+            <tbody>
+              <?php foreach ($subscriptions as $s): ?>
+              <tr>
+                <td><span class="badge <?= $view->e($s['status'] === 'active' ? 'active' : 'cancelled') ?>"><?= $view->e($s['status_label'] ?? $s['status'] ?? '—') ?></span></td>
+                <td><?= $view->e($s['charge'] ?? '—') ?></td>
+                <td><?= $view->e($s['freq_label'] ?? '—') ?></td>
+                <td><?= $view->e($s['next_service'] ?? '—') ?></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table></div>
+        <?php endif; ?>
+      </div>
+
+      <div class="panel">
+        <h3>Billing Overview</h3>
+        <?php if (!$invoices && !$payments): ?>
+          <p class="empty">No billing history yet. Payments are managed through FieldRoutes — contact us for billing questions.</p>
+          <?php if ($paymentMethods): ?>
+          <div style="margin-top:1rem">
+            <h4 style="font-size:.85rem;color:var(--khaki)">Payment Methods on File</h4>
+            <?php foreach ($paymentMethods as $pm): ?>
+            <div style="color:var(--cream);font-size:.82rem;margin-top:.3rem">
+              <?= $view->e(ucfirst($pm['method_type'] ?? 'Card')) ?> <?= $view->e($pm['last_four'] ? 'ending in ' . $pm['last_four'] : '') ?>
+              <?php if ($pm['exp_month'] && $pm['exp_year']): ?>
+                · Expires <?= $view->e($pm['exp_month'] . '/' . $pm['exp_year']) ?>
+              <?php endif; ?>
+              <?php if ($pm['is_default']): ?><span class="badge active">Default</span><?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+          </div>
+          <?php endif; ?>
+        <?php else: ?>
+          <?php if ($invoices): ?>
+          <h4 style="font-size:.85rem;color:var(--khaki);margin-top:.8rem">Recent Invoices</h4>
+          <div class="table-wrap" style="margin-top:.4rem"><table class="data">
+            <thead><tr><th>#</th><th>Amount</th><th>Balance</th><th>Status</th><th>Due</th></tr></thead>
+            <tbody>
+              <?php foreach ($invoices as $inv): ?>
+              <tr>
+                <td><?= $view->e($inv['invoice_number'] ?? '#—') ?></td>
+                <td><?= $view->e($inv['amount'] ?? '—') ?></td>
+                <td><?= $view->e($inv['balance'] ?? '—') ?></td>
+                <td><span class="badge <?= $view->e($inv['status']) ?>"><?= $view->e(ucfirst($inv['status'])) ?></span></td>
+                <td class="num"><?= $view->e($inv['due_date'] ? date('M j', strtotime($inv['due_date'])) : '—') ?></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table></div>
+          <?php endif; ?>
+          <?php if ($payments): ?>
+          <h4 style="font-size:.85rem;color:var(--khaki);margin-top:1rem">Recent Payments</h4>
+          <div class="table-wrap" style="margin-top:.4rem"><table class="data">
+            <thead><tr><th>Date</th><th>Amount</th><th>Method</th></tr></thead>
+            <tbody>
+              <?php foreach ($payments as $p): ?>
+              <tr>
+                <td><?= $view->e($p['payment_date'] ? date('M j, Y', strtotime($p['payment_date'])) : '—') ?></td>
+                <td><?= $view->e($p['amount'] ?? '—') ?></td>
+                <td><?= $view->e(ucfirst($p['payment_method'] ?? '—')) ?></td>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table></div>
+          <?php endif; ?>
         <?php endif; ?>
       </div>
     </div>
