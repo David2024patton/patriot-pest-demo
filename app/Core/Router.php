@@ -94,6 +94,15 @@ final class Router
         return $route;
     }
 
+    /**
+     * Return every registered route. Used by the route-registration smoke
+     * test to assert every controller class referenced by a route resolves.
+     */
+    public static function routes(): array
+    {
+        return self::$routes;
+    }
+
     /** Match the current request and invoke its handler. */
     public static function dispatch(string $method, string $uri): void
     {

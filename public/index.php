@@ -200,4 +200,8 @@ if (\PPC\Core\Config::bool("API_ENABLED", false)) {
 }
 
 // ---------- Dispatch ----------
-Router::dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+// PPC_ROUTES_ONLY (defined by the route-registration smoke test) registers
+// every route but stops before dispatch so the route table can be inspected.
+if (!defined('PPC_ROUTES_ONLY')) {
+    Router::dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+}
