@@ -7,6 +7,7 @@
       </div>
       <div class="actions">
         <a class="btn btn-ghost" href="/admin">Admin Home</a>
+        <a class="btn btn-ghost" href="/admin/api-keys/audit">Audit Trail</a>
       </div>
     </div>
 
