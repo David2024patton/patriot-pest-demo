@@ -27,7 +27,7 @@ if ($enabled === 'false' || $enabled === '0') {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Black+Ops+One&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./assets/css/cost.css">
+  <link rel="stylesheet" href="./assets/css/cost.css?v=20260809a">
 </head>
 <body class="cost-shell">
   <canvas id="bugfield" aria-hidden="true"></canvas>
@@ -213,7 +213,7 @@ if ($enabled === 'false' || $enabled === '0') {
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="./assets/js/cost.js"></script>
-  <script src="./assets/js/intel.js"></script>
+  <script src="./assets/js/cost.js?v=20260809a"></script>
+  <script src="./assets/js/intel.js?v=20260809a"></script>
 </body>
 </html>

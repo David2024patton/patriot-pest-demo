@@ -56,11 +56,12 @@ final class View
             {
                 return (string) ($v ?? '');
             }
-            /** Public asset URL. */
+            /** Public asset URL, cache-busted. Bump ASSET_V on visual changes. */
             public function asset(string $path): string
             {
-                return '/assets/' . ltrim($path, '/');
+                return '/assets/' . ltrim($path, '/') . '?v=' . self::ASSET_V;
             }
+            private const ASSET_V = '20260809a';
             /** Absolute site URL for a path (canonical/OG tags). */
             public function url(string $path = '/'): string
             {
