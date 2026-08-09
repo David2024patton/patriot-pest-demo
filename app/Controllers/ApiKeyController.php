@@ -145,6 +145,9 @@ class ApiKeyController
     {
         $db = Database::instance();
         $keyFilter = trim((string) ($_GET['key'] ?? ''));
+        if ($keyFilter !== '' && !preg_match('/^[a-f0-9]{12}$/', $keyFilter)) {
+            $keyFilter = '';
+        }
 
         $sql = 'SELECT * FROM audit_log WHERE entity = ? AND action IN (?, ?, ?, ?)';
         $params = ['api_keys', 'api_key.create', 'api_key.revoke', 'api_key.rotate', 'api_key.scopes'];
