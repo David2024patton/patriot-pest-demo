@@ -41,11 +41,12 @@ if ($enabled === 'false' || $enabled === '0') {
     <a href="/" class="back-link">← Return to Main Site</a>
   </nav>
 
-  <section class="cost-hero">
+  <section class="cost-hero" id="cost-hero">
+    <div id="xh-v"></div><div id="xh-h"></div><div id="xh-ring"></div>
     <div class="wrap">
       <div class="eyebrow" id="hero-eyebrow">// MISSION BRIEF</div>
       <h1 id="hero-title">What Does Marketing <em>Actually</em> Cost?</h1>
-      <p class="sub" id="hero-sub">Skyler, here is the real breakdown. No agency smoke, just numbers.</p>
+      <p class="sub" id="hero-sub">Real numbers from the digital marketing battlefield. No agency smoke, just data on what it takes to generate leads for a pest control company.</p>
     </div>
   </section>
 
@@ -174,7 +175,7 @@ if ($enabled === 'false' || $enabled === '0') {
         <div class="lead-icon">⚡</div>
         <div class="lead-body">
           <h3 id="lead-headline">What about responding to leads instantly?</h3>
-          <p id="lead-text">Patriot already has Twilio SMS and voice wired into the website. Leads hit the system the moment they submit. No 5-hour Facebook delay.</p>
+          <p id="lead-text">Patriot already has Twilio SMS and voice wired into the website. Leads hit the system the moment they submit, no 5-hour Facebook delay. Facebook advertising is already producing results. Google Ads is the next front to open, and the infrastructure is ready.</p>
           <a class="btn-lead" id="lead-cta" href="/contact">Run a test lead</a>
         </div>
       </div>
