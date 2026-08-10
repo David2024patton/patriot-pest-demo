@@ -141,6 +141,73 @@ class AdminController extends PageController
         echo View::page('admin/content', ['blocks' => $blocks, 'flash' => $this->flash()], $this->meta('Content | Admin', 'Edit page sections.', '/admin/content'));
     }
 
+    /** Settings page — tracking IDs with DB overrides. */
+    public function settings(): void
+    {
+        $db       = Database::instance();
+        $settings = [];
+        $rows     = $db->fetchAll(
+            "SELECT key, value FROM site_settings WHERE key IN ('gtag_id','gads_id','fb_pixel_id','clarity_id')"
+        );
+        foreach ($rows as $r) {
+            $settings[$r['key']] = $r['value'];
+        }
+        echo View::page('admin/settings', [
+            'settings' => $settings,
+            'flash'    => $this->flash(),
+        ], $this->meta('Settings | Admin', 'Tracking IDs and configuration.', '/admin/settings'));
+    }
+
+    /** Save settings (POST). */
+    public function settingsSave(): void
+    {
+        Csrf::verifyOrDie();
+        $db = Database::instance();
+
+        $keys = ['gtag_id', 'gads_id', 'fb_pixel_id', 'clarity_id'];
+        $errors = [];
+        $patterns = [
+            'gtag_id'     => '/^G-[A-Z0-9]{10}$/',
+            'gads_id'     => '/^AW-[0-9]{10}$/',
+            'fb_pixel_id' => '/^[0-9]{13,16}$/',
+            'clarity_id'  => '/^[A-Za-z0-9]{8,12}$/',
+        ];
+
+        foreach ($keys as $k) {
+            $val = trim($_POST[$k] ?? '');
+            if ($val === '') {
+                // Delete existing override
+                $db->execute('DELETE FROM site_settings WHERE key = ?', [$k]);
+            } elseif (!preg_match($patterns[$k], $val)) {
+                $errors[$k] = match ($k) {
+                    'gtag_id'     => 'GTAG must be G- + 10 chars (e.g. G-XXXXXXXXXX).',
+                    'gads_id'     => 'Google Ads ID must be AW- + 10 digits.',
+                    'fb_pixel_id' => 'FB Pixel ID must be 13-16 digits.',
+                    'clarity_id'  => 'Clarity ID must be 8-12 alphanumeric chars.',
+                    default       => 'Invalid format.',
+                };
+            } else {
+                $db->execute(
+                    'INSERT INTO site_settings (key, value, updated_at) VALUES (?, ?, datetime(\'now\'))
+                     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at',
+                    [$k, $val]
+                );
+            }
+        }
+
+        if ($errors) {
+            Session::flash('admin', ['errors' => $errors]);
+        } else {
+            $this->audit('settings.update', 'settings', null, [
+                'keys' => array_map(fn($k) => $k . '=' . (strlen($_POST[$k] ?? '') > 0 ? '***' : '(cleared)'), $keys),
+            ]);
+            Session::flash('admin', ['success' => 'Tracking settings saved. Changes are live immediately.']);
+        }
+
+        header('Location: /admin/settings');
+        exit;
+    }
+
     /* ============================ helpers ============================ */
 
     /** Pull one-shot admin flash (success/errors) for display. */

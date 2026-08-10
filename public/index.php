@@ -129,6 +129,8 @@ Router::get('/admin/posts/{id}', [AdminController::class, 'postEdit'])->auth('st
 Router::post('/admin/posts/{id}',[AdminController::class, 'postUpdate'])->auth('staff')->role('admin');
 Router::get('/admin/media',      [AdminController::class, 'media'])->auth('staff')->role('admin');
 Router::get('/admin/content',    [AdminController::class, 'content'])->auth('staff')->role('admin');
+Router::get('/admin/settings',  [AdminController::class, 'settings'])->auth('staff')->role('admin');
+Router::post('/admin/settings', [AdminController::class, 'settingsSave'])->auth('staff')->role('admin');
 
 // ---------- Staff CRUD (admin-guarded) ----------
 Router::get('/admin/staff',          [StaffController::class, 'staffList'])->auth('staff')->role('admin');

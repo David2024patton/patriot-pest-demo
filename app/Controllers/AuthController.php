@@ -338,7 +338,6 @@ class AuthController extends PageController
         $email = trim((string) ($_POST['email'] ?? ''));
 
         if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || preg_match('/[
-
 ]/', $email)) {
             Session::flash('auth', ['error' => 'Please enter a valid email address.']);
             header('Location: /su');

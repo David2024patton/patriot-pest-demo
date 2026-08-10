@@ -69,7 +69,7 @@ $staff = [
     ['mrose@patriotpest.pro','M. Rose','admin'],
     ['jordan@patriotpest.pro','Jordan','staff'],
     ['david.richard.patton@gmail.com','David Patton','admin'],
-    ['david@itak.net','David Patton','admin'],
+    ['david@itak.live','David Patton','admin'],
 ];
 $sc = 0;
 foreach ($staff as [$email,$name,$role]) {
@@ -125,7 +125,7 @@ echo "Posts seeded: $pc\n";
 
 echo "\nSeed complete.\n";
 echo "  → Sign in at /login (one page for everyone; routed by role):\n";
-echo "      admin    : david@itak.net            -> /admin (CMS)\n";
+echo "      admin    : david@itak.live            -> /admin (CMS)\n";
 echo "      staff    : jordan@patriotpest.pro    -> /staff-dashboard\n";
 echo "      customer : jane@example.com (or 1001 / +15095550101) -> /customer-dashboard\n";
 echo "  → In dev, the emailed code is logged to storage/logs/mail-*.log\n";

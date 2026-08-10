@@ -46,6 +46,9 @@ if ($uType === 'staff') {
             ['/admin/posts',   '📝', 'Posts'],
             ['/admin/media',   '🖼', 'Media'],
             ['/admin/content', '🧩', 'Content Blocks'],
+            ['/admin/settings','⚡', 'Settings'],
+            ['/admin/staff',   '👤', 'Staff'],
+            ['/admin/api-keys','🔑', 'API Keys'],
             ['/admin/twilio',  '📡', 'Twilio'],
         ];
     }
