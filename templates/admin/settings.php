@@ -7,7 +7,7 @@
   <?php endif; ?>
 
   <form method="post" action="/admin/settings" class="form-stack">
-    <?php \PPC\Core\Csrf::tokenField(); ?>
+    <?= \PPC\Core\Csrf::field() ?>
 
     <?php
     $fields = [
