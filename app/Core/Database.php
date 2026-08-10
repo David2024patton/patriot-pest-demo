@@ -94,7 +94,7 @@ final class Database
         $stmt->execute(['schema_version']);
         $current = (int) ($stmt->fetchColumn() ?: 0);
 
-        $target = 3; // bump when schema.sql changes structurally
+        $target = 4; // bump when schema.sql changes structurally
         if ($current < $target) {
             $sql = file_get_contents($schemaFile);
             if ($sql !== false && trim($sql) !== '') {
@@ -180,6 +180,41 @@ final class Database
             $this->pdo->exec('CREATE INDEX IF NOT EXISTS idx_cust_source ON customers(source)');
         } catch (\Throwable) {
             Logger::warning('idx_cust_source creation skipped (may already exist)');
+        }
+
+        // v3->v4: facebook_leads table for Facebook Lead Ads webhook pipeline.
+        try {
+            $this->pdo->exec("
+                CREATE TABLE IF NOT EXISTS facebook_leads (
+                    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                    leadgen_id        TEXT NOT NULL UNIQUE,
+                    page_id           TEXT,
+                    form_id           TEXT,
+                    ad_id             TEXT,
+                    adgroup_id        TEXT,
+                    campaign_id       TEXT,
+                    full_name         TEXT,
+                    email             TEXT COLLATE NOCASE,
+                    phone             TEXT,
+                    city              TEXT,
+                    state             TEXT,
+                    zip               TEXT,
+                    raw_payload       TEXT,
+                    fingerprint       TEXT,
+                    sms_sent          INTEGER NOT NULL DEFAULT 0,
+                    sms_sent_at       TEXT,
+                    sms_error         TEXT,
+                    email_fallback_sent INTEGER NOT NULL DEFAULT 0,
+                    email_fallback_sent_at TEXT,
+                    processed         INTEGER NOT NULL DEFAULT 0,
+                    created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+                    processed_at      TEXT
+                )
+            ");
+            $this->pdo->exec('CREATE INDEX IF NOT EXISTS idx_fb_lead_fingerprint ON facebook_leads(fingerprint, created_at)');
+            $this->pdo->exec('CREATE INDEX IF NOT EXISTS idx_fb_lead_created ON facebook_leads(created_at)');
+        } catch (\Throwable) {
+            Logger::warning('facebook_leads migration skipped (may already exist)');
         }
     }
 

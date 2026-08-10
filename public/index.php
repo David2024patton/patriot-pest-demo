@@ -60,6 +60,9 @@ use PPC\Controllers\WebhookController;
 use PPC\Controllers\ApiController;
 use PPC\Controllers\ApiKeyController;
 
+// Facebook Lead Ads webhook
+use PPC\Webhooks\Facebook\FacebookWebhookController;
+
 // ---------- Marketing pages (public) ----------
 Router::get('/',                 [PageController::class, 'home']);
 Router::get('/about',            [PageController::class, 'about']);
@@ -196,6 +199,12 @@ Router::post('/webhooks/twilio/voicemail', [WebhookController::class, 'voicemail
 // ---------- Public unsubscribe (HMAC-signed token, CSRF-exempt by design) ----------
 // The signed token in the URL is the proof of consent; it cannot be forged.
 Router::get('/unsubscribe', [WebhookController::class, 'unsubscribe']);
+// ---------- Facebook Lead Ads webhook (public, HMAC-SHA256 signature-validated) ----------
+// GET: webhook subscription handshake (hub.mode=subscribe)
+// POST: lead event processing (X-Hub-Signature-256 verified)
+Router::get('/webhooks/facebook',  [FacebookWebhookController::class, 'verify']);
+Router::post('/webhooks/facebook', [FacebookWebhookController::class, 'receive']);
+
 
 // ---------- API v1 (bearer-token guarded) ----------
 // API_ENABLED toggle checked inside ApiAuth. Off = 404 for all /api/v1/*

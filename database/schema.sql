@@ -537,3 +537,34 @@ CREATE TABLE IF NOT EXISTS api_keys (
     created_at   TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_apikey_prefix ON api_keys(key_prefix);
+
+-- ---------- Facebook Lead Ads (NEW) ----------
+-- Inbound leads from Facebook Lead Ads via webhook. Deduplicated by leadgen_id
+-- (UNIQUE constraint) with a 24-hour fingerprint fallback (name+email+phone hash).
+CREATE TABLE IF NOT EXISTS facebook_leads (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    leadgen_id        TEXT NOT NULL UNIQUE,       -- Facebook leadgen ID
+    page_id           TEXT,                       -- Facebook page ID
+    form_id           TEXT,                       -- Facebook form ID
+    ad_id             TEXT,                       -- Facebook ad ID
+    adgroup_id        TEXT,                       -- Facebook adgroup ID
+    campaign_id       TEXT,                       -- Facebook campaign ID
+    full_name         TEXT,                       -- lead's full name
+    email             TEXT COLLATE NOCASE,        -- lead's email
+    phone             TEXT,                       -- lead's phone
+    city              TEXT,                       -- lead's city
+    state             TEXT,                       -- lead's state
+    zip               TEXT,                       -- lead's zip
+    raw_payload       TEXT,                       -- full JSON from Graph API
+    fingerprint       TEXT,                       -- SHA256 hash of name|email|phone for 24h window dedup
+    sms_sent          INTEGER NOT NULL DEFAULT 0, -- 1 if SMS dispatched
+    sms_sent_at       TEXT,                       -- when SMS was sent
+    sms_error         TEXT,                       -- error if SMS failed
+    email_fallback_sent INTEGER NOT NULL DEFAULT 0, -- 1 if email fallback dispatched
+    email_fallback_sent_at TEXT,                  -- when email fallback was sent
+    processed         INTEGER NOT NULL DEFAULT 0, -- 0=pending, 1=processed
+    created_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    processed_at      TEXT                        -- when fully processed
+);
+CREATE INDEX IF NOT EXISTS idx_fb_lead_fingerprint ON facebook_leads(fingerprint, created_at);
+CREATE INDEX IF NOT EXISTS idx_fb_lead_created ON facebook_leads(created_at);
