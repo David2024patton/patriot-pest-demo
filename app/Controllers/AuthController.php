@@ -94,7 +94,7 @@ class AuthController extends PageController
         //    accidentally resolves to a customer row.
         // Defense 1: super-user accounts are excluded from the standard login
         // flow. They must use the dedicated /su elevated surface instead.
-        $staff = $db->fetch("SELECT id, email, name, role FROM staff WHERE email = ? AND active = 1 AND role != 'super-user'", [$identifier]);
+        $staff = $this->findStaffForLogin($identifier);
         if ($staff !== null) {
             RateLimiter::clear($rateKey);
             $this->issueAndEmail($staff['email'], 'staff');
@@ -286,6 +286,18 @@ class AuthController extends PageController
         return '/customer-dashboard';
     }
 
+    /**
+     * Testable seam: staff lookup with super-user exclusion for standard login.
+     * Used by loginRequest(); extracted so tests can verify the exclusion clause.
+     */
+    protected function findStaffForLogin(string $email): ?array
+    {
+        return Database::instance()->fetch(
+            "SELECT id, email, name, role FROM staff WHERE email = ? AND active = 1 AND role != 'super-user'",
+            [$email]
+        );
+    }
+
     /** Mask an email for display (j•••@example.com) — privacy in the UI. */
     private function maskEmail(string $email): string
     {
@@ -337,8 +349,7 @@ class AuthController extends PageController
 
         $email = trim((string) ($_POST['email'] ?? ''));
 
-        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || preg_match('/[
-]/', $email)) {
+        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false || preg_match("/[\r\n]/", $email)) {
             Session::flash('auth', ['error' => 'Please enter a valid email address.']);
             header('Location: /su');
             exit;
