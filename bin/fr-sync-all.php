@@ -51,15 +51,26 @@ function sync_rows(array $rows, callable $upsert, array &$stat): void
     }
 }
 
+/** Delta of two stat snapshots (per-district = totals-after minus totals-before). */
+function stat_delta(array $before, array $after): array
+{
+    $out = [];
+    foreach ($after as $k => $v) {
+        $out[$k] = $v - ($before[$k] ?? 0);
+    }
+    return $out;
+}
+
 foreach (FieldRoutes::districts() as $district) {
     $code = $district['code'];
     if ($only !== '' && $only !== $code) {
         continue;
     }
     try {
+        $before = $totals['customers'];
         $rows = FieldRoutes::pullCustomersForDistrict($district);
         sync_rows($rows, [FieldRoutes::class, 'upsertCustomer'], $totals['customers']);
-        $s = $totals['customers'];
+        $s = stat_delta($before, $totals['customers']);
         printf("%-4s | %-10s | fetched=%-5d inserted=%-4d updated=%-4d skipped=%-4d\n",
             strtoupper($code), 'customers', $s['fetched'], $s['inserted'], $s['updated'], $s['skipped']);
     } catch (\Throwable $e) {
@@ -70,9 +81,10 @@ foreach (FieldRoutes::districts() as $district) {
 
     // Employees
     try {
+        $before = $totals['employees'];
         $rows = FieldRoutes::pullEmployeesForDistrict($district);
         sync_rows($rows, [FieldRoutes::class, 'upsertEmployee'], $totals['employees']);
-        $s = $totals['employees'];
+        $s = stat_delta($before, $totals['employees']);
         printf("%-4s | %-10s | fetched=%-5d inserted=%-4d updated=%-4d skipped=%-4d\n",
             strtoupper($code), 'employees', $s['fetched'], $s['inserted'], $s['updated'], $s['skipped']);
     } catch (\Throwable $e) {
