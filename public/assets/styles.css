@@ -171,7 +171,11 @@ h2 em,h1 em{font-style:normal;color:var(--orange)}
 .g3{grid-template-columns:repeat(3,1fr)}
 .g4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:960px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  nav .brand{font-size:.78rem}
+  .nav-cta{font-size:.62rem;padding:.45rem .7rem}
+}
 
 .card{
   background:var(--olive-800);border:1px solid var(--olive-700);padding:1.6rem 1.5rem;
@@ -479,7 +483,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .hero-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:clamp(1.5rem,4vw,4rem);align-items:end;padding-bottom:2.5rem}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr;align-items:start}}
 .kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;color:var(--khaki);text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.7rem}
-#hero h1{font-size:clamp(2.6rem,7.4vw,6.2rem);line-height:.98;color:var(--cream)}
+#hero h1{font-size:clamp(2.6rem,7.4vw,6.2rem);line-height:1.06;color:var(--cream)}
 #hero h1 .strike{color:var(--orange);position:relative;display:inline-block}
 #hero h1 .strike::after{content:"";position:absolute;left:-3%;bottom:8%;width:106%;height:.14em;background:var(--red);transform:scaleX(0);transform-origin:left}
 .hero-sub{margin-top:1.4rem;font-size:clamp(1rem,1.6vw,1.18rem);color:var(--khaki);max-width:56ch;line-height:1.55;font-weight:500}
