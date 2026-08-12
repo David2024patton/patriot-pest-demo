@@ -225,7 +225,7 @@ body.appshell-body .app > .wrap { max-width: none; margin: 0; padding: 0; }
     font-family: var(--mono); font-size: .56rem; letter-spacing: .06em; text-transform: uppercase;
     color: #5b5646; padding: .35rem 0; border-radius: 8px;
   }
-  .appshell-bar a .bi, .appshell-bar button .bi { font-size: 1.25rem; line-height: 1; }
+  .appshell-bar a .bi, .appshell-bar button .bi { font-size: 1.25rem; line-height: 1; font-weight: bold; }
   .appshell-bar a.active { color: var(--shell-accent-d); }
 
   /* the raised center action (magnifier / request) */
@@ -469,6 +469,7 @@ body.appshell-body .inline-form { display: inline-flex; align-items: center; gap
   
   body.appshell-body .appshell-bar .bi {
     font-size: 1.3rem;
+    font-weight: bold;
   }
   
   /* Form inputs touch targets */

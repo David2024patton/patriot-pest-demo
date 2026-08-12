@@ -340,4 +340,87 @@ class ApiController
             exit;
         }
     }
-}
+
+    /** /api/v1/ai/chat -- AI chat endpoint for customer service automation */
+    public function aiChat(): void
+    {
+        self::ipRateLimit('ai_chat');
+        // No auth required for public AI chat, but rate limited by IP
+        // Future: could require specific API key for AI features
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        $message = trim((string) ($input['message'] ?? ''));
+        $context = $input['context'] ?? [];
+        
+        if ($message === '') {
+            self::err(400, 'Message is required');
+        }
+        
+        // Simple AI response system (can be enhanced with actual AI integration)
+        $response = self::generateAIResponse($message, $context);
+        
+        self::ok([
+            'response' => $response,
+            'timestamp' => date('c'),
+            'message_id' => uniqid('chat_'),
+        ]);
+        exit;
+    }
+    
+    /** Generate AI response based on message context */
+    private static function generateAIResponse(string $message, array $context): string
+    {
+        $messageLower = strtolower($message);
+        
+        // Basic intent detection and response generation
+        $responses = [
+            'pricing' => [
+                'keywords' => ['price', 'cost', 'how much', 'rate', 'charge', 'quote', 'estimate'],
+                'response' => "Our pricing starts at Bronze, Silver, Gold, and Platinum tiers designed to fit different needs and budgets. For a free, no-obligation quote specific to your property, please call us at (509) 471-5767 or use our contact form. We offer same-day service and a 90-day warranty on all treatments."
+            ],
+            'services' => [
+                'keywords' => ['service', 'treatment', 'what do you do', 'pest', 'insect', 'bug'],
+                'response' => "We provide comprehensive pest control services including ant control, termite treatment, bed bug removal, rodent control, mosquito management, wasp removal, cockroach extermination, and more. All treatments are eco-friendly and safe for families and pets. Would you like to schedule a free inspection?"
+            ],
+            'hours' => [
+                'keywords' => ['hour', 'open', 'close', 'time', 'when', 'available', 'schedule'],
+                'response' => "We're open Monday-Friday 9AM-5PM and Saturday-Sunday 10AM-4PM. For urgent pest issues, we offer same-day service when possible. Call our 24/7 line at (509) 471-5767 for immediate assistance."
+            ],
+            'areas' => [
+                'keywords' => ['area', 'location', 'where', 'serve', 'cover', 'region', 'washington', 'idaho', 'oregon', 'arizona'],
+                'response' => "We serve Washington, Idaho, Oregon, and Arizona. In Washington, we cover Spokane, Spokane Valley, Cheney, Liberty Lake, Airway Heights, Medical Lake, Deer Park, and Mead. In Idaho: Coeur d'Alene, Post Falls, Hayden, and Rathdrum. In Oregon: Hermiston and Milton-Freewater. In Arizona: Phoenix."
+            ],
+            'appointment' => [
+                'keywords' => ['appointment', 'schedule', 'book', 'reserve', 'booked'],
+                'response' => "You can schedule a free inspection by calling us at (509) 471-5767 or filling out our contact form on the website. Our team will work with you to find a convenient time for your service appointment."
+            ],
+            'emergency' => [
+                'keywords' => ['emergency', 'urgent', 'asap', 'immediate', 'now', 'help'],
+                'response' => "For urgent pest control needs, please call our 24/7 line at (509) 471-5767. We prioritize emergency calls and offer same-day service when possible. Your safety and comfort are our top priority."
+            ],
+            'greeting' => [
+                'keywords' => ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening'],
+                'response' => "Hello! Welcome to Patriot Pest Control. I'm here to help you with any pest control questions or concerns. How can I assist you today?"
+            ],
+            'thank' => [
+                'keywords' => ['thank', 'thanks', 'appreciate', 'helpful'],
+                'response' => "You're welcome! If you have any other questions about our pest control services or need assistance, please don't hesitate to ask. We're here to help!"
+            ],
+            'goodbye' => [
+                'keywords' => ['bye', 'goodbye', 'see you', 'farewell'],
+                'response' => "Thank you for choosing Patriot Pest Control! For any future pest control needs, we're here 24/7. Have a pest-free day!"
+            ]
+        ];
+        
+        // Check for keyword matches
+        foreach ($responses as $intent) {
+            foreach ($intent['keywords'] as $keyword) {
+                if (str_contains($messageLower, $keyword)) {
+                    return $intent['response'];
+                }
+            }
+        }
+        
+        // Default response if no match
+        return "I'm here to help with pest control questions! I can assist with information about our services, pricing, service areas, scheduling appointments, and more. What would you like to know about Patriot Pest Control?";
+    }

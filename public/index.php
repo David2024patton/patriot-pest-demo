@@ -249,6 +249,7 @@ if (\PPC\Core\Config::bool("API_ENABLED", false)) {
     Router::get("/api/v1/services",  [ApiController::class, "services"]);
     Router::get("/api/v1/twilio/logs", [ApiController::class, "twilioLogs"]);
     Router::get("/api/v1/staff",     [ApiController::class, "staff"]);
+    Router::post("/api/v1/ai/chat",   [ApiController::class, "aiChat"]);
 }
 
 // ---------- Dispatch ----------

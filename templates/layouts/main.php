@@ -97,22 +97,22 @@
 <?php if (!$__appUi): ?>
 <nav class="mobile-sticky-nav" aria-label="Mobile quick navigation">
   <a href="/" aria-label="Home">
-    <span>🏠</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
     <span class="label">Home</span>
   </a>
   <a href="<?= $view->phoneHref() ?>" aria-label="Call">
-    <span>📞</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
     <span class="label">Call</span>
   </a>
   <button class="center-btn" onclick="window.location.href='/contact'" aria-label="Request Service">
-    <span>＋</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
   </button>
   <a href="/contact" aria-label="Contact">
-    <span>📧</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
     <span class="label">Contact</span>
   </a>
   <a href="/login" aria-label="Login">
-    <span>🔐</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
     <span class="label">Login</span>
   </a>
 </nav>
@@ -171,5 +171,10 @@
 <?php endif; ?>
 <?= $view->raw(\PPC\Core\View::render('partials/install-banner')) ?>
 <script src="<?= $view->asset('pwa-install.js') ?>"></script>
+
+<!-- AI Chat Widget (marketing pages only) -->
+<?php if (!$__appUi): ?>
+<?= $view->raw(\PPC\Core\View::render('partials/ai-chat-widget')) ?>
+<?php endif; ?>
 </body>
 </html>

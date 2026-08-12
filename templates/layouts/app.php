@@ -36,33 +36,33 @@ $barItems = [];
 
 if ($uType === 'staff') {
     $navMain = [
-        ['/staff-dashboard', '◧', 'Overview'],
-        ['/staff/customers', '👥', 'Customers'],
-        ['/staff/leads/new',  '＋', 'New Lead'],
-        ['/staff/messages',  '✉', 'Messages'],
+        ['/staff-dashboard', '★', 'Overview'],
+        ['/staff/customers', '•', 'Customers'],
+        ['/staff/leads/new',  '+', 'New Lead'],
+        ['/staff/messages',  '•', 'Messages'],
     ];
     if ($isAdmin) {
         $navCms = [
-            ['/admin',         '⚙', 'CMS Home'],
-            ['/admin/posts',   '📝', 'Posts'],
-            ['/admin/media',   '🖼', 'Media'],
-            ['/admin/content', '🧩', 'Content Blocks'],
-            ['/admin/settings','⚡', 'Settings'],
-            ['/admin/staff',   '👤', 'Staff'],
-            ['/admin/roles',   '🛡', 'Roles'],
-            ['/admin/departments','🏢','Departments'],
-            ['/admin/api-keys','🔑', 'API Keys'],
-            ['/admin/twilio',  '📡', 'Twilio'],
-            ['/admin/retention', '📊', 'Retention'],
+            ['/admin',         '•', 'CMS Home'],
+            ['/admin/posts',   '•', 'Posts'],
+            ['/admin/media',   '•', 'Media'],
+            ['/admin/content', '•', 'Content Blocks'],
+            ['/admin/settings','•', 'Settings'],
+            ['/admin/staff',   '•', 'Staff'],
+            ['/admin/roles',   '•', 'Roles'],
+            ['/admin/departments','•','Departments'],
+            ['/admin/api-keys','•', 'API Keys'],
+            ['/admin/twilio',  '•', 'Twilio'],
+            ['/admin/retention', '•', 'Retention'],
         ];
     }
     // 5-icon bottom bar; center = customer search magnifier
     $barItems = [
-        ['href' => '/staff-dashboard', 'ico' => '◧', 'label' => 'Home'],
-        ['href' => '/staff/customers', 'ico' => '👥', 'label' => 'Customers'],
-        ['action' => 'search', 'ico' => '🔍', 'label' => 'Search'],
-        ['href' => '/staff/leads/new', 'ico' => '＋', 'label' => 'Lead'],
-        ['href' => '/account', 'ico' => '◉', 'label' => 'Account'],
+        ['href' => '/staff-dashboard', 'ico' => '★', 'label' => 'Home'],
+        ['href' => '/staff/customers', 'ico' => '•', 'label' => 'Customers'],
+        ['action' => 'search', 'ico' => '•', 'label' => 'Search'],
+        ['href' => '/staff/leads/new', 'ico' => '+', 'label' => 'Lead'],
+        ['href' => '/account', 'ico' => '•', 'label' => 'Account'],
     ];
     $signout = '/staff-logout';
     $roleLabel = $role ? ucfirst(str_replace('_', ' ', $role)) : 'Staff';

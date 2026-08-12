@@ -615,7 +615,6 @@ img, video, canvas, iframe {
     min-height: 44px;
     min-width: 44px;
     padding: .5rem;
-    font-size: 1.2rem;
     color: var(--cream);
     text-decoration: none;
     background: none;
@@ -624,12 +623,14 @@ img, video, canvas, iframe {
     flex-direction: column;
     align-items: center;
     gap: .2rem;
-  }
-  
-  .mobile-sticky-nav .label {
     font-size: .65rem;
     font-family: var(--mono);
     text-transform: uppercase;
+  }
+  
+  .mobile-sticky-nav svg {
+    width: 24px;
+    height: 24px;
   }
   
   .mobile-sticky-nav .center-btn {
@@ -640,6 +641,12 @@ img, video, canvas, iframe {
     height: 56px;
     transform: translateY(-20px);
     box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    padding: 1rem;
+  }
+  
+  .mobile-sticky-nav .center-btn svg {
+    width: 28px;
+    height: 28px;
   }
   
   /* Add space at bottom for sticky nav */
