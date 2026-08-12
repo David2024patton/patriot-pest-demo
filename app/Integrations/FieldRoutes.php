@@ -179,12 +179,12 @@ final class FieldRoutes
         $db = Database::instance();
 
         $existing = $db->fetch(
-            'SELECT id, is_no_call, dnc_reason, last_service FROM customers WHERE fr_id = ? AND district = ?',
+            'SELECT id, is_no_call, dnc_reason, last_service, name, email, phone, account_number, address, city, state, zip, status FROM customers WHERE fr_id = ? AND district = ?',
             [$row['fr_id'], $row['district']]
         );
         if (!$existing && !empty($row['email'])) {
             $existing = $db->fetch(
-                "SELECT id, is_no_call, dnc_reason, last_service FROM customers
+                "SELECT id, is_no_call, dnc_reason, last_service, name, email, phone, account_number, address, city, state, zip, status FROM customers
                  WHERE email = ? COLLATE NOCASE AND (fr_id IS NULL OR fr_id = '')",
                 [$row['email']]
             );
@@ -208,6 +208,23 @@ final class FieldRoutes
         ];
 
         if ($existing) {
+            // Change detection: skip the write when every FR-sourced identity
+            // field already matches. Local-only flags (is_no_call/dnc_reason)
+            // and updated_at are excluded from the comparison.
+            $same = true;
+            foreach (['name', 'email', 'phone', 'account_number', 'address', 'city', 'state', 'zip', 'status'] as $field) {
+                if ((string) ($identity[$field] ?? '') !== (string) ($existing[$field] ?? '')) {
+                    $same = false;
+                    break;
+                }
+            }
+            $existingLast = $existing['last_service'] ?? null;
+            if ((string) ($identity['last_service'] ?? '') !== (string) ($existingLast ?? '')) {
+                $same = false;
+            }
+            if ($same) {
+                return 'skipped';
+            }
             $db->update('customers', $identity, ['id' => $existing['id']]);
             return 'updated';
         }
@@ -443,7 +460,137 @@ final class FieldRoutes
     }
 
     /**
-     * Map an FR customer id + district code to the local customers.id.
+     * Pull active employees from a FieldRoutes district (FR employee API).
+     * Returns normalized staff-shaped rows. FR employee/search is POST-only;
+     * we fetch active employees with includeData so each row carries identity.
+     */
+    public static function pullEmployeesForDistrict(array $district): array
+    {
+        $search = self::requestPost($district, 'employee/search', [
+            'active'      => 1,
+            'includeData' => true,
+        ]);
+        $ids = $search['employeeIDs'] ?? [];
+        if (!is_array($ids) || !$ids) {
+            return [];
+        }
+        $rows = [];
+        foreach (array_chunk(array_map('strval', $ids), self::BATCH) as $chunk) {
+            $data = self::requestPost($district, 'employee/get', ['employeeIDs' => implode(',', $chunk)]);
+            foreach (($data['employees'] ?? []) as $e) {
+                $rows[] = self::normalizeEmployee($e, $district['code']);
+            }
+        }
+        return $rows;
+    }
+
+    /** Map an FR employee record onto the staff table shape. */
+    private static function normalizeEmployee(array $e, string $district): array
+    {
+        $name = trim(($e['fname'] ?? '') . ' ' . ($e['lname'] ?? ''));
+        if ($name === '') {
+            $name = trim((string) ($e['username'] ?? 'Employee'));
+        }
+        return [
+            'fr_employee_id' => (string) ($e['employeeID'] ?? ''),
+            'district'       => $district,
+            'name'           => $name !== '' ? $name : 'Employee',
+            'email'          => strtolower(trim((string) ($e['email'] ?? ''))),
+            'phone'          => self::normalizePhone($e['phone'] ?? null),
+            'active'         => !empty($e['active']) || (int) ($e['active'] ?? 0) === 1 ? 1 : 0,
+        ];
+    }
+
+    /**
+     * Upsert an FR employee into the local staff table. Keyed by
+     * fr_employee_id (fallback: email). Preserves locally-managed fields
+     * (role, department, manager) and skips the write when nothing changed.
+     */
+    public static function upsertEmployee(array $row): string
+    {
+        $frId = (string) ($row['fr_employee_id'] ?? '');
+        $email = strtolower(trim((string) ($row['email'] ?? '')));
+        if ($frId === '' || $email === '') {
+            return 'skipped'; // no way to key or reach the employee
+        }
+        $db = Database::instance();
+
+        $existing = $db->fetch(
+            'SELECT id, role, name, email, active FROM staff WHERE fr_employee_id = ?',
+            [$frId]
+        );
+        if (!$existing) {
+            $existing = $db->fetch(
+                'SELECT id, role, name, email, active FROM staff WHERE email = ? COLLATE NOCASE',
+                [$email]
+            );
+        }
+
+        $identity = [
+            'name'       => $row['name'],
+            'email'      => $email,
+            'active'     => $row['active'] ? 1 : 0,
+        ];
+
+        if ($existing) {
+            // Change detection: skip when nothing FR-sourced changed.
+            if (
+                strcasecmp((string) $existing['name'], (string) $identity['name']) === 0
+                && strcasecmp((string) $existing['email'], (string) $identity['email']) === 0
+                && (int) $existing['active'] === (int) $identity['active']
+            ) {
+                return 'skipped';
+            }
+            $db->update('staff', $identity, ['id' => $existing['id']]);
+            return 'updated';
+        }
+
+        // New FR employee: default role 'staff'. Elevated roles are assigned
+        // locally after sync (never granted implicitly from FR data).
+        $identity['role'] = 'staff';
+        $identity['fr_employee_id'] = $frId;
+        $identity['created_at'] = gmdate('Y-m-d H:i:s');
+        try {
+            $db->insert('staff', $identity);
+            return 'inserted';
+        } catch (\Throwable $e) {
+            // Likely a UNIQUE(email) race against a locally-created staff row.
+            Logger::warning('FR employee insert skipped', ['email' => $email, 'err' => $e->getMessage()]);
+            return 'skipped';
+        }
+    }
+
+    /**
+     * Update a customer's email in FieldRoutes (source of truth). Dedupes via
+     * customer/search first; refuses if the email already belongs to another
+     * customer. Returns {success, error}.
+     */
+    public static function updateCustomerEmail(array $district, string $frId, string $email): array
+    {
+        $email = strtolower(trim($email));
+        if ($email === '' || $frId === '') {
+            return ['success' => false, 'error' => 'Missing email or customer id'];
+        }
+
+        // Dedupe: email must not already be attached to a different customer.
+        $search = self::requestPost($district, 'customer/search', ['email' => $email]);
+        foreach (($search['customerIDs'] ?? []) as $existingId) {
+            if ((string) $existingId !== (string) $frId) {
+                return ['success' => false, 'error' => 'That email is already used by another account.'];
+            }
+        }
+
+        $response = self::requestPost($district, 'customer/update', [
+            'customerID' => $frId,
+            'email'      => $email,
+        ]);
+        if (!empty($response['success'])) {
+            return ['success' => true, 'error' => null];
+        }
+        return ['success' => false, 'error' => $response['errorMessage'] ?? 'FieldRoutes rejected the email update.'];
+    }
+
+    /** Map an FR customer id + district code to the local customers.id.
      * Used to key the local cache tables (appointments, subscriptions).
      */
     private static function localCustomerId(string $frId, string $districtCode): ?string

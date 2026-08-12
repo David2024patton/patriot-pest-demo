@@ -108,7 +108,7 @@ class AuthController extends PageController
 
         // 2) Customer (by email, phone, or account number).
         $customer = $db->fetch(
-            'SELECT id, name, email FROM customers WHERE email = ? OR phone = ? OR account_number = ? LIMIT 1',
+            'SELECT id, name, email, fr_id, district FROM customers WHERE email = ? OR phone = ? OR account_number = ? LIMIT 1',
             [$identifier, $identifier, $identifier]
         );
         if ($customer !== null && !empty($customer['email'])) {
@@ -122,12 +122,124 @@ class AuthController extends PageController
             exit;
         }
 
+        // 2b) Customer found but no email on file (FR has none): they cannot
+        // receive an emailed code yet. Send them to first-time email capture.
+        // The code is issued only AFTER the email is saved (to FR + locally).
+        if ($customer !== null) {
+            RateLimiter::clear($rateKey);
+            Session::put('pending_login_identifier', $identifier);
+            Session::put('pending_login_customer_id', $customer['id']);
+            Session::flash('auth', ['need_email' => true]);
+            header('Location: /login/email');
+            exit;
+        }
+
         // No match. Don't reveal whether an account exists (enumeration defense):
         // show the same "code sent" screen, but no code was actually issued, so
         // verification will simply fail.
         Session::flash('auth', ['sent' => true, 'to' => $this->maskEmail($identifier)]);
         header('Location: ' . $dest);
         exit;
+    }
+
+    /* ================== FIRST-TIME EMAIL CAPTURE ================== */
+
+    /** Step 1.5 (no email on file): collect the customer's email address. */
+    public function emailCaptureForm(): void
+    {
+        $identifier = (string) (Session::get('pending_login_identifier') ?? '');
+        if ($identifier === '') {
+            header('Location: /login');
+            exit;
+        }
+        echo View::page('auth/email-capture', [
+            'identifier' => $identifier,
+            'flash'      => Session::pullFlash('auth'),
+        ], $this->meta('Add your email | Patriot Pest Control', 'Add an email to receive your sign-in code.', '/login/email'));
+    }
+
+    /** Step 1.5 submit: validate, dedupe, push to FieldRoutes, then issue OTP. */
+    public function emailCaptureSubmit(): void
+    {
+        Csrf::verifyOrDie();
+
+        $identifier = (string) (Session::get('pending_login_identifier') ?? '');
+        $customerId = (int) (Session::get('pending_login_customer_id') ?? 0);
+        if ($identifier === '' || $customerId <= 0) {
+            header('Location: /login');
+            exit;
+        }
+
+        $email = strtolower(trim((string) ($_POST['email'] ?? '')));
+        $errors = Validator::make(['email' => $email], ['email' => ['required', 'email', 'max:254']]);
+        if ($errors) {
+            Session::flash('auth', ['error' => 'Please enter a valid email address.', 'need_email' => true]);
+            header('Location: /login/email');
+            exit;
+        }
+
+        $result = $this->applyEmailCapture($customerId, $email);
+        if (isset($result['restart'])) {
+            // Account gone or email already set (e.g. double submit) — restart.
+            Session::forget('pending_login_identifier');
+            Session::forget('pending_login_customer_id');
+            header('Location: /login');
+            exit;
+        }
+        if (isset($result['error'])) {
+            Session::flash('auth', ['error' => $result['error'], 'need_email' => true]);
+            header('Location: /login/email');
+            exit;
+        }
+
+        Session::forget('pending_login_identifier');
+        Session::forget('pending_login_customer_id');
+        Session::put('pending_login_email', $email);
+        Session::put('pending_login_type', 'customer');
+        Session::put('pending_login_id', $customerId);
+        Session::flash('auth', ['sent' => true, 'to' => $this->maskEmail($email)]);
+        header('Location: /login/verify');
+        exit;
+    }
+
+    /**
+     * Core of the email-capture step (shared with tests): confirm the customer
+     * still exists with no email on file, push the new address to FieldRoutes
+     * when a district is configured (FR is the source of truth — otherwise the
+     * next sync would wipe the local value), update the local cache, then issue
+     * the OTP for the new address.
+     *
+     * @return array{ok?:true, restart?:true, error?:string}
+     *   ['restart' => true] → account gone or already has an email; start over
+     *   ['error' => string] → FieldRoutes rejected the email; retry capture
+     *   ['ok' => true]      → email saved (FR + local) and OTP issued
+     */
+    private function applyEmailCapture(int $customerId, string $email): array
+    {
+        $db = Database::instance();
+        $customer = $db->fetch(
+            'SELECT id, name, email, fr_id, district FROM customers WHERE id = ?',
+            [$customerId]
+        );
+        if (!$customer || !empty($customer['email'])) {
+            return ['restart' => true];
+        }
+
+        // FR is the source of truth: push the email there first, then update
+        // the local cache. Otherwise the next sync would wipe the local value.
+        if (!empty($customer['fr_id']) && !empty($customer['district'])) {
+            $district = \PPC\Integrations\FieldRoutes::districtByCode($customer['district']);
+            if ($district !== null) {
+                $push = \PPC\Integrations\FieldRoutes::updateCustomerEmail($district, $customer['fr_id'], $email);
+                if (!$push['success']) {
+                    return ['error' => $push['error'] ?: 'We could not save your email right now. Please try again or call us.'];
+                }
+            }
+        }
+
+        $db->update('customers', ['email' => $email, 'updated_at' => gmdate('Y-m-d H:i:s')], ['id' => $customerId]);
+        $this->issueAndEmail($email, 'customer');
+        return ['ok' => true];
     }
 
     /* ============================ STEP 2: VERIFY ============================ */

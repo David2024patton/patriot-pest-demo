@@ -101,6 +101,9 @@ Router::get('/login',         [AuthController::class, 'loginForm']);
 Router::post('/login',        [AuthController::class, 'loginRequest']);   // step 1: identify + send code
 Router::get('/login/verify',  [AuthController::class, 'loginVerifyForm']);
 Router::post('/login/verify', [AuthController::class, 'loginVerify']);    // step 2: verify + route by role
+// Step 1.5: customer found with no email on file — capture one before OTP.
+Router::get('/login/email',   [AuthController::class, 'emailCaptureForm']);
+Router::post('/login/email',  [AuthController::class, 'emailCaptureSubmit']);
 Router::get('/logout',        [AuthController::class, 'logout']);
 
 // Legacy login URLs → the single login page (keeps old bookmarks/links working).

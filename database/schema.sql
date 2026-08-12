@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS staff (
     email      TEXT NOT NULL UNIQUE COLLATE NOCASE,
     name       TEXT NOT NULL,
     role       TEXT NOT NULL DEFAULT 'staff' REFERENCES roles(role),
+    fr_employee_id TEXT,                 -- FieldRoutes employee id (synced logins)
     department_id INTEGER REFERENCES departments(id),
     manager_id INTEGER REFERENCES staff(id),
     active     INTEGER NOT NULL DEFAULT 1,
