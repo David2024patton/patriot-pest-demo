@@ -19,12 +19,22 @@ CREATE TABLE IF NOT EXISTS roles (
     permissions TEXT NOT NULL DEFAULT '[]'
 );
 
+-- Departments for organizational hierarchy
+CREATE TABLE IF NOT EXISTS departments (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    name       TEXT NOT NULL,
+    parent_id  INTEGER REFERENCES departments(id),
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Staff have NO password column by design: login is passwordless email-OTP.
 CREATE TABLE IF NOT EXISTS staff (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     email      TEXT NOT NULL UNIQUE COLLATE NOCASE,
     name       TEXT NOT NULL,
     role       TEXT NOT NULL DEFAULT 'staff' REFERENCES roles(role),
+    department_id INTEGER REFERENCES departments(id),
+    manager_id INTEGER REFERENCES staff(id),
     active     INTEGER NOT NULL DEFAULT 1,
     last_login TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))

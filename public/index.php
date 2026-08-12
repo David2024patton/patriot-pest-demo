@@ -126,6 +126,10 @@ Router::get('/staff/messages',       [StaffController::class, 'messages'])->auth
 Router::post('/staff/customers/sync', [StaffController::class, 'syncCustomers'])->auth('staff')->permission('view_customers');
 Router::get('/api/customer-search',  [StaffController::class, 'searchCustomers'])->auth('staff')->permission('search_customers');
 
+// ---------- Lead creation (staff/admin with create_customers permission) ----------
+Router::get('/staff/leads/new',     [StaffController::class, 'leadNew'])->auth('staff')->permission('create_customers');
+Router::post('/staff/leads',        [StaffController::class, 'leadCreate'])->auth('staff')->permission('create_customers');
+
 // ---------- Self-service account (any authenticated user) ----------
 Router::get('/account', [StaffController::class, 'account'])->auth('*');
 
@@ -148,6 +152,16 @@ Router::post('/admin/staff',         [StaffController::class, 'staffCreate'])->a
 Router::get('/admin/staff/{id}',     [StaffController::class, 'staffEdit'])->auth('staff')->role('admin');
 Router::post('/admin/staff/{id}',    [StaffController::class, 'staffUpdate'])->auth('staff')->role('admin');
 Router::post('/admin/staff/{id}/toggle', [StaffController::class, 'staffToggle'])->auth('staff')->role('admin');
+
+// ---------- RBAC Management (admin-guarded) ----------
+Router::get('/admin/roles',            [AdminController::class, 'roles'])->auth('staff')->role('admin');
+Router::get('/admin/roles/{role}',     [AdminController::class, 'roleEdit'])->auth('staff')->role('admin');
+Router::post('/admin/roles/{role}',    [AdminController::class, 'roleUpdate'])->auth('staff')->role('admin');
+Router::get('/admin/departments',      [AdminController::class, 'departments'])->auth('staff')->role('admin');
+Router::post('/admin/departments',     [AdminController::class, 'departmentCreate'])->auth('staff')->role('admin');
+Router::get('/admin/departments/{id}', [AdminController::class, 'departmentEdit'])->auth('staff')->role('admin');
+Router::post('/admin/departments/{id}',[AdminController::class, 'departmentUpdate'])->auth('staff')->role('admin');
+Router::post('/admin/departments/{id}/delete', [AdminController::class, 'departmentDelete'])->auth('staff')->role('admin');
 
 // ---------- API Key management (admin-guarded) ----------
 Router::get("/admin/api-keys",          [ApiKeyController::class, "index"])->auth("staff")->role("admin");

@@ -166,6 +166,81 @@ class StaffController extends PageController
         ], $this->meta('Messages | Patriot Pest Control', 'Internal message center.', '/staff/messages'));
     }
 
+    /** Lead creation form (staff/admin with permission). */
+    public function leadNew(): void
+    {
+        $db = Database::instance();
+        $districts = \PPC\Integrations\FieldRoutes::districts();
+        
+        echo View::page('staff/lead-new', [
+            'districts' => $districts,
+            'flash' => Session::pullFlash('lead_crud'),
+        ], $this->meta('New Lead | Patriot Pest Control', 'Create a new lead.', '/staff/leads/new'));
+    }
+
+    /** Create a new lead. */
+    public function leadCreate(): void
+    {
+        Csrf::verifyOrDie();
+        
+        $errors = Validator::make($_POST, [
+            'firstName' => ['required', 'max:100'],
+            'lastName' => ['required', 'max:100'],
+            'email' => ['email', 'max:254'],
+            'phone' => ['required', 'max:20'],
+            'address' => ['max:200'],
+            'city' => ['max:100'],
+            'state' => ['max:50'],
+            'zip' => ['max:20'],
+            'district' => ['required'],
+        ]);
+        
+        if ($errors) {
+            Session::flash('lead_crud', ['errors' => $errors]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/staff/leads/new'));
+            exit;
+        }
+
+        $districtCode = trim($_POST['district']);
+        $district = \PPC\Integrations\FieldRoutes::districtByCode($districtCode);
+        
+        if (!$district) {
+            Session::flash('lead_crud', ['errors' => ['district' => ['Invalid district selected.']]]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/staff/leads/new'));
+            exit;
+        }
+
+        $leadData = [
+            'firstName' => Validator::clean($_POST['firstName']),
+            'lastName' => Validator::clean($_POST['lastName']),
+            'companyName' => Validator::clean($_POST['companyName'] ?? ''),
+            'email' => Validator::clean($_POST['email'] ?? ''),
+            'phone' => Validator::clean($_POST['phone']),
+            'address' => Validator::clean($_POST['address'] ?? ''),
+            'city' => Validator::clean($_POST['city'] ?? ''),
+            'state' => Validator::clean($_POST['state'] ?? ''),
+            'zip' => Validator::clean($_POST['zip'] ?? ''),
+            'notes' => Validator::clean($_POST['notes'] ?? ''),
+            'source' => Validator::clean($_POST['source'] ?? 'Manual Entry'),
+        ];
+
+        $result = \PPC\Integrations\FieldRoutes::createLead($district, $leadData);
+
+        if ($result['success']) {
+            Logger::info('Lead created in FieldRoutes', [
+                'customerId' => $result['customerId'],
+                'district' => $districtCode,
+                'by' => Session::get('user_id')
+            ]);
+            Session::flash('lead_crud', ['success' => 'Lead created successfully in FieldRoutes. Customer ID: ' . $result['customerId']]);
+            header('Location: /staff/customers');
+        } else {
+            Session::flash('lead_crud', ['error' => 'Failed to create lead: ' . $result['error']]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/staff/leads/new'));
+        }
+        exit;
+    }
+
     /**
      * JSON customer search for the app-shell magnifier overlay. Staff/admin
      * only (route-guarded). Returns a compact array the overlay renders live.
@@ -307,9 +382,14 @@ class StaffController extends PageController
     {
         $db = Database::instance();
         $roles = $db->fetchAll('SELECT * FROM roles ORDER BY label');
+        $departments = $db->fetchAll('SELECT * FROM departments ORDER BY name');
+        $allStaff = $db->fetchAll('SELECT id, name, email FROM staff WHERE active = 1 ORDER BY name');
+        
         echo View::page('staff/edit', [
             'staffMember' => null,
             'roles'       => $roles,
+            'departments' => $departments,
+            'allStaff'    => $allStaff,
             'isAdmin'     => Session::isAdmin(),
             'flash'       => Session::pullFlash('staff_crud'),
         ], $this->meta('New Staff | Patriot Pest Control', 'Add a staff member.', '/admin/staff/new'));
@@ -323,7 +403,7 @@ class StaffController extends PageController
         $errors = Validator::make($_POST, [
             'name'  => ['required', 'max:200'],
             'email' => ['required', 'email', 'max:254'],
-            'role'  => ['required', 'in:admin,tech_support,accounts,sales,staff'],
+            'role'  => ['required'],
         ]);
         if ($errors) {
             Session::flash('staff_crud', ['errors' => $errors]);
@@ -340,12 +420,25 @@ class StaffController extends PageController
             exit;
         }
 
+        $departmentId = !empty($_POST['department_id']) ? (int) $_POST['department_id'] : null;
+        $managerId = !empty($_POST['manager_id']) ? (int) $_POST['manager_id'] : null;
+
+        // Validate role exists in database
+        $validRole = $db->fetch('SELECT role FROM roles WHERE role = ?', [Validator::clean($_POST['role'])]);
+        if (!$validRole) {
+            Session::flash('staff_crud', ['errors' => ['role' => ['Invalid role selected.']]]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/admin/staff/new'));
+            exit;
+        }
+
         $id = $db->insert('staff', [
-            'name'       => Validator::clean($_POST['name']),
-            'email'      => $email,
-            'role'       => Validator::clean($_POST['role']),
-            'active'     => 1,
-            'created_at' => gmdate('Y-m-d H:i:s'),
+            'name'         => Validator::clean($_POST['name']),
+            'email'        => $email,
+            'role'         => Validator::clean($_POST['role']),
+            'department_id'=> $departmentId,
+            'manager_id'   => $managerId,
+            'active'       => 1,
+            'created_at'   => gmdate('Y-m-d H:i:s'),
         ]);
 
         Logger::info('Staff created', ['staff_id' => $id, 'by' => Session::get('user_id')]);
@@ -363,9 +456,14 @@ class StaffController extends PageController
             \PPC\Core\Router::notFound();
         }
         $roles = $db->fetchAll('SELECT * FROM roles ORDER BY label');
+        $departments = $db->fetchAll('SELECT * FROM departments ORDER BY name');
+        $allStaff = $db->fetchAll('SELECT id, name, email FROM staff WHERE active = 1 ORDER BY name');
+        
         echo View::page('staff/edit', [
             'staffMember' => $staffMember,
             'roles'       => $roles,
+            'departments' => $departments,
+            'allStaff'    => $allStaff,
             'isAdmin'     => Session::isAdmin(),
             'flash'       => Session::pullFlash('staff_crud'),
         ], $this->meta('Edit Staff | Patriot Pest Control', 'Edit staff member.', "/admin/staff/{$id}"));
@@ -391,7 +489,7 @@ class StaffController extends PageController
         $errors = Validator::make($_POST, [
             'name'  => ['required', 'max:200'],
             'email' => ['required', 'email', 'max:254'],
-            'role'  => ['required', 'in:admin,tech_support,accounts,sales,staff'],
+            'role'  => ['required'],
         ]);
         if ($errors) {
             Session::flash('staff_crud', ['errors' => $errors]);
@@ -407,10 +505,23 @@ class StaffController extends PageController
             exit;
         }
 
+        $departmentId = !empty($_POST['department_id']) ? (int) $_POST['department_id'] : null;
+        $managerId = !empty($_POST['manager_id']) ? (int) $_POST['manager_id'] : null;
+
+        // Validate role exists in database
+        $validRole = $db->fetch('SELECT role FROM roles WHERE role = ?', [Validator::clean($_POST['role'])]);
+        if (!$validRole) {
+            Session::flash('staff_crud', ['errors' => ['role' => ['Invalid role selected.']]]);
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? "/admin/staff/{$id}"));
+            exit;
+        }
+
         $db->update('staff', [
-            'name'  => Validator::clean($_POST['name']),
-            'email' => $email,
-            'role'  => Validator::clean($_POST['role']),
+            'name'         => Validator::clean($_POST['name']),
+            'email'        => $email,
+            'role'         => Validator::clean($_POST['role']),
+            'department_id'=> $departmentId,
+            'manager_id'   => $managerId,
         ], ['id' => $id]);
 
         Logger::info('Staff updated', ['staff_id' => $id, 'by' => Session::get('user_id')]);

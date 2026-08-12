@@ -210,6 +210,277 @@ class AdminController extends PageController
         exit;
     }
 
+    /** ==================== RBAC MANAGEMENT ==================== */
+    
+    /** Roles management - list all roles with permissions */
+    public function roles(): void
+    {
+        $db = Database::instance();
+        $roles = $db->fetchAll('SELECT * FROM roles ORDER BY role');
+        
+        // Count staff per role
+        $roleCounts = [];
+        foreach ($roles as $r) {
+            $count = $db->scalar('SELECT COUNT(*) FROM staff WHERE role = ?', [$r['role']]);
+            $roleCounts[$r['role']] = (int) $count;
+        }
+        
+        echo View::page('admin/roles', [
+            'roles' => $roles,
+            'roleCounts' => $roleCounts,
+            'flash' => $this->flash(),
+        ], $this->meta('Roles | Admin', 'Manage roles and permissions.', '/admin/roles'));
+    }
+    
+    /** Edit role permissions */
+    public function roleEdit(string $role): void
+    {
+        $db = Database::instance();
+        $roleData = $db->fetch('SELECT * FROM roles WHERE role = ?', [$role]);
+        if (!$roleData) {
+            \PPC\Core\Router::notFound();
+        }
+        
+        // Define available permissions
+        $availablePermissions = [
+            'all' => 'Full System Access',
+            'view_customers' => 'View Customer Information',
+            'search_customers' => 'Search Customers',
+            'create_customers' => 'Create New Customers',
+            'edit_customers' => 'Edit Customer Records',
+            'delete_customers' => 'Delete Customer Records',
+            'manage_billing' => 'Manage Billing and Payments',
+            'manage_appointments' => 'Manage Appointments',
+            'view_tickets' => 'View Support Tickets',
+            'respond_tickets' => 'Respond to Tickets',
+            'manage_tickets' => 'Manage All Tickets',
+            'send_messages' => 'Send Messages',
+            'view_messages' => 'View Message History',
+            'manage_staff' => 'Manage Staff Accounts',
+            'manage_roles' => 'Manage Roles and Permissions',
+            'view_analytics' => 'View Analytics and Reports',
+            'manage_content' => 'Manage Website Content',
+            'manage_marketing' => 'Manage Marketing Campaigns',
+            'api_access' => 'API Access',
+        ];
+        
+        $currentPerms = json_decode($roleData['permissions'], true) ?: [];
+        
+        echo View::page('admin/role-edit', [
+            'role' => $roleData,
+            'availablePermissions' => $availablePermissions,
+            'currentPerms' => $currentPerms,
+            'flash' => $this->flash(),
+        ], $this->meta('Edit Role | Admin', 'Edit role permissions.', "/admin/roles/{$role}"));
+    }
+    
+    /** Update role permissions */
+    public function roleUpdate(string $role): void
+    {
+        Csrf::verifyOrDie();
+        
+        $db = Database::instance();
+        $roleData = $db->fetch('SELECT * FROM roles WHERE role = ?', [$role]);
+        if (!$roleData) {
+            \PPC\Core\Router::notFound();
+        }
+        
+        // Prevent modifying super-user role permissions (security)
+        if ($role === 'super-user') {
+            Session::flash('admin', ['error' => 'Cannot modify Super User role permissions.']);
+            header('Location: /admin/roles');
+            exit;
+        }
+        
+        $permissions = $_POST['permissions'] ?? [];
+        if (!is_array($permissions)) {
+            $permissions = [];
+        }
+        
+        // Validate permissions
+        $validPermissions = [
+            'all', 'view_customers', 'search_customers', 'create_customers', 
+            'edit_customers', 'delete_customers', 'manage_billing', 'manage_appointments',
+            'view_tickets', 'respond_tickets', 'manage_tickets', 'send_messages',
+            'view_messages', 'manage_staff', 'manage_roles', 'view_analytics',
+            'manage_content', 'manage_marketing', 'api_access'
+        ];
+        
+        $permissions = array_intersect($permissions, $validPermissions);
+        
+        $db->update('roles', [
+            'permissions' => json_encode(array_values($permissions))
+        ], ['role' => $role]);
+        
+        $this->audit('role.update', 'role', $role, [
+            'role' => $role,
+            'permissions' => $permissions
+        ]);
+        
+        Session::flash('admin', ['success' => 'Role permissions updated.']);
+        header('Location: /admin/roles');
+        exit;
+    }
+    
+    /** Departments management */
+    public function departments(): void
+    {
+        $db = Database::instance();
+        $departments = $db->fetchAll('SELECT * FROM departments ORDER BY name');
+        
+        // Build tree structure
+        $tree = [];
+        $deptMap = [];
+        
+        foreach ($departments as $dept) {
+            $deptMap[$dept['id']] = $dept;
+            $deptMap[$dept['id']]['children'] = [];
+            $deptMap[$dept['id']]['staff_count'] = 0;
+        }
+        
+        // Count staff per department
+        foreach ($departments as $dept) {
+            $count = $db->scalar('SELECT COUNT(*) FROM staff WHERE department_id = ?', [$dept['id']]);
+            $deptMap[$dept['id']]['staff_count'] = (int) $count;
+        }
+        
+        // Build tree
+        foreach ($departments as $dept) {
+            if ($dept['parent_id'] && isset($deptMap[$dept['parent_id']])) {
+                $deptMap[$dept['parent_id']]['children'][] = &$deptMap[$dept['id']];
+            } else {
+                $tree[] = &$deptMap[$dept['id']];
+            }
+        }
+        
+        echo View::page('admin/departments', [
+            'departments' => $tree,
+            'flash' => $this->flash(),
+        ], $this->meta('Departments | Admin', 'Manage organizational structure.', '/admin/departments'));
+    }
+    
+    /** Create new department */
+    public function departmentCreate(): void
+    {
+        Csrf::verifyOrDie();
+        
+        $name = trim($_POST['name'] ?? '');
+        $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+        
+        if ($name === '') {
+            Session::flash('admin', ['error' => 'Department name is required.']);
+            header('Location: /admin/departments');
+            exit;
+        }
+        
+        $db = Database::instance();
+        $db->insert('departments', [
+            'name' => $name,
+            'parent_id' => $parentId
+        ]);
+        
+        $this->audit('department.create', 'department', (string) $db->lastInsertId(), [
+            'name' => $name,
+            'parent_id' => $parentId
+        ]);
+        
+        Session::flash('admin', ['success' => 'Department created.']);
+        header('Location: /admin/departments');
+        exit;
+    }
+    
+    /** Edit department */
+    public function departmentEdit(string $id): void
+    {
+        $db = Database::instance();
+        $department = $db->fetch('SELECT * FROM departments WHERE id = ?', [$id]);
+        if (!$department) {
+            \PPC\Core\Router::notFound();
+        }
+        
+        $departments = $db->fetchAll('SELECT * FROM departments ORDER BY name');
+        
+        echo View::page('admin/department-edit', [
+            'department' => $department,
+            'departments' => $departments,
+            'flash' => $this->flash(),
+        ], $this->meta('Edit Department | Admin', 'Edit department details.', "/admin/departments/{$id}"));
+    }
+    
+    /** Update department */
+    public function departmentUpdate(string $id): void
+    {
+        Csrf::verifyOrDie();
+        
+        $db = Database::instance();
+        $department = $db->fetch('SELECT * FROM departments WHERE id = ?', [$id]);
+        if (!$department) {
+            \PPC\Core\Router::notFound();
+        }
+        
+        $name = trim($_POST['name'] ?? '');
+        $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+        
+        // Prevent circular reference
+        if ($parentId == $id) {
+            Session::flash('admin', ['error' => 'Department cannot be its own parent.']);
+            header('Location: /admin/departments/{$id}");
+            exit;
+        }
+        
+        if ($name === '') {
+            Session::flash('admin', ['error' => 'Department name is required.']);
+            header('Location: /admin/departments/{$id}");
+            exit;
+        }
+        
+        $db->update('departments', [
+            'name' => $name,
+            'parent_id' => $parentId
+        ], ['id' => $id]);
+        
+        $this->audit('department.update', 'department', $id, [
+            'name' => $name,
+            'parent_id' => $parentId
+        ]);
+        
+        Session::flash('admin', ['success' => 'Department updated.']);
+        header('Location: /admin/departments');
+        exit;
+    }
+    
+    /** Delete department */
+    public function departmentDelete(string $id): void
+    {
+        Csrf::verifyOrDie();
+        
+        $db = Database::instance();
+        
+        // Check if department has staff
+        $staffCount = $db->scalar('SELECT COUNT(*) FROM staff WHERE department_id = ?', [$id]);
+        if ($staffCount > 0) {
+            Session::flash('admin', ['error' => 'Cannot delete department with staff members.']);
+            header('Location: /admin/departments');
+            exit;
+        }
+        
+        // Check if department has child departments
+        $childCount = $db->scalar('SELECT COUNT(*) FROM departments WHERE parent_id = ?', [$id]);
+        if ($childCount > 0) {
+            Session::flash('admin', ['error' => 'Cannot delete department with sub-departments.']);
+            header('Location: /admin/departments');
+            exit;
+        }
+        
+        $db->execute('DELETE FROM departments WHERE id = ?', [$id]);
+        
+        $this->audit('department.delete', 'department', $id, []);
+        
+        Session::flash('admin', ['success' => 'Department deleted.']);
+        header('Location: /admin/departments');
+        exit;
+    }
+
     /** Retention dashboard (ORDER 3): live summary + toggle states. */
     public function retention(): void
     {

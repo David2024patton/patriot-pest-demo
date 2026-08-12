@@ -303,6 +303,127 @@ final class FieldRoutes
     }
 
     /**
+     * Create a new lead/customer in FieldRoutes.
+     * This is the write-side capability for lead generation.
+     *
+     * @param array $district District configuration
+     * @param array $leadData Lead information (name, email, phone, address, etc.)
+     * @return array{success:bool, customerId:string|null, error:string|null}
+     */
+    public static function createLead(array $district, array $leadData): array
+    {
+        self::init();
+        if (!self::isConfigured()) {
+            return ['success' => false, 'customerId' => null, 'error' => 'FieldRoutes not configured'];
+        }
+
+        // Map lead data to FieldRoutes customer format
+        $params = [
+            'fname' => $leadData['firstName'] ?? '',
+            'lname' => $leadData['lastName'] ?? '',
+            'companyName' => $leadData['companyName'] ?? '',
+            'email' => $leadData['email'] ?? '',
+            'phone1' => $leadData['phone'] ?? '',
+            'address' => $leadData['address'] ?? '',
+            'city' => $leadData['city'] ?? '',
+            'state' => $leadData['state'] ?? '',
+            'zip' => $leadData['zip'] ?? '',
+            'notes' => $leadData['notes'] ?? '',
+            'source' => $leadData['source'] ?? 'Website',
+        ];
+
+        try {
+            $response = self::request($district, 'customer/create', $params);
+            
+            if ($response['success'] && isset($response['customerID'])) {
+                $customerId = $response['customerID'];
+                
+                // Cache the new customer locally
+                $normalized = self::normalize([
+                    'customerID' => $customerId,
+                    'fname' => $params['fname'],
+                    'lname' => $params['lname'],
+                    'companyName' => $params['companyName'],
+                    'email' => $params['email'],
+                    'phone1' => $params['phone1'],
+                    'address' => $params['address'],
+                    'city' => $params['city'],
+                    'state' => $params['state'],
+                    'zip' => $params['zip'],
+                    'statusText' => 'Lead',
+                ], $district['code']);
+                
+                self::upsertCustomer($normalized);
+                
+                return ['success' => true, 'customerId' => $customerId, 'error' => null];
+            } else {
+                $errorMsg = $response['errorMessage'] ?? 'Unknown error from FieldRoutes';
+                Logger::error('FieldRoutes lead creation failed', [
+                    'district' => $district['code'],
+                    'error' => $errorMsg,
+                    'response' => $response
+                ]);
+                return ['success' => false, 'customerId' => null, 'error' => $errorMsg];
+            }
+        } catch (\Throwable $e) {
+            Logger::error('FieldRoutes lead creation exception', [
+                'district' => $district['code'],
+                'error' => $e->getMessage()
+            ]);
+            return ['success' => false, 'customerId' => null, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Create an appointment in FieldRoutes.
+     * Used for scheduling service appointments.
+     *
+     * @param array $district District configuration
+     * @param string $customerId FieldRoutes customer ID
+     * @param array $appointmentData Appointment details
+     * @return array{success:bool, appointmentId:string|null, error:string|null}
+     */
+    public static function createAppointment(array $district, string $customerId, array $appointmentData): array
+    {
+        self::init();
+        if (!self::isConfigured()) {
+            return ['success' => false, 'appointmentId' => null, 'error' => 'FieldRoutes not configured'];
+        }
+
+        $params = [
+            'customerID' => $customerId,
+            'date' => $appointmentData['date'] ?? '',
+            'start' => $appointmentData['startTime'] ?? '',
+            'end' => $appointmentData['endTime'] ?? '',
+            'type' => $appointmentData['type'] ?? 'Regular Service',
+            'notes' => $appointmentData['notes'] ?? '',
+        ];
+
+        try {
+            $response = self::request($district, 'appointment/create', $params);
+            
+            if ($response['success'] && isset($response['appointmentID'])) {
+                return ['success' => true, 'appointmentId' => $response['appointmentID'], 'error' => null];
+            } else {
+                $errorMsg = $response['errorMessage'] ?? 'Unknown error from FieldRoutes';
+                Logger::error('FieldRoutes appointment creation failed', [
+                    'district' => $district['code'],
+                    'customerId' => $customerId,
+                    'error' => $errorMsg
+                ]);
+                return ['success' => false, 'appointmentId' => null, 'error' => $errorMsg];
+            }
+        } catch (\Throwable $e) {
+            Logger::error('FieldRoutes appointment creation exception', [
+                'district' => $district['code'],
+                'customerId' => $customerId,
+                'error' => $e->getMessage()
+            ]);
+            return ['success' => false, 'appointmentId' => null, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
      * Map an FR customer id + district code to the local customers.id.
      * Used to key the local cache tables (appointments, subscriptions).
      */

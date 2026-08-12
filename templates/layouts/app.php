@@ -38,6 +38,7 @@ if ($uType === 'staff') {
     $navMain = [
         ['/staff-dashboard', '◧', 'Overview'],
         ['/staff/customers', '👥', 'Customers'],
+        ['/staff/leads/new',  '＋', 'New Lead'],
         ['/staff/messages',  '✉', 'Messages'],
     ];
     if ($isAdmin) {
@@ -48,6 +49,8 @@ if ($uType === 'staff') {
             ['/admin/content', '🧩', 'Content Blocks'],
             ['/admin/settings','⚡', 'Settings'],
             ['/admin/staff',   '👤', 'Staff'],
+            ['/admin/roles',   '🛡', 'Roles'],
+            ['/admin/departments','🏢','Departments'],
             ['/admin/api-keys','🔑', 'API Keys'],
             ['/admin/twilio',  '📡', 'Twilio'],
             ['/admin/retention', '📊', 'Retention'],
@@ -58,7 +61,7 @@ if ($uType === 'staff') {
         ['href' => '/staff-dashboard', 'ico' => '◧', 'label' => 'Home'],
         ['href' => '/staff/customers', 'ico' => '👥', 'label' => 'Customers'],
         ['action' => 'search', 'ico' => '🔍', 'label' => 'Search'],
-        ['href' => '/staff/messages', 'ico' => '✉', 'label' => 'Messages'],
+        ['href' => '/staff/leads/new', 'ico' => '＋', 'label' => 'Lead'],
         ['href' => '/account', 'ico' => '◉', 'label' => 'Account'],
     ];
     $signout = '/staff-logout';

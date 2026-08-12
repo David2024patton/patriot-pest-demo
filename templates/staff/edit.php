@@ -68,6 +68,43 @@ $action      = $isNew ? '/admin/staff' : '/admin/staff/' . $staffMember['id'];
           </div>
         </div>
 
+        <div class="field" style="margin-bottom:1rem">
+          <label for="department_id" style="color:var(--cream)">Department</label>
+          <select id="department_id" name="department_id" 
+            style="width:100%;padding:.5rem;background:var(--olive-900);border:1px solid var(--olive-700);color:var(--cream);margin-top:.3rem">
+            <option value="">No Department</option>
+            <?php 
+            $departments = $data['departments'] ?? [];
+            foreach ($departments as $dept): ?>
+            <option value="<?= $view->e($dept['id']) ?>" <?= ($staffMember['department_id'] ?? '') == $dept['id'] ? 'selected' : '' ?>>
+              <?= $view->e($dept['name']) ?>
+            </option>
+            <?php endforeach; ?>
+          </select>
+          <div style="font-size:.75rem;color:var(--khaki);margin-top:.3rem">
+            Assign to a department for organizational structure.
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:1rem">
+          <label for="manager_id" style="color:var(--cream)">Manager</label>
+          <select id="manager_id" name="manager_id" 
+            style="width:100%;padding:.5rem;background:var(--olive-900);border:1px solid var(--olive-700);color:var(--cream);margin-top:.3rem">
+            <option value="">No Manager</option>
+            <?php 
+            $allStaff = $data['allStaff'] ?? [];
+            foreach ($allStaff as $s): 
+              if ($s['id'] != ($staffMember['id'] ?? 0)): // Can't be own manager ?>
+            <option value="<?= $view->e($s['id']) ?>" <?= ($staffMember['manager_id'] ?? '') == $s['id'] ? 'selected' : '' ?>>
+              <?= $view->e($s['name']) ?> (<?= $view->e($s['email']) ?>)
+            </option>
+            <?php endif; endforeach; ?>
+          </select>
+          <div style="font-size:.75rem;color:var(--khaki);margin-top:.3rem">
+            Assign a manager for reporting hierarchy.
+          </div>
+        </div>
+
         <?php if (!$isNew): ?>
         <div class="field" style="margin-bottom:1rem">
           <label style="color:var(--cream)">Status</label>
