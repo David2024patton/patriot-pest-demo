@@ -41,6 +41,29 @@ $pestCount = $data['pestCount'] ?? count($pests);
   <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker-track"></div></div>
 </section>
 
+<!-- ============ MOBILE STICKY NAVIGATION ============ -->
+<nav class="mobile-sticky-nav" aria-label="Mobile quick navigation">
+  <a href="/" aria-label="Home">
+    <span>🏠</span>
+    <span class="label">Home</span>
+  </a>
+  <a href="/contact" aria-label="Contact">
+    <span>📞</span>
+    <span class="label">Call</span>
+  </a>
+  <button class="center-btn" onclick="window.location.href='/contact'" aria-label="Request Service">
+    <span>＋</span>
+  </button>
+  <a href="/customer-dashboard" aria-label="Account">
+    <span>👤</span>
+    <span class="label">Account</span>
+  </a>
+  <a href="/login" aria-label="Login">
+    <span>🔐</span>
+    <span class="label">Login</span>
+  </a>
+</nav>
+
 <!-- ============ THREAT BOARD (DB-driven, every pest) ============ -->
 <section id="threats">
   <div class="wrap threats-head">

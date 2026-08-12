@@ -104,7 +104,7 @@ $isActive = fn(string $href): bool => $href !== '' && $href === $__activeHref;
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes">
   <meta name="robots" content="noindex, nofollow">
   <title><?= $view->e($title ?? 'Patriot Pest Control') ?></title>
 

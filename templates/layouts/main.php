@@ -15,7 +15,7 @@
 <head>
   <?= $view->raw(\PPC\Core\View::render('layouts/analytics')) ?>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes">
   <title><?= $view->e($title ?? 'Patriot Pest Control') ?></title>
   <meta name="description" content="<?= $view->e($description ?? '') ?>">
   <?php if (!empty($keywords)): ?><meta name="keywords" content="<?= $view->e($keywords) ?>"><?php endif; ?>
@@ -55,6 +55,7 @@
     $__appUi = (bool) preg_match('#^/(admin|staff-dashboard|customer-dashboard|login)(/|$)#', $__path);
   ?>
   <?php if ($__appUi): ?><link rel="stylesheet" href="<?= $view->asset('admin.css') ?>"><?php endif; ?>
+  <?php if ($__appUi): ?><link rel="stylesheet" href="<?= $view->asset('app.css') ?>"><?php endif; ?>
   <?php if (\PPC\Core\Settings::bool('egg_enabled', true)): ?><link rel="stylesheet" href="<?= $view->asset('beacon.css') ?>"><?php endif; ?>
   <link rel="stylesheet" href="<?= $view->asset('pwa-install.css') ?>">
   <link rel="icon" href="<?= $view->asset('img/pests/ants.jpg') ?>" type="image/jpeg">
@@ -91,6 +92,32 @@
 <?php endif; ?>
 <?= $view->raw($content ?? '') ?>
 </main>
+
+<!-- Mobile sticky navigation (marketing pages only) -->
+<?php if (!$__appUi): ?>
+<nav class="mobile-sticky-nav" aria-label="Mobile quick navigation">
+  <a href="/" aria-label="Home">
+    <span>🏠</span>
+    <span class="label">Home</span>
+  </a>
+  <a href="<?= $view->phoneHref() ?>" aria-label="Call">
+    <span>📞</span>
+    <span class="label">Call</span>
+  </a>
+  <button class="center-btn" onclick="window.location.href='/contact'" aria-label="Request Service">
+    <span>＋</span>
+  </button>
+  <a href="/contact" aria-label="Contact">
+    <span>📧</span>
+    <span class="label">Contact</span>
+  </a>
+  <a href="/login" aria-label="Login">
+    <span>🔐</span>
+    <span class="label">Login</span>
+  </a>
+</nav>
+<div class="mobile-nav-spacer"></div>
+<?php endif; ?>
 
 <footer>
   <div class="wrap">

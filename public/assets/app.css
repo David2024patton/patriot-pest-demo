@@ -391,3 +391,305 @@ body.appshell-body .code-block pre { font-family: var(--mono); font-size: .78rem
 body.appshell-body .media-preview { max-width: 320px; border: 1px solid var(--shell-line); display: block; }
 body.appshell-body .error-message { color: #8a2c1c; font-size: .85rem; margin-top: .4rem; }
 body.appshell-body .inline-form { display: inline-flex; align-items: center; gap: .6rem; }
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS FIXES (Phase 1)
+   Fix text overlapping, touch targets, and mobile/tablet layouts
+   ========================================================================== */
+
+/* ---------- Mobile viewport and typography fixes ---------- */
+@media (max-width: 768px) {
+  body.appshell-body {
+    font-size: 16px; /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Fix text overlapping in headings */
+  body.appshell-body h1 {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    line-height: 1.2;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  body.appshell-body h2 {
+    font-size: clamp(1.3rem, 4vw, 1.6rem);
+    line-height: 1.3;
+    word-wrap: break-word;
+  }
+  
+  body.appshell-body h3 {
+    font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+    line-height: 1.4;
+  }
+  
+  /* Prevent text overflow in tables */
+  body.appshell-body .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  body.appshell-body table.data {
+    min-width: 600px; /* Force horizontal scroll on small screens */
+  }
+  
+  body.appshell-body table.data th,
+  body.appshell-body table.data td {
+    padding: .6rem .5rem;
+    font-size: .85rem;
+    white-space: nowrap;
+  }
+  
+  /* Allow text wrapping in specific columns */
+  body.appshell-body table.data td.wrap-text {
+    white-space: normal;
+    min-width: 150px;
+    max-width: 200px;
+  }
+}
+
+/* ---------- Touch-friendly button sizing ---------- */
+@media (max-width: 768px) {
+  body.appshell-body .btn,
+  body.appshell-body .btn-ghost,
+  body.appshell-body button[type="submit"] {
+    min-height: 44px; /* iOS touch target minimum */
+    min-width: 44px;
+    padding: .7rem 1rem;
+    font-size: 1rem;
+  }
+  
+  /* Bottom navigation bar touch targets */
+  body.appshell-body .appshell-bar a,
+  body.appshell-body .appshell-bar button {
+    min-height: 48px;
+    min-width: 48px;
+    padding: .5rem;
+  }
+  
+  body.appshell-body .appshell-bar .bi {
+    font-size: 1.3rem;
+  }
+  
+  /* Form inputs touch targets */
+  body.appshell-body .field input,
+  body.appshell-body .field select,
+  body.appshell-body .field textarea {
+    min-height: 48px;
+    padding: .8rem;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+  
+  /* Checkbox and radio touch targets */
+  body.appshell-body input[type="checkbox"],
+  body.appshell-body input[type="radio"] {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+}
+
+/* ---------- Tablet landscape optimizations ---------- */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  body.appshell-body .appshell-main {
+    padding: 0 1rem;
+  }
+  
+  body.appshell-body .wrap {
+    padding: 1rem;
+  }
+  
+  /* Two-column layouts for tablet */
+  body.appshell-body .grid.g2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  body.appshell-body .form-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+/* ---------- Mobile form layouts ---------- */
+@media (max-width: 600px) {
+  body.appshell-body .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  body.appshell-body .form-grid .full {
+    grid-column: 1;
+  }
+  
+  /* Stack grid layouts on mobile */
+  body.appshell-body .grid.g2,
+  body.appshell-body .grid.g3,
+  body.appshell-body .grid.g4 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Stats cards stack on mobile */
+  body.appshell-body .stat-cards {
+    grid-template-columns: 1fr;
+    gap: .8rem;
+  }
+  
+  /* Detail rows stack on mobile */
+  body.appshell-body .detail-row {
+    grid-template-columns: 1fr;
+    gap: .3rem;
+    padding: .8rem 0;
+  }
+  
+  body.appshell-body .detail-row .label {
+    font-size: .75rem;
+    color: var(--shell-accent);
+  }
+}
+
+/* ---------- Mobile navigation improvements ---------- */
+@media (max-width: 768px) {
+  /* Top bar improvements */
+  body.appshell-body .appshell-topbar {
+    padding: .8rem 1rem;
+    height: 56px;
+  }
+  
+  body.appshell-body .appshell-topbar .tbrand {
+    font-size: 1rem;
+  }
+  
+  body.appshell-body .appshell-topbar .burger {
+    font-size: 1.5rem;
+    padding: .5rem;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Sidebar drawer improvements */
+  body.appshell-body .appshell-side {
+    width: 280px;
+    max-width: 85vw;
+  }
+  
+  body.appshell-body .appshell-nav a {
+    padding: .8rem 1rem;
+    min-height: 48px;
+    font-size: 1rem;
+  }
+  
+  /* Bottom navigation improvements */
+  body.appshell-body .appshell-bar {
+    padding: .4rem .3rem calc(.4rem + env(safe-area-inset-bottom));
+    height: 60px;
+  }
+  
+  body.appshell-body .appshell-bar a,
+  body.appshell-body .appshell-bar button {
+    font-size: .7rem;
+    line-height: 1.2;
+  }
+  
+  /* Center button enhancement */
+  body.appshell-body .appshell-bar .center {
+    transform: translateY(-20px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+}
+
+/* ---------- Safe area for notched devices ---------- */
+@supports (padding: max(0px)) {
+  body.appshell-body .appshell-bar {
+    padding-bottom: max(.4rem, env(safe-area-inset-bottom));
+  }
+  
+  body.appshell-body .appshell-topbar {
+    padding-top: max(.8rem, env(safe-area-inset-top));
+  }
+}
+
+/* ---------- Prevent horizontal scroll ---------- */
+body.appshell-body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+body.appshell-body .appshell-main {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body.appshell-body .wrap {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  padding: 1rem;
+}
+
+/* ---------- Improved mobile text readability ---------- */
+@media (max-width: 600px) {
+  body.appshell-body p,
+  body.appshell-body li,
+  body.appshell-body td {
+    font-size: .95rem;
+    line-height: 1.6;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+  
+  /* Panel spacing on mobile */
+  body.appshell-body .panel {
+    padding: 1.2rem 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Button full width on mobile for easier tapping */
+  body.appshell-body .app-head .actions {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    width: 100%;
+  }
+  
+  body.appshell-body .app-head .actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ---------- Flash messages mobile fixes ---------- */
+@media (max-width: 600px) {
+  body.appshell-body .flash,
+  body.appshell-body .notice {
+    padding: 1rem;
+    font-size: .9rem;
+    margin: 0 0 1rem 0;
+    border-radius: 8px;
+  }
+  
+  body.appshell-body .flash ul {
+    margin: .5rem 0 0 0;
+    padding-left: 1.2rem;
+  }
+}
+
+/* ---------- Modal/overlay mobile fixes ---------- */
+@media (max-width: 600px) {
+  body.appshell-body .csearch {
+    padding: 1rem;
+  }
+  
+  body.appshell-body .csearch-box {
+    max-width: none;
+    width: 100%;
+  }
+  
+  body.appshell-body .csearch input {
+    font-size: 16px; /* Prevent iOS zoom */
+    padding: .8rem;
+  }
+}
