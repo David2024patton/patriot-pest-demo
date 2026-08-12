@@ -1,11 +1,11 @@
 <?php
 /**
- * layouts/app.php — the LIGHT authenticated app shell.
+ * layouts/app.php - the LIGHT authenticated app shell.
  *
  * Wraps the staff dashboard, customer portal, and the CMS in a clean paper-white
  * workspace: a fixed left sidebar (desktop) that collapses to an off-canvas
  * drawer + a sticky 5-icon bottom bar (mobile). The center bottom icon is a
- * raised magnifier that opens the customer-search overlay (staff/admin) — or a
+ * raised magnifier that opens the customer-search overlay (staff/admin) - or a
  * raised "request" action for customers.
  *
  * Deliberately OMITS the marketing nav/footer and main.js (which injects the
@@ -50,6 +50,7 @@ if ($uType === 'staff') {
             ['/admin/staff',   '👤', 'Staff'],
             ['/admin/api-keys','🔑', 'API Keys'],
             ['/admin/twilio',  '📡', 'Twilio'],
+            ['/admin/retention', '📊', 'Retention'],
         ];
     }
     // 5-icon bottom bar; center = customer search magnifier
@@ -112,6 +113,12 @@ $isActive = fn(string $href): bool => $href !== '' && $href === $__activeHref;
   <link rel="stylesheet" href="<?= $view->asset('admin.css') ?>">
   <link rel="stylesheet" href="<?= $view->asset('app.css') ?>">
   <link rel="icon" href="<?= $view->asset('img/pests/ants.jpg') ?>" type="image/jpeg">
+
+  <!-- PWA: manifest, theme color, home-screen icon -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1c2415">
+  <link rel="apple-touch-icon" href="<?= $view->asset('icons/apple-touch-icon.png') ?>">
+  <link rel="stylesheet" href="<?= $view->asset('pwa-install.css') ?>">
 </head>
 <body class="appshell-body">
 
@@ -206,5 +213,10 @@ $isActive = fn(string $href): bool => $href !== '' && $href === $__activeHref;
   window.PPC_APP = { userType: <?= json_encode($uType) ?> };
 </script>
 <script src="<?= $view->asset('app.js') ?>"></script>
+<?php if (\PPC\Core\Settings::bool('track_enabled', true)): ?>
+<script src="<?= $view->asset('beacon.js') ?>"></script>
+<?php endif; ?>
+<?= $view->raw(\PPC\Core\View::render('partials/install-banner')) ?>
+<script src="<?= $view->asset('pwa-install.js') ?>"></script>
 </body>
 </html>

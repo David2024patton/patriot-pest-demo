@@ -1,6 +1,6 @@
 <?php
 /**
- * FieldRoutes — read/write client for the FieldRoutes CRM API.
+ * FieldRoutes - read/write client for the FieldRoutes CRM API.
  *
  * FieldRoutes is the SOURCE OF TRUTH for customers; this app keeps a local
  * cache (the `customers` table) plus local-only flags (is_no_call / dnc_reason)
@@ -17,7 +17,7 @@
  * returns IDs; customer/get returns up to 1000 records per call (we batch 200).
  *
  * Every network call is wrapped so a missing cURL extension or a dead endpoint
- * never throws into the caller — it returns [] / false and logs instead.
+ * never throws into the caller - it returns [] / false and logs instead.
  */
 
 declare(strict_types=1);
@@ -167,6 +167,7 @@ final class FieldRoutes
      * seeded fixture gets claimed by its real FR record), otherwise inserts.
      * Local opt-out flags (is_no_call / dnc_reason) are NEVER touched on update
      * — FieldRoutes does not own them. last_service is updated from FR data.
+
      *
      * @return string 'inserted' | 'updated' | 'skipped'
      */
@@ -258,7 +259,7 @@ final class FieldRoutes
         foreach ($appts as $a) {
             $cachedAppts[] = [
                 'when'         => trim(self::fmtDate($a['date'] ?? '') . ' ' . (string) ($a['start'] ?? '')),
-                'type'         => $a['type'] ?? '—',
+                'type'         => $a['type'] ?? 'N/A',
                 'status_label' => self::apptStatusLabel($a),
                 'status_kind'  => self::apptStatusKind($a),
                 'notes'        => $a['notes'] ?? '',
@@ -267,6 +268,7 @@ final class FieldRoutes
                 self::cacheAppointment($a, $localCustomerId, $district['code']);
             }
         }
+
 
         // Subscriptions: /search returns IDs only, then /get the records.
         // FR scoping bug: search may return all district subscriptions regardless
@@ -285,7 +287,7 @@ final class FieldRoutes
             $cachedSubs[] = [
                 'status_label' => !empty($s['activeText']) ? $s['activeText'] : ((int) ($s['active'] ?? 0) === 1 ? 'Active' : 'Inactive'),
                 'status_kind'  => (int) ($s['active'] ?? 0) === 1 ? 'active' : 'cancelled',
-                'charge'       => isset($s['recurringCharge']) && $s['recurringCharge'] !== '' ? '$' . number_format((float) $s['recurringCharge'], 2) : '—',
+                'charge'       => isset($s['recurringCharge']) && $s['recurringCharge'] !== '' ? '$' . number_format((float) $s['recurringCharge'], 2) : 'N/A',
                 'freq_label'   => self::freqLabel($s['billingFrequency'] ?? null),
                 'next'         => self::fmtDate($s['nextService'] ?? ''),
                 'last'         => self::fmtDate($s['lastCompleted'] ?? ''),
@@ -295,6 +297,7 @@ final class FieldRoutes
                 self::cacheSubscription($s, $localCustomerId, $district['code']);
             }
         }
+
 
         return ['appointments' => $cachedAppts, 'subscriptions' => $cachedSubs];
     }
@@ -372,7 +375,7 @@ final class FieldRoutes
         $label   = !empty($s['activeText']) ? $s['activeText'] : ucfirst($status);
         $charge  = isset($s['recurringCharge']) && $s['recurringCharge'] !== ''
             ? '$' . number_format((float) $s['recurringCharge'], 2)
-            : '—';
+            : 'N/A';
         $freq    = self::freqLabel($s['billingFrequency'] ?? null);
         $next    = self::fmtDate($s['nextService'] ?? '');
         $last    = self::fmtDate($s['lastCompleted'] ?? '');
@@ -419,7 +422,7 @@ final class FieldRoutes
             90  => 'Quarterly',
             180 => 'Semi-annual',
             365 => 'Annual',
-            default => $f === null || $f === '' ? '—' : 'Custom',
+            default => $f === null || $f === '' ? 'N/A' : 'Custom',
         };
     }
 
@@ -430,7 +433,7 @@ final class FieldRoutes
             return (string) $a['statusText'];
         }
         return match ((int) ($a['status'] ?? -1)) {
-            0 => 'Pending', 1 => 'Completed', 2 => 'Scheduled', 3 => 'Cancelled', default => '—',
+            0 => 'Pending', 1 => 'Completed', 2 => 'Scheduled', 3 => 'Cancelled', default => 'N/A',
         };
     }
 
@@ -447,7 +450,7 @@ final class FieldRoutes
     {
         $v = trim((string) $v);
         if ($v === '') {
-            return '—';
+            return 'N/A';
         }
         $ts = strtotime($v);
         return $ts ? date('M j, Y', $ts) : $v;

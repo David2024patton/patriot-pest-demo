@@ -1,6 +1,6 @@
 <?php
 /**
- * RateLimiter — sliding-window attempt limiting.
+ * RateLimiter - sliding-window attempt limiting.
  *
  * The old OTP flow had NO brute-force protection: a 6-digit code could be
  * guessed by hammering the endpoint. This limiter counts recent attempts per

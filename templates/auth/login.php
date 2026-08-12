@@ -1,10 +1,10 @@
 <?php
 /**
- * auth/login.php — the customer sign-in page.
+ * auth/login.php - the customer sign-in page.
  *
  * Customer-facing by design: it welcomes new and existing customers and never
  * describes the internal auth machinery. One field (email / phone / account #),
- * then a secure emailed code. The brand panel is alive — ambient grid, a slow
+ * then a secure emailed code. The brand panel is alive - ambient grid, a slow
  * radar sweep, a rotating threat photo, and the visitor's local phone line.
  * Vars: $flash (array|null: 'error' | 'sent' | 'to').
  */
@@ -23,8 +23,8 @@ $flash = $data['flash'] ?? null;
 
     <div>
       <h1 class="authx-headline">Welcome <em>back.</em></h1>
-      <p class="authx-lede">Your appointments, your technician, your plan — everything about your pest-free home, right here.</p>
-      <p class="authx-new"><b>New around here?</b> Welcome aboard — enter your details and we'll get you set up in seconds.</p>
+      <p class="authx-lede">Your appointments, your technician, your plan. Everything about your pest-free home, right here.</p>
+      <p class="authx-new"><b>New around here?</b> Welcome aboard. Enter your details and we'll get you set up in seconds.</p>
 
       <div class="authx-photo" aria-hidden="true">
         <img id="authx-img" src="<?= $view->asset('img/pests/ants.jpg') ?>" alt="">
@@ -60,7 +60,7 @@ $flash = $data['flash'] ?? null;
           <label for="identifier">Email, phone, or account number</label>
           <input type="text" id="identifier" name="identifier" autocomplete="username" required autofocus
                  placeholder="you@example.com  ·  (509) 555-0101  ·  1001">
-          <div class="hint">Use whichever you have on file — we'll recognize you and email a one-time code.</div>
+          <div class="hint">Use whichever you have on file. We'll recognize you and email a one-time code.</div>
         </div>
         <button type="submit" class="authx-btn">Send My Secure Code ▸</button>
       </form>

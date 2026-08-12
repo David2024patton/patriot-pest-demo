@@ -1,12 +1,12 @@
 <?php
 /**
- * OtpAuth — passwordless one-time-code authentication.
+ * OtpAuth - passwordless one-time-code authentication.
  *
  * This is the heart of the login system (no passwords anywhere):
- *   1. issue()  — generate a 6-digit code, store a HASH of it (never plaintext),
+ *   1. issue()  - generate a 6-digit code, store a HASH of it (never plaintext),
  *                 with expiry + single-use flag, and return the plaintext code
  *                 so the caller can email/text it.
- *   2. verify() — constant-time compare against the stored hash, enforcing:
+ *   2. verify() - constant-time compare against the stored hash, enforcing:
  *                 expiry, single-use, and a brute-force attempt cap (via
  *                 RateLimiter). On success the code is consumed.
  *

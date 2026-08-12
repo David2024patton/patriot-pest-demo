@@ -1,6 +1,6 @@
 <?php
 /**
- * View — minimal PHP template renderer.
+ * View - minimal PHP template renderer.
  *
  * Templates live in templates/ as plain .php files (the scrollytelling design
  * is converted into these). A template receives its data as extracted local

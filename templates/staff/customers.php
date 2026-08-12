@@ -1,6 +1,6 @@
 <?php
 /**
- * staff/customers.php — the customer book (searchable list).
+ * staff/customers.php - the customer book (searchable list).
  * Vars: $customers, $q, $status, $total, $isAdmin.
  */
 $customers = $data['customers'] ?? [];
@@ -72,13 +72,13 @@ $frOn      = (bool) ($data['frConfigured'] ?? false);
     <tbody>
       <?php foreach ($customers as $c): ?>
       <tr>
-        <td><a href="/staff/customers/<?= (int) $c['id'] ?>"><?= $view->e($c['name'] ?? '—') ?></a>
+        <td><a href="/staff/customers/<?= (int) $c['id'] ?>"><?= $view->e($c['name'] ?? 'N/A') ?></a>
             <div class="mono" style="font-size:.7rem;color:var(--olive-300)"><?= $view->e($c['email'] ?? '') ?></div></td>
-        <td class="num"><?= $view->e($c['account_number'] ?? '—') ?></td>
-        <td class="num"><?= $view->e($c['phone'] ?? '—') ?></td>
+        <td class="num"><?= $view->e($c['account_number'] ?? 'N/A') ?></td>
+        <td class="num"><?= $view->e($c['phone'] ?? 'N/A') ?></td>
         <td class="muted"><?= $view->e(trim(($c['city'] ?? '') . ', ' . ($c['state'] ?? ''), ', ')) ?></td>
         <td><span class="badge <?= $view->e($c['status']) ?>"><?= $view->e(ucfirst($c['status'] ?? 'active')) ?></span></td>
-        <td><?php if ((int)($c['is_no_call'] ?? 0) === 1): ?><span class="badge cancelled">No-Call</span><?php else: ?><span class="muted">—</span><?php endif; ?></td>
+        <td><?php if ((int)($c['is_no_call'] ?? 0) === 1): ?><span class="badge cancelled">No-Call</span><?php else: ?><span class="muted">N/A</span><?php endif; ?></td>
         <td><div class="row-actions"><a href="/staff/customers/<?= (int) $c['id'] ?>">Open</a></div></td>
       </tr>
       <?php endforeach; ?>

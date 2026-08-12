@@ -1,13 +1,13 @@
 <?php
 /**
- * Bootstrap — application entry-point setup.
+ * Bootstrap - application entry-point setup.
  *
  * Loaded once by public/index.php (and by CLI scripts). Responsibilities:
  *   - define BASE_PATH,
  *   - load .env into Config,
  *   - register the PSR-4 autoloader (PPC\ => app/),
  *   - install error/exception handlers (log everything, expose details only
- *     in debug mode — never leak stack traces in production),
+ *     in debug mode - never leak stack traces in production),
  *   - initialise Logger, View, and the hardened Session.
  */
 

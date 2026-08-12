@@ -1,6 +1,6 @@
 <?php
 /**
- * dashboard/staff.php — the staff dashboard overview.
+ * dashboard/staff.php - the staff dashboard overview.
  * Vars: $name, $role, $isAdmin, $counts (openTickets/openCases/staff/customers).
  */
 $name    = $data['name'] ?? 'Staff';
@@ -51,7 +51,7 @@ $counts  = $data['counts'] ?? [];
 
       <div class="panel">
         <h3>Operations</h3>
-        <p class="muted" style="margin-top:.6rem;line-height:1.7">The full staff toolkit — customers, appointments, tickets, cases, messaging, reactivation campaigns, and phone lookup — is being rebuilt on the new secure core. Modules come online in phases.</p>
+        <p class="muted" style="margin-top:.6rem;line-height:1.7">The full staff toolkit (customers, appointments, tickets, cases, messaging, reactivation campaigns, and phone lookup) is being rebuilt on the new secure core. Modules come online in phases.</p>
         <p class="muted" style="margin-top:.8rem;line-height:1.7">Need something now? The legacy tools remain available during the transition.</p>
       </div>
     </div>

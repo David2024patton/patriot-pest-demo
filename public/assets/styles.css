@@ -1,5 +1,5 @@
 /* ============================================================
-   PATRIOT PEST CONTROL — Tactical Design System
+   PATRIOT PEST CONTROL - Tactical Design System
    Display: Black Ops One · Body: Barlow · Mono: IBM Plex Mono
    ============================================================ */
 :root{
@@ -397,7 +397,7 @@ h2 em,h1 em{font-style:normal;color:var(--orange)}
 .step h3{font-size:1rem;color:var(--cream);margin-bottom:.5rem}
 .step p{font-size:.86rem;color:var(--khaki);line-height:1.55}
 
-/* ---- home: area of operations — 4-state tactical readout ----
+/* ---- home: area of operations - 4-state tactical readout ----
    Scoped to #areas so the /service-areas page (self-styled inline) is untouched.
    Each state is a dossier column: stencil code, a hairline city list that slides
    on hover, an orange tick that draws down the left edge, and a mono status line. */
@@ -517,7 +517,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .threat-card{flex:0 0 320px;margin-right:1.4rem;background:var(--olive-800);border:1px solid var(--olive-700);padding:1.6rem 1.5rem 1.4rem;position:relative;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));transition:border-color .25s,transform .25s}
 .threat-card:hover{border-color:var(--orange);transform:translateY(-8px)}
 .threat-card .file-no{font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;color:var(--olive-300);text-transform:uppercase}
-/* ---------- pest photos — tactical "surveillance still" treatment ---------- */
+/* ---------- pest photos - tactical "surveillance still" treatment ---------- */
 .pphoto{position:relative;display:block;overflow:hidden;background:#0b0e08;border:1px solid var(--olive-700);flex-shrink:0;aspect-ratio:16/10}
 .pphoto img{width:100%;height:100%;object-fit:cover;display:block;
   filter:grayscale(.55) sepia(.4) hue-rotate(35deg) saturate(1.15) contrast(1.06) brightness(.9);

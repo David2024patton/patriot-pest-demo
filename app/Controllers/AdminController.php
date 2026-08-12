@@ -1,12 +1,12 @@
 <?php
 /**
- * AdminController — the WordPress-like CMS (admin-only).
+ * AdminController - the WordPress-like CMS (admin-only).
  *
  * Lets admins manage the site's content without touching code:
  *   - Blog posts: list → click to edit → create new. All posts share ONE
  *     template; the editor offers a pest-photo picker (the media library) so
  *     any selected photo gets the site's tactical treatment automatically.
- *   - Media: the pest photo library (pest_photos) — the single source of pest
+ *   - Media: the pest photo library (pest_photos) - the single source of pest
  *     imagery used across posts and pages.
  *   - Content: per-page editable blocks (expanded in the CMS phase).
  *
@@ -24,6 +24,8 @@ use PPC\Core\Database;
 use PPC\Core\Csrf;
 use PPC\Core\Logger;
 use PPC\Core\Validator;
+use PPC\Core\Retention;
+use PPC\Core\Settings;
 
 class AdminController extends PageController
 {
@@ -205,6 +207,38 @@ class AdminController extends PageController
         }
 
         header('Location: /admin/settings');
+        exit;
+    }
+
+    /** Retention dashboard (ORDER 3): live summary + toggle states. */
+    public function retention(): void
+    {
+        $summary = [];
+        try {
+            $summary = Retention::summary();
+        } catch (\Throwable $e) {
+            \PPC\Core\Logger::warning('Retention summary failed', ['error' => $e->getMessage()]);
+        }
+        echo View::page('admin/retention', [
+            'summary'      => $summary,
+            'eggEnabled'   => Settings::bool('egg_enabled', true),
+            'trackEnabled' => Settings::bool('track_enabled', true),
+            'flash'        => $this->flash(),
+        ], $this->meta('Retention Analytics | Admin', 'First-party retention analytics.', '/admin/retention'));
+    }
+
+    /** Save the retention/beacon toggles (doctrine: on/off per feature). */
+    public function retentionSettings(): void
+    {
+        Csrf::verifyOrDie();
+        Settings::set('egg_enabled',   !empty($_POST['egg_enabled'])   ? '1' : '0');
+        Settings::set('track_enabled', !empty($_POST['track_enabled']) ? '1' : '0');
+        $this->audit('settings.update', 'settings', 'retention', [
+            'egg_enabled'   => Settings::bool('egg_enabled'),
+            'track_enabled' => Settings::bool('track_enabled'),
+        ]);
+        Session::flash('admin', ['success' => 'Settings saved.']);
+        header('Location: /admin/retention');
         exit;
     }
 

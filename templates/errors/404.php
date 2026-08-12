@@ -1,9 +1,9 @@
-<?php /** errors/404.php — standalone (no layout) to avoid render recursion. */ ?>
+<?php /** errors/404.php - standalone (no layout) to avoid render recursion. */ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 — Target Not Found | Patriot Pest Control</title>
+  <title>404 - Target Not Found | Patriot Pest Control</title>
   <meta name="robots" content="noindex">
   <style>
     :root{--olive-950:#0d0f08;--olive-800:#1b1e14;--khaki:#c9c2a6;--orange:#e8762d;--cream:#f2efe2}

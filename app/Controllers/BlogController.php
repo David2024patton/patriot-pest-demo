@@ -1,6 +1,6 @@
 <?php
 /**
- * BlogController — the blog, rendered through ONE unified template.
+ * BlogController - the blog, rendered through ONE unified template.
  *
  * Posts live in the `posts` table and are managed from the admin CMS. Every
  * post uses the same template (pages/blog-post) so any selected pest photo
@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace PPC\Controllers;
 
+use PPC\Core\Config;
 use PPC\Core\Database;
 use PPC\Core\Router;
 use PPC\Core\View;
@@ -32,7 +33,7 @@ class BlogController extends PageController
         );
 
         echo View::page('pages/blog-index', ['posts' => $posts], $this->meta(
-            'Pest Control Blog & Tips — Seasonal Guides | Patriot Pest Control',
+            'Pest Control Blog & Tips - Seasonal Guides | Patriot Pest Control',
             'Expert pest control tips, seasonal guides, and identification help for WA, ID, OR, AZ. Written by licensed technicians.',
             '/blogs',
             ['crumb' => [['Home', '/'], ['Blog', '/blogs']]]
@@ -96,5 +97,23 @@ class BlogController extends PageController
             'dateModified'  => $post['date_modified'] ?? $post['updated_at'] ?? '',
             'mainEntityOfPage' => 'https://patriotpest.pro/blogs/' . $post['slug'],
         ];
+    }
+
+    /** RSS 2.0 feed: every published post, newest first, stable GUIDs. */
+    public function rss(): void
+    {
+        $db    = Database::instance();
+        $posts = $db->fetchAll(
+            "SELECT slug, title, excerpt, published_at
+             FROM posts
+             WHERE status = 'published'
+             ORDER BY published_at DESC"
+        );
+
+        header('Content-Type: application/rss+xml; charset=UTF-8');
+        echo View::render('feeds/blog-rss', [
+            'posts' => $posts,
+            'base'  => (string) (Config::get('APP_URL', 'https://patriotpest.pro') ?? 'https://patriotpest.pro'),
+        ]);
     }
 }

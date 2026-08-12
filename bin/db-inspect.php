@@ -1,6 +1,6 @@
 <?php
 /**
- * bin/db-inspect.php — read-only snapshot of the live SQLite database.
+ * bin/db-inspect.php - read-only snapshot of the live SQLite database.
  *
  * Uses the exact same Database singleton the web app uses, so this is the
  * authoritative view of what the dashboards/CMS are reading. SELECTs only.
@@ -38,7 +38,7 @@ dump('POSTS (blog / CMS)',
 dump('PEST PHOTOS (count only)',
     $db->fetchAll('SELECT COUNT(*) AS total, COUNT(DISTINCT category) AS categories FROM pest_photos'));
 
-dump('OTP CODES (recent — passwordless login trail)',
+dump('OTP CODES (recent - passwordless login trail)',
     $db->fetchAll("SELECT id, identity, purpose, attempts, used_at IS NOT NULL AS used, created_at FROM otp_codes ORDER BY id DESC LIMIT 6"));
 
 dump('AUDIT LOG (recent security trail)',

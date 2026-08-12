@@ -1,6 +1,6 @@
 <?php
 /**
- * pages/pest.php — the unified "threat file" page for a single pest.
+ * pages/pest.php - the unified "threat file" page for a single pest.
  *
  * Every pest in the library renders through this ONE template, so each page has
  * the same tactical photo treatment and the same Signs / Treatment / Prevention
@@ -16,7 +16,7 @@ $related = $data['related'] ?? [];
 $byCat = [
     'insect'   => [
         'signs' => ['Live insects or shed skins near entry points, kitchens, or baseboards', 'Small droppings, smear marks, or nesting material in hidden corners', 'Damaged food packaging, wood, or fabrics', 'Unusual odors or faint rustling sounds at night'],
-        'treat' => 'Targeted crack-and-crevice and baiting programs that reach the colony at its source — not just the insects you see. We use low-toxicity, family- and pet-safe products, then monitor to confirm elimination.',
+        'treat' => 'Targeted crack-and-crevice and baiting programs that reach the colony at its source, not just the insects you see. We use low-toxicity, family- and pet-safe products, then monitor to confirm elimination.',
         'prev'  => ['Seal cracks around the foundation, windows, and utility entry points', 'Store food in airtight containers and clean up crumbs and spills promptly', 'Eliminate standing water and fix leaky fixtures', 'Keep vegetation and mulch pulled back from the foundation'],
     ],
     'rodent'   => [
@@ -26,7 +26,7 @@ $byCat = [
     ],
     'wildlife' => [
         'signs' => ['Noises in the attic, walls, or chimney at dawn and dusk', 'Entry holes, torn vents, or damaged soffits and fascia', 'Droppings or nesting material in attics and crawlspaces', 'Damaged insulation, wiring, or stored items'],
-        'treat' => 'Humane removal and exclusion. We safely remove the animals, then install one-way doors and seal entry points so they can’t return — with cleanup and decontamination of affected areas.',
+        'treat' => 'Humane removal and exclusion. We safely remove the animals, then install one-way doors and seal entry points so they can’t return, with cleanup and decontamination of affected areas.',
         'prev'  => ['Cap chimneys and vent openings with wildlife-proof covers', 'Repair damaged soffits, fascia, and roof vents', 'Keep trash secured and remove outdoor food sources', 'Trim overhanging branches that provide roof access'],
     ],
 ];

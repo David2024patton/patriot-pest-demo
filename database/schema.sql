@@ -1,5 +1,5 @@
 -- ============================================================
--- Patriot Pest Control — SQLite schema (idempotent)
+-- Patriot Pest Control - SQLite schema (idempotent)
 -- Applied automatically by app/Core/Database.php on first run.
 -- Every table uses CREATE TABLE IF NOT EXISTS so re-running is safe.
 -- Conventions: snake_case, INTEGER PK AUTOINCREMENT, UTC timestamps (TEXT ISO-8601).

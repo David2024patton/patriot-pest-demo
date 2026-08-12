@@ -1,6 +1,6 @@
 <?php
 /**
- * pages/legal.php — privacy policy & terms of use. Vars: $kind ('privacy'|'terms').
+ * pages/legal.php - privacy policy & terms of use. Vars: $kind ('privacy'|'terms').
  */
 $kind = $data['kind'] ?? 'privacy';
 $isPrivacy = $kind === 'privacy';
@@ -16,7 +16,7 @@ $title = $isPrivacy ? 'Privacy Policy' : 'Terms of Use';
     <div class="prose" style="margin-top:1.6rem">
       <p>Patriot Pest Control LLC ("we," "us") respects your privacy. This policy explains what information we collect, how we use it, and your choices.</p>
       <h3>Information We Collect</h3>
-      <p>We collect information you provide directly — such as your name, contact details, address, and service information — when you request a quote, schedule service, or create an account. We also collect limited technical data (like browser type and pages visited) to improve our site.</p>
+      <p>We collect information you provide directly, such as your name, contact details, address, and service information, when you request a quote, schedule service, or create an account. We also collect limited technical data (like browser type and pages visited) to improve our site.</p>
       <h3>How We Use Information</h3>
       <ul>
         <li>To provide, schedule, and manage pest control services</li>
@@ -41,7 +41,7 @@ $title = $isPrivacy ? 'Privacy Policy' : 'Terms of Use';
       <h3>Use of the Site</h3>
       <p>You agree to use this site only for lawful purposes. You may not misuse the site, interfere with its operation, or attempt to access it using automated means in ways that could damage or impair it.</p>
       <h3>Content</h3>
-      <p>The content on this site — including text, graphics, logos, and images — is the property of Patriot Pest Control LLC or its licensors and is protected by applicable law. You may not reproduce or distribute it without permission.</p>
+      <p>The content on this site, including text, graphics, logos, and images, is the property of Patriot Pest Control LLC or its licensors and is protected by applicable law. You may not reproduce or distribute it without permission.</p>
       <h3>Service Quotes &amp; Estimates</h3>
       <p>Quotes provided through this site are estimates. Final pricing depends on an assessment of your specific situation, including property size, pest type, and severity.</p>
       <h3>Warranty</h3>

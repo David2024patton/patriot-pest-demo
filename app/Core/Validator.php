@@ -1,6 +1,6 @@
 <?php
 /**
- * Validator — declarative input validation.
+ * Validator - declarative input validation.
  *
  * Central place to validate all user input before it touches the DB or an
  * external API. Returns an associative array of field => [error messages];

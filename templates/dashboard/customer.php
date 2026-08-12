@@ -1,8 +1,9 @@
 <?php
 /**
- * dashboard/customer.php — the customer portal overview.
+ * dashboard/customer.php N/A the customer portal overview.
  * Vars: $customer (row|null), $tickets, $messages, $appointments, $subscriptions,
  *       $paymentMethods, $invoices, $payments, $frData, $name.
+
  */
 $customer       = $data['customer'] ?? null;
 $tickets        = $data['tickets'] ?? [];
@@ -40,10 +41,10 @@ $name           = $data['name'] ?? 'Customer';
     <div class="panel">
       <h3>Account Details</h3>
       <dl class="kv" style="margin-top:.8rem">
-        <dt>Account #</dt><dd class="mono"><?= $view->e($customer['account_number'] ?? '—') ?></dd>
-        <dt>Name</dt><dd><?= $view->e($customer['name'] ?? '—') ?></dd>
-        <dt>Email</dt><dd><?= $view->e($customer['email'] ?? '—') ?></dd>
-        <dt>Phone</dt><dd><?= $view->e($customer['phone'] ?? '—') ?></dd>
+        <dt>Account #</dt><dd class="mono"><?= $view->e($customer['account_number'] ?? 'N/A') ?></dd>
+        <dt>Name</dt><dd><?= $view->e($customer['name'] ?? 'N/A') ?></dd>
+        <dt>Email</dt><dd><?= $view->e($customer['email'] ?? 'N/A') ?></dd>
+        <dt>Phone</dt><dd><?= $view->e($customer['phone'] ?? 'N/A') ?></dd>
         <dt>Service Address</dt><dd><?= $view->e(trim(($customer['address'] ?? '') . ', ' . ($customer['city'] ?? '') . ', ' . ($customer['state'] ?? '') . ' ' . ($customer['zip'] ?? ''), ', ')) ?></dd>
         <dt>Status</dt><dd><span class="badge <?= $view->e($customer['status']) ?>"><?= $view->e(ucfirst($customer['status'] ?? 'active')) ?></span></dd>
       </dl>
@@ -96,9 +97,9 @@ $name           = $data['name'] ?? 'Customer';
         <tbody>
           <?php foreach ($appointments as $a): ?>
           <tr>
-            <td><?= $view->e($a['when'] ?? $a['scheduled'] ?? '—') ?></td>
-            <td><?= $view->e($a['type'] ?? '—') ?></td>
-            <td><span class="badge <?= $view->e($a['status_kind'] ?? 'open') ?>"><?= $view->e($a['status_label'] ?? '—') ?></span></td>
+            <td><?= $view->e($a['when'] ?? $a['scheduled'] ?? 'N/A') ?></td>
+            <td><?= $view->e($a['type'] ?? 'N/A') ?></td>
+            <td><span class="badge <?= $view->e($a['status_kind'] ?? 'open') ?>"><?= $view->e($a['status_label'] ?? 'N/A') ?></span></td>
             <td><?= $view->e(mb_substr($a['notes'] ?? '', 0, 60)) ?></td>
           </tr>
           <?php endforeach; ?>
@@ -118,10 +119,10 @@ $name           = $data['name'] ?? 'Customer';
             <tbody>
               <?php foreach ($subscriptions as $s): ?>
               <tr>
-                <td><span class="badge <?= $view->e($s['status'] === 'active' ? 'active' : 'cancelled') ?>"><?= $view->e($s['status_label'] ?? $s['status'] ?? '—') ?></span></td>
-                <td><?= $view->e($s['charge'] ?? '—') ?></td>
-                <td><?= $view->e($s['freq_label'] ?? '—') ?></td>
-                <td><?= $view->e($s['next_service'] ?? '—') ?></td>
+                <td><span class="badge <?= $view->e($s['status'] === 'active' ? 'active' : 'cancelled') ?>"><?= $view->e($s['status_label'] ?? $s['status'] ?? 'N/A') ?></span></td>
+                <td><?= $view->e($s['charge'] ?? 'N/A') ?></td>
+                <td><?= $view->e($s['freq_label'] ?? 'N/A') ?></td>
+                <td><?= $view->e($s['next_service'] ?? 'N/A') ?></td>
               </tr>
               <?php endforeach; ?>
             </tbody>
@@ -132,7 +133,7 @@ $name           = $data['name'] ?? 'Customer';
       <div class="panel">
         <h3>Billing Overview</h3>
         <?php if (!$invoices && !$payments): ?>
-          <p class="empty">No billing history yet. Payments are managed through FieldRoutes — contact us for billing questions.</p>
+          <p class="empty">No billing history yet. Payments are managed through FieldRoutes N/A contact us for billing questions.</p>
           <?php if ($paymentMethods): ?>
           <div style="margin-top:1rem">
             <h4 style="font-size:.85rem;color:var(--khaki)">Payment Methods on File</h4>
@@ -155,11 +156,11 @@ $name           = $data['name'] ?? 'Customer';
             <tbody>
               <?php foreach ($invoices as $inv): ?>
               <tr>
-                <td><?= $view->e($inv['invoice_number'] ?? '#—') ?></td>
-                <td><?= $view->e($inv['amount'] ?? '—') ?></td>
-                <td><?= $view->e($inv['balance'] ?? '—') ?></td>
+                <td><?= $view->e($inv['invoice_number'] ?? '#N/A') ?></td>
+                <td><?= $view->e($inv['amount'] ?? 'N/A') ?></td>
+                <td><?= $view->e($inv['balance'] ?? 'N/A') ?></td>
                 <td><span class="badge <?= $view->e($inv['status']) ?>"><?= $view->e(ucfirst($inv['status'])) ?></span></td>
-                <td class="num"><?= $view->e($inv['due_date'] ? date('M j', strtotime($inv['due_date'])) : '—') ?></td>
+                <td class="num"><?= $view->e($inv['due_date'] ? date('M j', strtotime($inv['due_date'])) : 'N/A') ?></td>
               </tr>
               <?php endforeach; ?>
             </tbody>
@@ -172,9 +173,9 @@ $name           = $data['name'] ?? 'Customer';
             <tbody>
               <?php foreach ($payments as $p): ?>
               <tr>
-                <td><?= $view->e($p['payment_date'] ? date('M j, Y', strtotime($p['payment_date'])) : '—') ?></td>
-                <td><?= $view->e($p['amount'] ?? '—') ?></td>
-                <td><?= $view->e(ucfirst($p['payment_method'] ?? '—')) ?></td>
+                <td><?= $view->e($p['payment_date'] ? date('M j, Y', strtotime($p['payment_date'])) : 'N/A') ?></td>
+                <td><?= $view->e($p['amount'] ?? 'N/A') ?></td>
+                <td><?= $view->e(ucfirst($p['payment_method'] ?? 'N/A')) ?></td>
               </tr>
               <?php endforeach; ?>
             </tbody>
@@ -184,6 +185,7 @@ $name           = $data['name'] ?? 'Customer';
       </div>
     </div>
 
-    <div class="promise" style="margin-top:1.6rem"><b>Need something?</b> Call <a href="tel:+15094715767" style="color:var(--orange)">(509) 471-5767</a> or use the contact form — we're here to help. <a href="/help" style="color:var(--orange)">Help Center ▸</a></div>
+    <div class="promise" style="margin-top:1.6rem"><b>Need something?</b> Call <a href="tel:+15094715767" style="color:var(--orange)">(509) 471-5767</a> or use the contact form N/A we're here to help. <a href="/help" style="color:var(--orange)">Help Center ▸</a></div>
+
   </div>
 </div>

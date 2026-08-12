@@ -1,6 +1,6 @@
 <?php
 /**
- * Router — small, explicit front-controller router.
+ * Router - small, explicit front-controller router.
  *
  * Replaces the old hybrid (.htaccess rewrite to loose .php files + a router.php
  * shim). All requests flow through public/index.php → Router::dispatch().

@@ -1,6 +1,6 @@
 <?php
 /**
- * Front controller — every HTTP request enters here.
+ * Front controller - every HTTP request enters here.
  *
  * The old site relied on .htaccess rewriting to loose .php files plus a
  * router.php shim. This single entry point gives us one place to:
@@ -62,6 +62,7 @@ use PPC\Controllers\ApiKeyController;
 
 // Facebook Lead Ads webhook
 use PPC\Webhooks\Facebook\FacebookWebhookController;
+use PPC\Controllers\RetentionController;
 
 // ---------- Marketing pages (public) ----------
 Router::get('/',                 [PageController::class, 'home']);
@@ -86,9 +87,14 @@ Router::get('/areas/{slug}',     [PageController::class, 'areaDetail']);
 
 // ---------- Blog (public, unified template) ----------
 Router::get('/blogs',            [BlogController::class, 'index']);
+// RSS feed registered BEFORE /blogs/{slug} (router is first-match-wins, so
+// the literal path must win over the {slug} placeholder). /blog/rss.xml is
+// an alias so old feed-reader subscriptions keep resolving.
+Router::get('/blogs/rss.xml',    [BlogController::class, 'rss']);
+Router::get('/blog/rss.xml',     [BlogController::class, 'rss']);
 Router::get('/blogs/{slug}',     [BlogController::class, 'show']);
 
-// ---------- Unified auth (passwordless email OTP — one login for everyone) ----------
+// ---------- Unified auth (passwordless email OTP - one login for everyone) ----------
 // The single login identifies the user (staff or customer), emails a code, then
 // routes them to the dashboard matching their authority level.
 Router::get('/login',         [AuthController::class, 'loginForm']);
@@ -175,6 +181,18 @@ if (\PPC\Core\Config::bool("SUPERUSER_ENABLED", false)) {
     Router::get("/su/verify",      [AuthController::class, "superLoginVerifyForm"]);
     Router::post("/su/verify",     [AuthController::class, "superLoginVerify"]);
 }
+
+// ---------- Retention analytics (ORDER 3) ----------
+// Anonymous ingestion beacons (CSRF-exempt by design; sendBeacon cannot set
+// headers). Same-origin checked + payload validated in the controller.
+Router::post('/api/track/view',        [RetentionController::class, 'view']);
+Router::post('/api/track/event',       [RetentionController::class, 'event']);
+Router::post('/api/track/session_end', [RetentionController::class, 'sessionEnd']);
+// Admin dashboard data (401 for non-admins, enforced inside the controller).
+Router::get('/api/retention/summary',  [RetentionController::class, 'summary']);
+// Admin dashboard page + settings toggles (per doctrine).
+Router::get('/admin/retention',             [AdminController::class, 'retention'])->auth('staff')->role('admin');
+Router::post('/admin/retention/settings',   [AdminController::class, 'retentionSettings'])->auth('staff')->role('admin');
 
 // ---------- Health check (public, no auth) ----------
 Router::get('/health', function () {

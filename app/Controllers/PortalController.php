@@ -1,6 +1,6 @@
 <?php
 /**
- * PortalController — the customer portal.
+ * PortalController - the customer portal.
  *
  * Phase 1 renders the account overview. Later phases add FieldRoutes-backed
  * views (appointments, subscriptions, billing) and messaging/tickets from the

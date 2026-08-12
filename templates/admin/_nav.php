@@ -1,6 +1,6 @@
 <?php
 /**
- * admin/_nav.php — shared CMS page head + flash messages.
+ * admin/_nav.php - shared CMS page head + flash messages.
  * Rendered via View::render('admin/_nav', ['active' => '...', 'flash' => ...]).
  *
  * The CMS section nav (Overview / Posts / Media / Content) now lives in the app

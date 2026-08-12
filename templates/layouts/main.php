@@ -1,6 +1,6 @@
 <?php
 /**
- * layouts/main.php — the shared page shell.
+ * layouts/main.php - the shared page shell.
  *
  * Wraps every page template. Emits the full SEO/GEO head (title, description,
  * keywords, robots, canonical, Open Graph, Twitter, and any JSON-LD blocks),
@@ -21,6 +21,11 @@
   <?php if (!empty($keywords)): ?><meta name="keywords" content="<?= $view->e($keywords) ?>"><?php endif; ?>
   <meta name="robots" content="<?= $view->e($robots ?? 'index, follow, max-snippet:-1') ?>">
   <link rel="canonical" href="<?= $view->e($canonical ?? $view->url('/')) ?>">
+
+  <!-- PWA: manifest, theme color, home-screen icon -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#1c2415">
+  <link rel="apple-touch-icon" href="<?= $view->asset('icons/apple-touch-icon.png') ?>">
 
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website">
@@ -50,6 +55,8 @@
     $__appUi = (bool) preg_match('#^/(admin|staff-dashboard|customer-dashboard|login)(/|$)#', $__path);
   ?>
   <?php if ($__appUi): ?><link rel="stylesheet" href="<?= $view->asset('admin.css') ?>"><?php endif; ?>
+  <?php if (\PPC\Core\Settings::bool('egg_enabled', true)): ?><link rel="stylesheet" href="<?= $view->asset('beacon.css') ?>"><?php endif; ?>
+  <link rel="stylesheet" href="<?= $view->asset('pwa-install.css') ?>">
   <link rel="icon" href="<?= $view->asset('img/pests/ants.jpg') ?>" type="image/jpeg">
 </head>
 <body>
@@ -113,7 +120,7 @@
           $__order   = [$__primary, \PPC\Core\Geo::otherRegion()];
         ?>
         <?php foreach ($__order as $__r): $__line = \PPC\Core\Geo::REGIONS[$__r]; ?>
-          <a href="tel:<?= $view->e($__line['tel']) ?>"><?= $view->e($__line['display']) ?> — <?= $view->e($__line['label']) ?></a>
+          <a href="tel:<?= $view->e($__line['tel']) ?>"><?= $view->e($__line['display']) ?> - <?= $view->e($__line['label']) ?></a>
         <?php endforeach; ?>
         <a href="mailto:info@patriotpest.pro">info@patriotpest.pro</a>
         <a href="/contact">Spokane, WA 99201, United States</a>
@@ -131,5 +138,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="<?= $view->asset('main.js') ?>"></script>
+<?php if (\PPC\Core\Settings::bool('track_enabled', true)): ?>
+<?= $view->raw(\PPC\Core\View::render('partials/egg')) ?>
+<script src="<?= $view->asset('beacon.js') ?>"></script>
+<?php endif; ?>
+<?= $view->raw(\PPC\Core\View::render('partials/install-banner')) ?>
+<script src="<?= $view->asset('pwa-install.js') ?>"></script>
 </body>
 </html>

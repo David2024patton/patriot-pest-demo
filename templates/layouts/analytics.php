@@ -11,6 +11,7 @@
  * Database overrides (site_settings table): per-instance values set by the
  * admin at /admin/settings. Any key set in site_settings takes precedence
  * over the .env default.
+
  *
  * Emitted only when at least one id is configured AND we're not in local dev
  * (set ANALYTICS_ENABLED=true to force it locally).
@@ -44,6 +45,7 @@ $__loaderId = $__gtag ?: $__gads;  // gtag.js loader needs one id
 ?>
 <!-- Google tag (gtag.js) — Analytics & Ads -->
 <?php if ($__loaderId): ?>
+
 <script async src="https://www.googletagmanager.com/gtag/js?id=<?= $view->e($__loaderId) ?>"></script>
 <?php endif; ?>
 <script>

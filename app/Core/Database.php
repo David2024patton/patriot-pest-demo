@@ -1,6 +1,6 @@
 <?php
 /**
- * Database — SQLite (PDO) access layer.
+ * Database - SQLite (PDO) access layer.
  *
  * Replaces the old dual-layer setup (a PPDatabase singleton plus a dead MySQL
  * helper that silently returned null). This is the single source of DB access:
@@ -77,6 +77,20 @@ final class Database
     }
 
     /**
+     * Open a secondary SQLite database without running the app migration.
+     * Used by the retention analytics store (storage/retention.sqlite) so its
+     * sessions table never collides with the app auth sessions table. Callers
+     * own schema setup for secondary databases (see Retention::db()).
+     */
+    public static function open(string $relPath): self
+    {
+        $path = str_starts_with($relPath, '/') || preg_match('#^[A-Za-z]:[\\\\/]#', $relPath)
+            ? $relPath
+            : BASE_PATH . DIRECTORY_SEPARATOR . $relPath;
+        return new self($path);
+    }
+
+    /**
      * Apply database/schema.sql if the schema_version marker is missing/stale.
      * The schema file is idempotent (CREATE TABLE IF NOT EXISTS), so re-running
      * it is safe. Add ALTER-based upgrades in upgrade() as the schema evolves.
@@ -94,7 +108,11 @@ final class Database
         $stmt->execute(['schema_version']);
         $current = (int) ($stmt->fetchColumn() ?: 0);
 
-        $target = 4; // bump when schema.sql changes structurally
+        // Bump when schema.sql changes structurally. Re-running is safe: the
+        // schema file is all CREATE TABLE IF NOT EXISTS, so an older volume
+        // (e.g. schema_version=1 from before otp_codes existed) gets the
+        // missing tables added on boot without touching existing rows.
+        $target = 4; // v4 = facebook_leads (FB lead pipeline); re-run is idempotent
         if ($current < $target) {
             $sql = file_get_contents($schemaFile);
             if ($sql !== false && trim($sql) !== '') {
@@ -259,7 +277,7 @@ final class Database
 
     /**
      * Insert an associative array as a row; returns the new row id.
-     * Column names come from code (never user input) — values are bound.
+     * Column names come from code (never user input) - values are bound.
      */
     public function insert(string $table, array $data): int
     {

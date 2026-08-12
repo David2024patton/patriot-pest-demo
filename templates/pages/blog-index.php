@@ -1,6 +1,6 @@
 <?php
 /**
- * pages/blog-index.php — the blog landing page.
+ * pages/blog-index.php - the blog landing page.
  *
  * Lists every published post (newest first) with its pest photo under the same
  * tactical treatment used site-wide. Vars: $posts (array of post rows w/ photo).
@@ -11,7 +11,7 @@ $posts = $data['posts'] ?? [];
   <div class="wrap">
     <div class="eyebrow">FIELD INTEL // THE BLOG</div>
     <h1 style="font-family:var(--display);color:var(--cream);font-size:clamp(2rem,6vw,3rem);margin:.4rem 0 .8rem">Pest Control <em>Intel &amp; Guides.</em></h1>
-    <p class="lead">Expert identification, seasonal guides, and prevention tips from our licensed technicians — written for homeowners across Washington, Idaho, Oregon &amp; Arizona.</p>
+    <p class="lead">Expert identification, seasonal guides, and prevention tips from our licensed technicians, written for homeowners across Washington, Idaho, Oregon &amp; Arizona.</p>
   </div>
 </section>
 

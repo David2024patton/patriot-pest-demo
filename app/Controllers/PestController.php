@@ -1,6 +1,6 @@
 <?php
 /**
- * PestController — individual pest "threat file" pages.
+ * PestController - individual pest "threat file" pages.
  *
  * Fully DB-driven off the pest_photos library: any pest added to the library
  * automatically gets a page at /pest/{slug}. Uses the unified pest template so
