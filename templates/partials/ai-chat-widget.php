@@ -360,7 +360,7 @@
   'use strict';
   
   const toggle = document.getElementById('ai-chat-toggle');
-  const window = document.getElementById('ai-chat-window');
+  const chatWindow = document.getElementById('ai-chat-window');
   const close = document.getElementById('ai-chat-close');
   const form = document.getElementById('ai-chat-form');
   const input = document.getElementById('ai-chat-input');
@@ -368,9 +368,9 @@
   
   // Toggle chat window
   toggle.addEventListener('click', function() {
-    window.classList.toggle('open');
-    const isOpen = window.classList.contains('open');
-    window.setAttribute('aria-hidden', !isOpen);
+    chatWindow.classList.toggle('open');
+    const isOpen = chatWindow.classList.contains('open');
+    chatWindow.setAttribute('aria-hidden', !isOpen);
     if (isOpen) {
       input.focus();
     }
@@ -378,8 +378,8 @@
   
   // Close chat window
   close.addEventListener('click', function() {
-    window.classList.remove('open');
-    window.setAttribute('aria-hidden', 'true');
+    chatWindow.classList.remove('open');
+    chatWindow.setAttribute('aria-hidden', 'true');
   });
   
   // Form submission
@@ -439,7 +439,9 @@
     
     const content = document.createElement('div');
     content.className = 'ai-chat-content';
-    content.innerHTML = '<p>' + text + '</p>';
+    const para = document.createElement('p');
+    para.textContent = text; // textContent, never innerHTML: user input must not execute
+    content.appendChild(para);
     
     messageDiv.appendChild(avatar);
     messageDiv.appendChild(content);
@@ -478,9 +480,9 @@
   
   // Close on escape key
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && window.classList.contains('open')) {
-      window.classList.remove('open');
-      window.setAttribute('aria-hidden', 'true');
+    if (e.key === 'Escape' && chatWindow.classList.contains('open')) {
+      chatWindow.classList.remove('open');
+      chatWindow.setAttribute('aria-hidden', 'true');
     }
   });
   

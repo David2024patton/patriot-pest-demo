@@ -424,3 +424,4 @@ class ApiController
         // Default response if no match
         return "I'm here to help with pest control questions! I can assist with information about our services, pricing, service areas, scheduling appointments, and more. What would you like to know about Patriot Pest Control?";
     }
+}

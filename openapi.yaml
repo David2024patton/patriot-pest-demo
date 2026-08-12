@@ -287,6 +287,49 @@ paths:
       responses:
         "200":
           description: Active staff list (no emails)
+  /ai/chat:
+    post:
+      operationId: aiChat
+      summary: Public AI assistant chat (on-site widget)
+      description: >
+        Serves canned, intent-matched responses for the marketing-site chat
+        widget. Public and rate-limited by IP (120 requests/hour); no bearer
+        token required and no customer data exposed.
+      tags: [Services]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  description: Free-text user message
+                context:
+                  type: object
+                  description: Optional page/user-agent context
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  message_id:
+                    type: string
+        "400":
+          description: Message is required
+        "429":
+          description: Rate limit exceeded
 components:
   securitySchemes:
     BearerAuth:

@@ -249,8 +249,12 @@ if (\PPC\Core\Config::bool("API_ENABLED", false)) {
     Router::get("/api/v1/services",  [ApiController::class, "services"]);
     Router::get("/api/v1/twilio/logs", [ApiController::class, "twilioLogs"]);
     Router::get("/api/v1/staff",     [ApiController::class, "staff"]);
-    Router::post("/api/v1/ai/chat",   [ApiController::class, "aiChat"]);
 }
+
+// Public, rate-limited AI chat for the on-site widget. Registered outside the
+// API_ENABLED gate on purpose: it serves canned responses only (no data, no
+// bearer scope) and must work on the marketing site regardless of API toggle.
+Router::post("/api/v1/ai/chat",   [ApiController::class, "aiChat"]);
 
 // ---------- Dispatch ----------
 // PPC_ROUTES_ONLY (defined by the route-registration smoke test) registers

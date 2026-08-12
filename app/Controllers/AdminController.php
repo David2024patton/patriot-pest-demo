@@ -424,13 +424,13 @@ class AdminController extends PageController
         // Prevent circular reference
         if ($parentId == $id) {
             Session::flash('admin', ['error' => 'Department cannot be its own parent.']);
-            header('Location: /admin/departments/{$id}");
+            header('Location: /admin/departments/' . $id);
             exit;
         }
         
         if ($name === '') {
             Session::flash('admin', ['error' => 'Department name is required.']);
-            header('Location: /admin/departments/{$id}");
+            header('Location: /admin/departments/' . $id);
             exit;
         }
         

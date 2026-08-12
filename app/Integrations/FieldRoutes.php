@@ -319,25 +319,44 @@ final class FieldRoutes
 
         // Map lead data to FieldRoutes customer format
         $params = [
-            'fname' => $leadData['firstName'] ?? '',
-            'lname' => $leadData['lastName'] ?? '',
+            'fname'       => $leadData['firstName'] ?? '',
+            'lname'       => $leadData['lastName'] ?? '',
             'companyName' => $leadData['companyName'] ?? '',
-            'email' => $leadData['email'] ?? '',
-            'phone1' => $leadData['phone'] ?? '',
-            'address' => $leadData['address'] ?? '',
-            'city' => $leadData['city'] ?? '',
-            'state' => $leadData['state'] ?? '',
-            'zip' => $leadData['zip'] ?? '',
-            'notes' => $leadData['notes'] ?? '',
-            'source' => $leadData['source'] ?? 'Website',
+            'email'       => $leadData['email'] ?? '',
+            'phone1'      => $leadData['phone'] ?? '',
+            'address'     => $leadData['address'] ?? '',
+            'city'        => $leadData['city'] ?? '',
+            'state'       => $leadData['state'] ?? '',
+            'zip'         => $leadData['zip'] ?? '',
+            'notes'       => $leadData['notes'] ?? '',
+            'source'      => $leadData['source'] ?? 'Website',
+            // Web leads must be created inactive (0); active customers (1) are
+            // reserved for converted/paid accounts. Per FR customer/create spec.
+            'status'      => 0,
         ];
 
         try {
-            $response = self::request($district, 'customer/create', $params);
-            
-            if ($response['success'] && isset($response['customerID'])) {
-                $customerId = $response['customerID'];
-                
+            // Dedupe first: if a customer with this email already exists in the
+            // district, return the existing ID instead of creating a duplicate.
+            if (!empty($params['email'])) {
+                $search = self::requestPost($district, 'customer/search', ['email' => $params['email']]);
+                $existingIds = $search['customerIDs'] ?? [];
+                if (is_array($existingIds) && count($existingIds) > 0) {
+                    $existingId = (string) $existingIds[0];
+                    Logger::info('FieldRoutes lead skipped (duplicate email)', [
+                        'district' => $district['code'],
+                        'email'    => $params['email'],
+                        'existingCustomerId' => $existingId,
+                    ]);
+                    return ['success' => true, 'customerId' => $existingId, 'error' => null, 'duplicate' => true];
+                }
+            }
+
+            $response = self::requestPost($district, 'customer/create', $params);
+
+            if ($response['success'] && isset($response['result'])) {
+                $customerId = (string) $response['result'];
+
                 // Cache the new customer locally
                 $normalized = self::normalize([
                     'customerID' => $customerId,
@@ -352,10 +371,10 @@ final class FieldRoutes
                     'zip' => $params['zip'],
                     'statusText' => 'Lead',
                 ], $district['code']);
-                
+
                 self::upsertCustomer($normalized);
-                
-                return ['success' => true, 'customerId' => $customerId, 'error' => null];
+
+                return ['success' => true, 'customerId' => $customerId, 'error' => null, 'duplicate' => false];
             } else {
                 $errorMsg = $response['errorMessage'] ?? 'Unknown error from FieldRoutes';
                 Logger::error('FieldRoutes lead creation failed', [
@@ -400,10 +419,10 @@ final class FieldRoutes
         ];
 
         try {
-            $response = self::request($district, 'appointment/create', $params);
-            
-            if ($response['success'] && isset($response['appointmentID'])) {
-                return ['success' => true, 'appointmentId' => $response['appointmentID'], 'error' => null];
+            $response = self::requestPost($district, 'appointment/create', $params);
+
+            if ($response['success'] && isset($response['result'])) {
+                return ['success' => true, 'appointmentId' => (string) $response['result'], 'error' => null];
             } else {
                 $errorMsg = $response['errorMessage'] ?? 'Unknown error from FieldRoutes';
                 Logger::error('FieldRoutes appointment creation failed', [
@@ -658,6 +677,38 @@ final class FieldRoutes
         return $data;
     }
 
+    /**
+     * One POST against the FieldRoutes API. Auth stays in the query string per
+     * the API spec; payload goes form-urlencoded in the body. POST is required
+     * for all /create and /search endpoints (create is POST-only per spec).
+     */
+    private static function requestPost(array $district, string $endpoint, array $params = []): array
+    {
+        $auth = [
+            'authenticationKey'   => $district['key'],
+            'authenticationToken' => $district['token'],
+        ];
+        $url  = $district['base'] . '/api/' . ltrim($endpoint, '/') . '?' . http_build_query($auth);
+
+        $body = self::httpPost($url, $params);
+        if ($body === false) {
+            Logger::error('FieldRoutes POST failed', ['district' => $district['code'], 'endpoint' => $endpoint]);
+            return [];
+        }
+        $data = json_decode($body, true);
+        if (!is_array($data)) {
+            Logger::error('FieldRoutes bad JSON', ['district' => $district['code'], 'endpoint' => $endpoint]);
+            return [];
+        }
+        if (isset($data['success']) && $data['success'] === false) {
+            Logger::warning('FieldRoutes API error', [
+                'district' => $district['code'], 'endpoint' => $endpoint,
+                'error'    => $data['errorMessage'] ?? 'unknown',
+            ]);
+        }
+        return $data;
+    }
+
     /** cURL if available, else stream context. Returns body string or false. */
     private static function httpGet(string $url): string|false
     {
@@ -687,6 +738,55 @@ final class FieldRoutes
         }
         $ctxOpts = [
             'http' => ['method' => 'GET', 'timeout' => self::TIMEOUT, 'header' => "User-Agent: PatriotPest/1.0\r\n"],
+        ];
+        if (!$verifySsl) {
+            $ctxOpts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
+        }
+        $ctx  = stream_context_create($ctxOpts);
+        $resp = @file_get_contents($url, false, $ctx);
+        return $resp === false ? false : $resp;
+    }
+
+    /** cURL if available, else stream context. POSTs form-urlencoded params. */
+    private static function httpPost(string $url, array $params): string|false
+    {
+        $verifySsl = Config::bool('FIELDROUTES_SSL_VERIFY', true);
+        $query     = http_build_query($params);
+
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+            $opts = [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => self::TIMEOUT,
+                CURLOPT_USERAGENT      => 'PatriotPest/1.0 (+fieldroutes-sync)',
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => $query,
+                CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
+            ];
+            if (!$verifySsl) {
+                $opts[CURLOPT_SSL_VERIFYPEER] = false;
+                $opts[CURLOPT_SSL_VERIFYHOST] = 0;
+            }
+            curl_setopt_array($ch, $opts);
+            $resp = curl_exec($ch);
+            $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $err  = curl_error($ch);
+            curl_close($ch);
+            if ($resp === false || $code < 200 || $code >= 300) {
+                Logger::warning('FieldRoutes HTTP POST', ['code' => $code, 'err' => $err]);
+                return false;
+            }
+            return (string) $resp;
+        }
+        $ctxOpts = [
+            'http' => [
+                'method'  => 'POST',
+                'timeout' => self::TIMEOUT,
+                'header'  => "User-Agent: PatriotPest/1.0
+Content-Type: application/x-www-form-urlencoded
+",
+                'content' => $query,
+            ],
         ];
         if (!$verifySsl) {
             $ctxOpts['ssl'] = ['verify_peer' => false, 'verify_peer_name' => false];
