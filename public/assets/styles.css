@@ -607,7 +607,10 @@ img, video, canvas, iframe {
 }
 
 /* ---------- Mobile sticky navigation (requested feature) ---------- */
-@media (max-width: 768px) {
+/* Hidden by default on desktop; shown as the ONLY nav below 960px */
+.mobile-sticky-nav { display: none; }
+.mobile-nav-spacer { display: none; }
+@media (max-width: 960px) {
   .mobile-sticky-nav {
     position: fixed;
     bottom: 0;
@@ -668,6 +671,7 @@ img, video, canvas, iframe {
   }
   
   .mobile-nav-spacer {
+    display: block;
     height: 80px;
   }
 }
