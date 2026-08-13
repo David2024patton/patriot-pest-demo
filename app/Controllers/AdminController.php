@@ -547,17 +547,39 @@ class AdminController extends PageController
 
         $status = $_POST['status'] ?? 'draft';
         $now    = date('Y-m-d H:i:s');
+        $region = Validator::clean($_POST['region'] ?? 'all');
+        if (!in_array($region, ['all', 'wa', 'id', 'or', 'az'], true)) { $region = 'all'; }
+
+        // Scheduled posts keep published_at null until publishScheduled() fires.
+        $scheduledAt = null;
+        $publishedAt = null;
+        if ($status === 'published') {
+            $publishedAt = Validator::clean($_POST['published_at'] ?? '') ?: $now;
+        } elseif ($status === 'scheduled') {
+            $scheduledAt = Validator::clean($_POST['scheduled_at'] ?? '');
+            if ($scheduledAt === '') {
+                Session::flash('admin', ['errors' => ['scheduled_at' => 'Pick a date/time to schedule this post.']]);
+                header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/admin/posts'));
+                exit;
+            }
+        }
 
         return [
-            'title'         => Validator::clean($_POST['title']),
-            'slug'          => $this->uniqueSlug(Validator::clean($_POST['slug']), $_POST['id'] ?? null),
-            'excerpt'       => Validator::clean($_POST['excerpt'] ?? ''),
-            'body_html'     => $this->sanitizeRich($_POST['body_html'] ?? ''),
-            'pest_photo_id' => !empty($_POST['pest_photo_id']) ? (int) $_POST['pest_photo_id'] : null,
-            'season'        => Validator::clean($_POST['season'] ?? ''),
-            'pest_category' => Validator::clean($_POST['pest_category'] ?? ''),
-            'status'        => $status,
-            'published_at'  => $status === 'published' ? ($_POST['published_at'] ?: $now) : null,
+            'title'            => Validator::clean($_POST['title']),
+            'slug'             => $this->uniqueSlug(Validator::clean($_POST['slug']), $_POST['id'] ?? null),
+            'excerpt'          => Validator::clean($_POST['excerpt'] ?? ''),
+            'body_html'        => $this->sanitizeRich($_POST['body_html'] ?? ''),
+            'pest_photo_id'    => !empty($_POST['pest_photo_id']) ? (int) $_POST['pest_photo_id'] : null,
+            'season'           => Validator::clean($_POST['season'] ?? ''),
+            'pest_category'    => Validator::clean($_POST['pest_category'] ?? ''),
+            'status'           => $status,
+            'published_at'     => $publishedAt,
+            'scheduled_at'     => $scheduledAt,
+            'region'           => $region,
+            'meta_title'       => Validator::clean($_POST['meta_title'] ?? '') ?: null,
+            'meta_description' => Validator::clean($_POST['meta_description'] ?? '') ?: null,
+            'meta_keywords'    => Validator::clean($_POST['meta_keywords'] ?? '') ?: null,
+            'og_image'         => Validator::clean($_POST['og_image'] ?? '') ?: null,
         ];
     }
 

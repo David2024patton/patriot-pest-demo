@@ -70,13 +70,21 @@ class BlogController extends PageController
             [$post['id'], $post['season'], $post['pest_category']]
         );
 
+        $metaTitle = $post['meta_title'] ?: ($post['title'] . ' | Patriot Pest Control Blog');
+        $metaDesc  = $post['meta_description'] ?: ($post['excerpt'] ?? '');
+        $regionTag = ($post['region'] ?? 'all') === 'all' ? 'Washington, Idaho, Oregon, Arizona' : strtoupper((string) $post['region']);
+        $metaKw    = $post['meta_keywords'] ?: trim('pest control, ' . ($post['pest_name'] ?? '') . ', ' . $regionTag . ', ' . ($post['season'] ?? ''), ', ');
+        $ogImage   = $post['og_image'] ?: ($post['photo'] ? 'https://patriotpest.pro/assets/img/pests/' . $post['photo'] : null);
+
         $meta = $this->meta(
-            $post['title'] . ' | Patriot Pest Control Blog',
-            $post['excerpt'] ?? '',
+            $metaTitle,
+            $metaDesc,
             "/blogs/{$post['slug']}",
             [
-                'crumb'  => [['Home', '/'], ['Blog', '/blogs'], [$post['title'], "/blogs/{$post['slug']}"]],
-                'jsonld' => [$this->ldBusiness(), $this->ldArticle($post)],
+                'crumb'    => [['Home', '/'], ['Blog', '/blogs'], [$post['title'], "/blogs/{$post['slug']}"]],
+                'keywords' => $metaKw,
+                'ogImage'  => $ogImage ?: 'https://patriotpest.pro/assets/img/og.png',
+                'jsonld'   => [$this->ldBusiness(), $this->ldArticle($post)],
             ]
         );
 
@@ -90,12 +98,14 @@ class BlogController extends PageController
             '@context'      => 'https://schema.org',
             '@type'         => 'Article',
             'headline'      => $post['title'],
-            'description'   => $post['excerpt'] ?? '',
+            'description'   => $post['meta_description'] ?: ($post['excerpt'] ?? ''),
+            'keywords'      => $post['meta_keywords'] ?? '',
             'author'        => ['@type' => 'Organization', 'name' => 'Patriot Pest Control'],
             'publisher'     => ['@id' => 'https://patriotpest.pro/#business'],
             'datePublished' => $post['published_at'] ?? '',
             'dateModified'  => $post['date_modified'] ?? $post['updated_at'] ?? '',
             'mainEntityOfPage' => 'https://patriotpest.pro/blogs/' . $post['slug'],
+            'image'         => $post['og_image'] ?: ($post['photo'] ? 'https://patriotpest.pro/assets/img/pests/' . $post['photo'] : null),
         ];
     }
 

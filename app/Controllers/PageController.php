@@ -239,7 +239,10 @@ class PageController
 
     public function sitemap(): void
     {
-        echo View::page('pages/sitemap', ['states' => $this->states()], $this->meta('Sitemap | Patriot Pest Control', 'Every page on the Patriot Pest Control website.', '/sitemap'));
+        $posts = Database::instance()->fetchAll(
+            "SELECT slug, title FROM posts WHERE status = 'published' ORDER BY published_at DESC"
+        );
+        echo View::page('pages/sitemap', ['states' => $this->states(), 'posts' => $posts], $this->meta('Sitemap | Patriot Pest Control', 'Every page on the Patriot Pest Control website.', '/sitemap'));
     }
 
     public function privacy(): void

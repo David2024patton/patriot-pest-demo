@@ -1,8 +1,9 @@
 <!-- AI Chat Widget -->
 <div id="ai-chat-widget" class="ai-chat-widget">
   <button id="ai-chat-toggle" class="ai-chat-toggle" aria-label="Toggle AI Chat">
-    <svg class="ai-chat-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2 2h3a2 2 0 0 1 2 2h13a2 2 0 0 1 2-2M10 20a2 2 0 0 1-2 2m-6-10a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2"></path>
+    <svg class="ai-chat-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+      <path d="M12 2l2.1 6.2L20 10l-5.9 1.8L12 18l-2.1-6.2L4 10l5.9-1.8z"/>
+      <path d="M19 15l1 2.7 2.7 1-2.7 1L19 22l-1-2.3-2.7-1 2.7-1z" opacity=".75"/>
     </svg>
     <span class="ai-chat-label">Ask AI</span>
   </button>
@@ -10,8 +11,9 @@
   <div id="ai-chat-window" class="ai-chat-window" aria-hidden="true">
     <div class="ai-chat-header">
       <div class="ai-chat-title">
-        <svg class="ai-chat-avatar" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2 2h3a2 2 0 0 1 2 2h13a2 2 0 0 1 2-2M10 20a2 2 0 0 1-2 2m-6-10a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2"></path>
+        <svg class="ai-chat-avatar" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+          <path d="M12 2l2.1 6.2L20 10l-5.9 1.8L12 18l-2.1-6.2L4 10l5.9-1.8z"/>
+          <path d="M19 15l1 2.7 2.7 1-2.7 1L19 22l-1-2.3-2.7-1 2.7-1z" opacity=".75"/>
         </svg>
         <span>Patriot AI Assistant</span>
       </div>
@@ -20,8 +22,8 @@
     
     <div id="ai-chat-messages" class="ai-chat-messages">
       <div class="ai-chat-message ai-chat-bot">
-        <svg class="ai-chat-avatar" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2 2h3a2 2 0 0 1 2 2h13a2 2 0 0 1 2-2M10 20a2 2 0 0 1-2 2m-6-10a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2"></path>
+        <svg class="ai-chat-avatar" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+          <path d="M12 2l2.1 6.2L20 10l-5.9 1.8L12 18l-2.1-6.2L4 10l5.9-1.8z"/>
         </svg>
         <div class="ai-chat-content">
           <p>Hello! I'm the Patriot Pest Control AI assistant. I can help you with:</p>

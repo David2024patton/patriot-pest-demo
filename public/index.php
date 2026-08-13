@@ -35,6 +35,13 @@ require dirname(__DIR__) . '/app/bootstrap.php';
 use PPC\Core\Router;
 use PPC\Core\Config;
 
+// ---------- Publish due scheduled blog posts (cheap; idempotent) ----------
+try {
+    \PPC\Core\Database::instance()->publishScheduled();
+} catch (\Throwable) {
+    // non-fatal
+}
+
 // ---------- Force HTTPS in production ----------
 // Behind the Dokploy TLS terminator we trust X-Forwarded-Proto. Any plain-HTTP
 // request in production is 301-redirected so credentials and OTP codes never

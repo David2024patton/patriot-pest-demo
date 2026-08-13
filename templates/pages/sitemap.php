@@ -1,8 +1,9 @@
 <?php
 /**
- * pages/sitemap.php - HTML sitemap. Vars: $states (WA/ID/OR/AZ => name+cities).
+ * pages/sitemap.php - HTML sitemap. Vars: $states (WA/ID/OR/AZ => name+cities), $posts (published blog posts).
  */
 $states  = $data['states'] ?? [];
+$posts   = $data['posts'] ?? [];
 $slugify = fn(string $s): string => trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($s)) ?? '', '-');
 $pages = [['/', 'Home'], ['/about', 'About Us'], ['/services', 'Services'], ['/prices', 'Pricing'], ['/service-areas', 'Service Areas'], ['/blogs', 'Blog'], ['/faqs', 'FAQs'], ['/contact', 'Contact'], ['/referral', 'Referral Program'], ['/socials', 'Social Media'], ['/help', 'Help Center'], ['/links', 'All Links'], ['/privacy-policy', 'Privacy Policy'], ['/terms-of-use', 'Terms of Use']];
 ?>
@@ -31,6 +32,14 @@ $pages = [['/', 'Home'], ['/about', 'About Us'], ['/services', 'Services'], ['/p
         </div>
       </div>
       <?php endforeach; ?>
+      <?php if (!empty($posts)): ?>
+      <div class="card">
+        <h3 style="font-family:var(--display);color:var(--orange);margin-bottom:.8rem">Blog</h3>
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <?php foreach ($posts as $p): ?><a href="/blogs/<?= $view->e($p['slug']) ?>" style="color:var(--cream);text-decoration:none"><?= $view->e($p['title']) ?> ▸</a><?php endforeach; ?>
+        </div>
+      </div>
+      <?php endif; ?>
     </div>
   </div>
 </section>

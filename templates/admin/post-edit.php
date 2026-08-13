@@ -65,6 +65,25 @@ $selPhoto = $post['pest_photo_id'] ?? null;
           <?php endforeach; ?>
         </select>
       </div>
+      <div class="field">
+        <label for="region">Target Region</label>
+        <select id="region" name="region">
+          <?php foreach (['all' => 'All States', 'wa' => 'Washington', 'id' => 'Idaho', 'or' => 'Oregon', 'az' => 'Arizona'] as $v => $l): ?>
+            <option value="<?= $v ?>" <?= ($post['region'] ?? 'all') === $v ? 'selected' : '' ?>><?= $l ?></option>
+          <?php endforeach; ?>
+        </select>
+        <div class="hint">Used for region-specific pest calendars and local SEO.</div>
+      </div>
+    </div>
+
+    <div class="form-row" id="sched-row" style="display:none">
+      <div class="field">
+        <label for="scheduled_at">Publish At (local time)</label>
+        <input type="datetime-local" id="scheduled_at" name="scheduled_at"
+               value="<?= $view->e(str_replace(' ', 'T', (string)($post['scheduled_at'] ?? ''))) ?>"
+               step="60">
+        <div class="hint">Post auto-publishes when this time passes.</div>
+      </div>
     </div>
 
     <div class="field">
@@ -93,6 +112,39 @@ $selPhoto = $post['pest_photo_id'] ?? null;
         <?php endforeach; ?>
       </div>
     </div>
+
+    <fieldset class="seo-box">
+      <legend>SEO &amp; Social</legend>
+      <div class="form-row">
+        <div class="field">
+          <label for="meta_title">SEO Title</label>
+          <input type="text" id="meta_title" name="meta_title" maxlength="70" value="<?= $old('meta_title') ?: $view->e($post['meta_title'] ?? '') ?>">
+          <div class="hint">Default: post title. Keep under ~60 chars for Google.</div>
+        </div>
+        <div class="field">
+          <label for="meta_keywords">Keywords (comma separated)</label>
+          <input type="text" id="meta_keywords" name="meta_keywords" maxlength="300" value="<?= $old('meta_keywords') ?: $view->e($post['meta_keywords'] ?? '') ?>">
+        </div>
+      </div>
+      <div class="field">
+        <label for="meta_description">Meta Description</label>
+        <textarea id="meta_description" name="meta_description" maxlength="300" style="min-height:70px"><?= $old('meta_description') ?: $view->e($post['meta_description'] ?? '') ?></textarea>
+        <div class="hint">Default: excerpt. 150–160 chars shows best in search results.</div>
+      </div>
+      <div class="field">
+        <label for="og_image">Social Share Image URL</label>
+        <input type="text" id="og_image" name="og_image" maxlength="300" placeholder="https://... (defaults to the pest photo / site OG image)" value="<?= $old('og_image') ?: $view->e($post['og_image'] ?? '') ?>">
+      </div>
+    </fieldset>
+
+    <script>
+    (function(){
+      var sel = document.getElementById('status');
+      var sched = document.getElementById('sched-row');
+      var toggle = function(){ sched.style.display = sel.value === 'scheduled' ? 'flex' : 'none'; };
+      if (sel && sched) { sel.addEventListener('change', toggle); toggle(); }
+    })();
+    </script>
 
     <div class="form-actions">
       <button type="submit" class="btn btn-primary"><?= $isNew ? 'Create Post' : 'Save Changes' ?> ▸</button>

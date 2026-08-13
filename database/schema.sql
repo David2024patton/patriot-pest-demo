@@ -329,7 +329,14 @@ CREATE TABLE IF NOT EXISTS posts (
     published_at  TEXT,
     date_modified TEXT,
     created_at    TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
+    updated_at    TEXT NOT NULL DEFAULT (datetime('now')),
+    -- v5: SEO + region targeting + scheduling
+    meta_title       TEXT,
+    meta_description TEXT,
+    meta_keywords    TEXT,
+    region           TEXT NOT NULL DEFAULT 'all',   -- all | wa | id | or | az
+    og_image         TEXT,
+    scheduled_at     TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status, published_at);
 

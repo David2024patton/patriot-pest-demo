@@ -200,6 +200,18 @@ final class Database
             Logger::warning('idx_cust_source creation skipped (may already exist)');
         }
 
+        // v4->v5: posts SEO + region targeting + scheduling columns.
+        foreach ([
+            'ALTER TABLE posts ADD COLUMN meta_title TEXT',
+            'ALTER TABLE posts ADD COLUMN meta_description TEXT',
+            'ALTER TABLE posts ADD COLUMN meta_keywords TEXT',
+            "ALTER TABLE posts ADD COLUMN region TEXT NOT NULL DEFAULT 'all'",
+            'ALTER TABLE posts ADD COLUMN og_image TEXT',
+            'ALTER TABLE posts ADD COLUMN scheduled_at TEXT',
+        ] as $colSql) {
+            try { $this->pdo->exec($colSql); } catch (\Throwable) { /* idempotent: column exists */ }
+        }
+
         // v3->v4: facebook_leads table for Facebook Lead Ads webhook pipeline.
         try {
             $this->pdo->exec("
@@ -233,6 +245,22 @@ final class Database
             $this->pdo->exec('CREATE INDEX IF NOT EXISTS idx_fb_lead_created ON facebook_leads(created_at)');
         } catch (\Throwable) {
             Logger::warning('facebook_leads migration skipped (may already exist)');
+        }
+    }
+
+    /**
+     * Promote due scheduled posts (status='scheduled' and scheduled_at <= now).
+     * Called once per request from the front controller; cheap single UPDATE.
+     */
+    public function publishScheduled(): void
+    {
+        try {
+            $this->pdo->exec(
+                "UPDATE posts SET status='published', published_at = COALESCE(scheduled_at, datetime('now'))
+                 WHERE status='scheduled' AND scheduled_at IS NOT NULL AND scheduled_at <= datetime('now')"
+            );
+        } catch (\Throwable) {
+            // non-fatal; posts table may lack scheduled_at on very old volumes
         }
     }
 
