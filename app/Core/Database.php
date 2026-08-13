@@ -215,6 +215,33 @@ final class Database
         // v6b: api_keys.key_cipher — encrypted raw key so super-admins can copy it later.
         try { $this->pdo->exec('ALTER TABLE api_keys ADD COLUMN key_cipher TEXT'); } catch (\Throwable) {}
 
+        // v7: marketing_ads (targeted email ads) + ad_impressions (tracking).
+        try {
+            $this->pdo->exec("
+                CREATE TABLE IF NOT EXISTS marketing_ads (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    bucket     TEXT NOT NULL,      -- new_plan | upgrade | reactivate | referral | review
+                    title      TEXT NOT NULL,
+                    body       TEXT NOT NULL,
+                    cta_label  TEXT NOT NULL,
+                    cta_url    TEXT NOT NULL,
+                    region     TEXT NOT NULL DEFAULT 'all',  -- all | wa | id | or | az
+                    season     TEXT NOT NULL DEFAULT 'all',  -- all | spring | summer | fall | winter
+                    weight     INTEGER NOT NULL DEFAULT 1,
+                    active     INTEGER NOT NULL DEFAULT 1,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )");
+            $this->pdo->exec("
+                CREATE TABLE IF NOT EXISTS ad_impressions (
+                    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ad_id        INTEGER NOT NULL,
+                    customer_id  INTEGER,
+                    purpose      TEXT,
+                    created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+                )");
+        } catch (\Throwable) {}
+        self::seedAds($this->pdo);
+
         // v6: rag_docs (RAG knowledge base) + pest_calendar (NPMA-style seasonal data).
         try {
             $this->pdo->exec("
@@ -281,8 +308,7 @@ final class Database
     /**
      * Promote due scheduled posts (status='scheduled' and scheduled_at <= now).
      * Called once per request from the front controller; cheap single UPDATE.
-     */
-    public function publishScheduled(): void
+     */    public function publishScheduled(): void
     {
         try {
             $this->pdo->exec(
@@ -292,6 +318,31 @@ final class Database
         } catch (\Throwable) {
             // non-fatal; posts table may lack scheduled_at on very old volumes
         }
+    }
+
+    /** Seed the targeted-email ad catalog (idempotent). */
+    private static function seedAds(\PDO $pdo): void
+    {
+        $count = (int) $pdo->query('SELECT COUNT(*) FROM marketing_ads')->fetchColumn();
+        if ($count > 0) { return; }
+        $ads = [
+            ['new_plan', 'Get covered in 24 hours', 'Same-day service is available across WA, ID, OR &amp; AZ — and every plan includes a 90-day re-treatment warranty.', 'View Plans', '/prices', 'all', 'all', 3],
+            ['new_plan', 'Summer is coming. Are you ready?', 'Mosquitoes and ants ramp up fast in warm weather. Lock in your coverage before they move in.', 'See Pricing', '/prices', 'all', 'summer', 3],
+            ['new_plan', 'Rodents don’t wait for winter', 'Cooler nights send mice and rats inside. A quarterly plan stops them before they settle in.', 'Get Protected', '/prices', 'all', 'fall', 2],
+            ['upgrade', 'Add Flea &amp; Tick protection', 'Extend your current plan with flea &amp; tick treatment — perfect for pets and yards.', 'Add to My Plan', '/prices', 'all', 'all', 4],
+            ['upgrade', 'Fortify the perimeter', 'Add rodent stations and baiting to your existing plan for year-round defense.', 'Upgrade My Plan', '/prices', 'all', 'all', 3],
+            ['upgrade', 'Go Gold for priority service', 'Gold adds priority scheduling and seasonal deep checks — the plan your technician recommends.', 'See Gold', '/prices', 'all', 'all', 2],
+            ['upgrade', 'Termite season check', 'Carpenter ants and termites swarm in spring. Add an inspection to your plan.', 'Book an Inspection', '/contact', 'all', 'spring', 2],
+            ['upgrade', 'Take back your yard with misting', 'Mosquito misting knocks down your whole yard — the #1 add-on for summer.', 'Ask About Misting', '/contact', 'all', 'summer', 2],
+            ['reactivate', 'We miss you — rebook your service', 'Pests don’t take a break. Get back on the schedule and we’ll re-treat your property.', 'Rebook Now', '/contact', 'all', 'all', 3],
+            ['reactivate', 'Your protection lapsed', 'Re-activate your plan and your 90-day warranty restarts immediately.', 'Reactivate', '/prices', 'all', 'all', 2],
+            ['referral', 'Refer a neighbor, get rewarded', 'Every referral that books earns you credit. Helping a neighbor helps your wallet.', 'Start Referring', '/referral', 'all', 'all', 2],
+            ['referral', 'Know someone with bugs?', 'Pass along our number — you both get rewarded when they book.', 'Share the Deal', '/referral', 'all', 'all', 2],
+            ['review', 'Love the service? Say it loudly', 'A quick review helps a veteran-owned local business more than you know.', 'Leave a Review', '/socials', 'all', 'all', 2],
+            ['review', 'Your 5-star review matters', 'Happy with your technician? Give us a rating — it takes 30 seconds.', 'Rate Us', '/socials', 'all', 'all', 2],
+        ];
+        $stmt = $pdo->prepare("INSERT INTO marketing_ads (bucket, title, body, cta_label, cta_url, region, season, weight, active) VALUES (?,?,?,?,?,?,?,?,1)");
+        foreach ($ads as $a) { $stmt->execute($a); }
     }
 
     /** Expose raw PDO only where genuinely needed (e.g. transactions). */

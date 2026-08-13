@@ -55,6 +55,7 @@ if ($uType === 'staff') {
             ['/admin/ai',      '✦', 'AI & Agents'],
             ['/admin/audit-log','•', 'Audit Log'],
             ['/admin/system-logs','•', 'System Logs'],
+            ['/admin/ads',     '◈', 'Marketing Ads'],
             ['/admin/twilio',  '•', 'Twilio'],
             ['/admin/retention', '•', 'Retention'],
         ];

@@ -156,6 +156,9 @@ Router::post('/admin/settings', [AdminController::class, 'settingsSave'])->auth(
 Router::get('/admin/ai',            [AdminController::class, 'aiSettings'])->auth('staff')->role('admin');
 Router::get('/admin/audit-log',     [AdminController::class, 'auditLog'])->auth('staff')->role('admin');
 Router::get('/admin/system-logs',   [AdminController::class, 'systemLogs'])->auth('staff')->role('admin');
+Router::get('/admin/ads',           [AdminController::class, 'adsIndex'])->auth('staff')->role('admin');
+Router::post('/admin/ads',          [AdminController::class, 'adsSave'])->auth('staff')->role('admin');
+Router::post('/admin/ads/toggle',   [AdminController::class, 'adsToggle'])->auth('staff')->role('admin');
 Router::post('/admin/ai',           [AdminController::class, 'aiSettingsSave'])->auth('staff')->role('admin');
 Router::post('/admin/ai/docs',      [AdminController::class, 'aiDocUpload'])->auth('staff')->role('admin');
 Router::post('/admin/ai/docs/delete', [AdminController::class, 'aiDocDelete'])->auth('staff')->role('admin');

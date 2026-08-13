@@ -879,6 +879,54 @@ class AdminController extends PageController
         ], ['title' => 'System Logs | Patriot Pest Admin', 'crumb' => [['Home', '/'], ['Admin', '/admin'], ['System Logs', '/admin/system-logs']]]);
     }
 
+    /** Marketing Ads manager — targeted email ads catalog. */
+    public function adsIndex(): void
+    {
+        $db = Database::instance();
+        $ads = $db->fetchAll('SELECT a.*, COUNT(i.id) AS impressions FROM marketing_ads a LEFT JOIN ad_impressions i ON i.ad_id = a.id GROUP BY a.id ORDER BY a.active DESC, a.bucket, a.id');
+        $msg = Session::pullFlash('ads');
+        echo View::page('admin/ads', ['ads' => $ads, 'msg' => $msg], ['title' => 'Marketing Ads | Patriot Pest Admin', 'crumb' => [['Home', '/'], ['Admin', '/admin'], ['Marketing Ads', '/admin/ads']]]);
+    }
+
+    public function adsSave(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        $bucket = Validator::clean($_POST['bucket'] ?? 'new_plan');
+        if (!in_array($bucket, ['new_plan', 'upgrade', 'reactivate', 'referral', 'review'], true)) { $bucket = 'new_plan'; }
+        $region = Validator::clean($_POST['region'] ?? 'all');
+        if (!in_array($region, ['all', 'wa', 'id', 'or', 'az'], true)) { $region = 'all'; }
+        $season = Validator::clean($_POST['season'] ?? 'all');
+        if (!in_array($season, ['all', 'spring', 'summer', 'fall', 'winter'], true)) { $season = 'all'; }
+        $title = Validator::clean($_POST['title'] ?? '');
+        if ($title === '') {
+            Session::flash('ads', 'Ad needs a title.');
+            header('Location: /admin/ads');
+            exit;
+        }
+        Database::instance()->insert('marketing_ads', [
+            'bucket' => $bucket, 'title' => $title, 'body' => Validator::clean($_POST['body'] ?? ''),
+            'cta_label' => Validator::clean($_POST['cta_label'] ?? 'Learn More'), 'cta_url' => Validator::clean($_POST['cta_url'] ?? '/prices'),
+            'region' => $region, 'season' => $season, 'weight' => max(1, (int) ($_POST['weight'] ?? 1)), 'active' => 1,
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+        $this->audit('ads.create', 'marketing_ads', null, ['title' => $title]);
+        Session::flash('ads', 'Ad added.');
+        header('Location: /admin/ads');
+        exit;
+    }
+
+    public function adsToggle(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        $id = (int) ($_POST['id'] ?? 0);
+        $db = Database::instance();
+        $db->execute('UPDATE marketing_ads SET active = CASE active WHEN 1 THEN 0 ELSE 1 END WHERE id = ?', [$id]);
+        $this->audit('ads.toggle', 'marketing_ads', (string) $id);
+        Session::flash('ads', 'Ad toggled.');
+        header('Location: /admin/ads');
+        exit;
+    }
+
     /** Audit-log helper (mirrors AuthController's). */
     private function audit(string $action, string $entity, mixed $entityId, array $meta = []): void
     {

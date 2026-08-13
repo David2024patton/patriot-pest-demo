@@ -108,12 +108,12 @@ class AuthController extends PageController
 
         // 2) Customer (by email, phone, or account number).
         $customer = $db->fetch(
-            'SELECT id, name, email FROM customers WHERE email = ? OR phone = ? OR account_number = ? LIMIT 1',
+            'SELECT id, name, email, city, state, district FROM customers WHERE email = ? OR phone = ? OR account_number = ? LIMIT 1',
             [$identifier, $identifier, $identifier]
         );
         if ($customer !== null && !empty($customer['email'])) {
             RateLimiter::clear($rateKey);
-            $this->issueAndEmail($customer['email'], 'customer');
+            $this->issueAndEmail($customer['email'], 'customer', $customer);
             Session::put('pending_login_email', $customer['email']);
             Session::put('pending_login_type', 'customer');
             Session::put('pending_login_id', $customer['id']);
@@ -195,7 +195,7 @@ class AuthController extends PageController
 
     /** Issue a code and email it (dev mode logs it to storage/logs/mail-*.log). */
     /** Issue a code and email it (dev mode logs it to storage/logs/mail-*.log). */
-    private function issueAndEmail(string $email, string $who): void
+    private function issueAndEmail(string $email, string $who, ?array $customer = null): void
     {
         // --- Rate limit: 3 codes per identity per 5 minutes ---
         $limitKey = 'otp_issue:' . $email;
@@ -209,14 +209,21 @@ class AuthController extends PageController
 
         $code = OtpAuth::issue($email, self::PURPOSE);
         $mins = (int) (Config::int('OTP_TTL', 600) / 60);
+        $body = '<p style="font-size:32px;letter-spacing:8px;font-weight:bold;color:#c8a24a">' . $code . '</p>'
+            . '<p>This code expires in ' . $mins . ' minutes and works once. If you didn\'t request it, you can safely ignore this email.</p>';
+
+        // Customers get a targeted, rotating ad based on their account state.
+        if ($who === 'customer' && $customer !== null && !empty($customer['email'])) {
+            $ad = \PPC\Core\MarketingAds::renderFor($customer);
+            if ($ad !== '') {
+                $body .= $ad;
+            }
+        }
+
         Mailer::send(
             $email,
             'Your Patriot Pest Control sign-in code',
-            Mailer::template(
-                'Your sign-in code',
-                '<p style="font-size:32px;letter-spacing:8px;font-weight:bold;color:#c8a24a">' . $code . '</p>'
-                . '<p>This code expires in ' . $mins . ' minutes and works once. If you didn\'t request it, you can safely ignore this email.</p>'
-            )
+            Mailer::template('Your sign-in code', $body)
         );
     }
 
