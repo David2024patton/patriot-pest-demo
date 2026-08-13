@@ -212,6 +212,33 @@ final class Database
             try { $this->pdo->exec($colSql); } catch (\Throwable) { /* idempotent: column exists */ }
         }
 
+        // v6: rag_docs (RAG knowledge base) + pest_calendar (NPMA-style seasonal data).
+        try {
+            $this->pdo->exec("
+                CREATE TABLE IF NOT EXISTS rag_docs (
+                    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                    doc_name    TEXT NOT NULL,
+                    chunk_index INTEGER NOT NULL DEFAULT 0,
+                    content     TEXT NOT NULL,
+                    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+                )");
+            $this->pdo->exec('CREATE INDEX IF NOT EXISTS idx_rag_doc ON rag_docs(doc_name)');
+        } catch (\Throwable) {}
+        try {
+            $this->pdo->exec("
+                CREATE TABLE IF NOT EXISTS pest_calendar (
+                    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                    pest        TEXT NOT NULL,
+                    region      TEXT NOT NULL DEFAULT 'all',
+                    month_start INTEGER NOT NULL,
+                    month_end   INTEGER NOT NULL,
+                    severity    TEXT DEFAULT 'high',
+                    source      TEXT DEFAULT 'NPMA guidance + regional climate',
+                    note        TEXT
+                )");
+            $this->pdo->exec('CREATE INDEX IF NOT EXISTS idx_pestcal ON pest_calendar(pest, region)');
+        } catch (\Throwable) {}
+
         // v3->v4: facebook_leads table for Facebook Lead Ads webhook pipeline.
         try {
             $this->pdo->exec("

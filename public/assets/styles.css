@@ -620,19 +620,19 @@ img, video, canvas, iframe {
     height: auto;
     background: var(--olive-950);
     border-top: 2px solid var(--orange);
-    padding: .5rem 1rem calc(.5rem + env(safe-area-inset-bottom));
+    padding: .35rem .25rem calc(.35rem + env(safe-area-inset-bottom));
     z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: .5rem;
+    gap: .1rem;
   }
   
-  .mobile-sticky-nav a,
-  .mobile-sticky-nav button {
-    min-height: 44px;
-    min-width: 44px;
-    padding: .5rem;
+  .mobile-sticky-nav a {
+    flex: 1;
+    min-height: 48px;
+    min-width: 0;
+    padding: .3rem .15rem;
     color: var(--cream);
     text-decoration: none;
     background: none;
@@ -640,41 +640,39 @@ img, video, canvas, iframe {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: .2rem;
-    font-size: .65rem;
+    justify-content: center;
+    gap: .1rem;
+    font-size: .56rem;
     font-family: var(--mono);
     text-transform: uppercase;
+    white-space: nowrap;
   }
   
   .mobile-sticky-nav svg {
-    width: 24px;
-    height: 24px;
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
   }
   
-  .mobile-sticky-nav .center-btn {
-    background: var(--orange);
-    color: var(--olive-950);
-    border-radius: 50%;
-    width: 56px;
-    height: 56px;
-    transform: translateY(-20px);
-    box-shadow: 0 4px 12px rgba(0,0,0,.3);
-    padding: 1rem;
+  .mobile-sticky-nav .label {
+    line-height: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
-  .mobile-sticky-nav .center-btn svg {
-    width: 28px;
-    height: 28px;
+  .mobile-sticky-nav a:active {
+    color: var(--orange);
   }
   
   /* Add space at bottom for sticky nav */
   body {
-    padding-bottom: 80px;
+    padding-bottom: 76px;
   }
   
   .mobile-nav-spacer {
     display: block;
-    height: 80px;
+    height: 76px;
   }
 }
 
@@ -1002,12 +1000,12 @@ html.has-crosshair #xh-v,html.has-crosshair #xh-h,html.has-crosshair #xh-ring{op
 .bigquote{margin-top:2rem;border-left:6px solid var(--red);padding:1.2rem 1.6rem;background:#e4dabf;font-size:clamp(1.02rem,1.7vw,1.25rem);line-height:1.55;font-weight:600;color:var(--ink);position:relative}
 .bigquote::before{content:"“";font-family:var(--display);font-size:4rem;color:var(--red);position:absolute;top:-1.4rem;left:.6rem;opacity:.35}
 
-/* ---------- themed scrollbars ---------- */
-::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-track{background:var(--olive-950)}
-::-webkit-scrollbar-thumb{background:var(--olive-700);border:2px solid var(--olive-950);border-radius:6px}
-::-webkit-scrollbar-thumb:hover{background:var(--orange)}
-*{scrollbar-width:thin;scrollbar-color:var(--olive-700) var(--olive-950)}
+/* ---------- themed scrollbars (document only - never add stray bars to cards/panels) ---------- */
+html::-webkit-scrollbar{width:12px;height:12px}
+html::-webkit-scrollbar-track{background:var(--olive-950)}
+html::-webkit-scrollbar-thumb{background:var(--olive-700);border:3px solid var(--olive-950);border-radius:8px}
+html::-webkit-scrollbar-thumb:hover{background:var(--orange)}
+html{scrollbar-width:thin;scrollbar-color:var(--olive-700) var(--olive-950)}
 
 /* ---------- reveal default (fail-safe: only hidden when JS is active) ---------- */
 html.js [data-reveal]{opacity:0;transform:translateY(34px)}

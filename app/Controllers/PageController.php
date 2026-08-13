@@ -245,6 +245,43 @@ class PageController
         echo View::page('pages/sitemap', ['states' => $this->states(), 'posts' => $posts], $this->meta('Sitemap | Patriot Pest Control', 'Every page on the Patriot Pest Control website.', '/sitemap'));
     }
 
+    /** Lightweight site search: published posts + pest library + service areas. */
+    public function search(): void
+    {
+        $q = trim((string) ($_GET['q'] ?? ''));
+        $db = Database::instance();
+        $results = ['posts' => [], 'pests' => [], 'areas' => []];
+        if ($q !== '') {
+            $like = '%' . $q . '%';
+            $results['posts'] = $db->fetchAll(
+                "SELECT slug, title, excerpt, published_at FROM posts
+                 WHERE status = 'published' AND (title LIKE ? OR excerpt LIKE ? OR body_html LIKE ? OR meta_keywords LIKE ?)
+                 ORDER BY published_at DESC LIMIT 12",
+                [$like, $like, $like, $like]
+            );
+            $results['pests'] = $db->fetchAll(
+                "SELECT slug, name, filename, description FROM pest_photos
+                 WHERE name LIKE ? OR scientific_name LIKE ? OR description LIKE ? OR category LIKE ?
+                 ORDER BY sort_order LIMIT 12",
+                [$like, $like, $like, $like]
+            );
+            $cityRows = [];
+            foreach ($this->states() as $st => $s) {
+                foreach ($s['cities'] as $city) {
+                    if (stripos($city, $q) !== false) {
+                        $cityRows[] = ['city' => $city, 'state' => $st];
+                    }
+                }
+            }
+            $results['areas'] = array_slice($cityRows, 0, 12);
+        }
+        echo View::page('pages/search', ['q' => $q, 'results' => $results], $this->meta(
+            ($q !== '' ? "Search: $q | " : '') . 'Patriot Pest Control',
+            'Search Patriot Pest Control - blog guides, pest library, and service areas.',
+            '/search' . ($q !== '' ? '?q=' . rawurlencode($q) : '')
+        ));
+    }
+
     public function privacy(): void
     {
         echo View::page('pages/legal', ['kind' => 'privacy'], $this->meta('Privacy Policy | Patriot Pest Control', 'How Patriot Pest Control collects, uses, and protects your information.', '/privacy-policy'));

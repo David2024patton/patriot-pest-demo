@@ -40,6 +40,12 @@ final class Settings
         return in_array(strtolower($v), ['1', 'true', 'yes', 'on'], true);
     }
 
+    /** Raw string read with a default for missing keys. */
+    public static function get(string $key, string $default = ''): string
+    {
+        return self::all()[$key] ?? $default;
+    }
+
     /** Upsert a setting and drop the cache so the next read is fresh. */
     public static function set(string $key, string $value): void
     {

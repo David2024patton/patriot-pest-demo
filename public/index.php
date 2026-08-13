@@ -85,6 +85,7 @@ Router::get('/socials',          [PageController::class, 'socials']);
 Router::get('/help',             [PageController::class, 'help']);
 Router::get('/links',            [PageController::class, 'links']);
 Router::get('/sitemap',          [PageController::class, 'sitemap']);
+Router::get('/search',           [PageController::class, 'search']);
 Router::get('/privacy-policy',   [PageController::class, 'privacy']);
 Router::get('/terms-of-use',     [PageController::class, 'terms']);
 
@@ -151,6 +152,13 @@ Router::get('/admin/media',      [AdminController::class, 'media'])->auth('staff
 Router::get('/admin/content',    [AdminController::class, 'content'])->auth('staff')->role('admin');
 Router::get('/admin/settings',  [AdminController::class, 'settings'])->auth('staff')->role('admin');
 Router::post('/admin/settings', [AdminController::class, 'settingsSave'])->auth('staff')->role('admin');
+// AI & Agents section (LLM provider config + RAG docs + regional blog generation)
+Router::get('/admin/ai',            [AdminController::class, 'aiSettings'])->auth('staff')->role('admin');
+Router::post('/admin/ai',           [AdminController::class, 'aiSettingsSave'])->auth('staff')->role('admin');
+Router::post('/admin/ai/docs',      [AdminController::class, 'aiDocUpload'])->auth('staff')->role('admin');
+Router::post('/admin/ai/docs/delete', [AdminController::class, 'aiDocDelete'])->auth('staff')->role('admin');
+Router::post('/admin/ai/generate',  [AdminController::class, 'generateRegionalPosts'])->auth('staff')->role('admin');
+Router::post('/admin/posts/draft',  [AdminController::class, 'postDraft'])->auth('staff')->role('admin');
 
 // ---------- Staff CRUD (admin-guarded) ----------
 Router::get('/admin/staff',          [StaffController::class, 'staffList'])->auth('staff')->role('admin');
@@ -256,6 +264,7 @@ if (\PPC\Core\Config::bool("API_ENABLED", false)) {
     Router::get("/api/v1/services",  [ApiController::class, "services"]);
     Router::get("/api/v1/twilio/logs", [ApiController::class, "twilioLogs"]);
     Router::get("/api/v1/staff",     [ApiController::class, "staff"]);
+    Router::post("/api/v1/mcp",      [ApiController::class, "mcp"]);
 }
 
 // Public, rate-limited AI chat for the on-site widget. Registered outside the

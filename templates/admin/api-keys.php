@@ -37,7 +37,10 @@
           <button type="submit" class="btn" style="background:var(--orange);color:var(--olive-950);padding:.4rem 1rem;border:none">Generate Key</button>
         </div>
         <div style="font-size:.7rem;color:var(--khaki);margin-top:.5rem">
-          Available scopes: customer:read, customer:read-full, ticket:read, message:read, twilio:read, staff:read, all
+          Available scopes: customer:read, customer:read-full, ticket:read, message:read, create_customers, twilio:read, staff:read, all
+        </div>
+        <div style="font-size:.7rem;color:var(--khaki);margin-top:.4rem">
+          <b style="color:var(--cream)">Remote agents (MCP):</b> <code>POST https://test.patriotpest.pro/api/v1/mcp</code> with <code>Authorization: Bearer &lt;key&gt;</code>. Tools: list/search/get customers (PII redacted unless customer:read-full), tickets, messages, services, blog, pests, create_lead (new leads only). <b>No tool can update or delete customers.</b>
         </div>
       </form>
     </div>

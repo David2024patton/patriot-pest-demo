@@ -615,6 +615,159 @@ class AdminController extends PageController
         return trim(strip_tags($html, '<p><br><strong><em><b><i><u><ul><ol><li><h2><h3><h4><blockquote><a><img><figure><figcaption><table><thead><tbody><tr><th><td>'));
     }
 
+    /** AI/LLM settings + RAG document manager. */
+    public function aiSettings(): void
+    {
+        $db = Database::instance();
+        $docs = $db->fetchAll('SELECT doc_name, COUNT(*) AS chunks, MAX(created_at) AS updated FROM rag_docs GROUP BY doc_name ORDER BY updated DESC');
+        $total = (int) $db->scalar('SELECT COUNT(*) FROM rag_docs');
+        $settings = [
+            'ai_provider', 'ai_base_url', 'ai_model', 'ai_api_key', 'ai_persona', 'ai_rules',
+        ];
+        $vals = [];
+        foreach ($settings as $k) { $vals[$k] = \PPC\Core\Settings::get($k); }
+        echo View::page('admin/ai', [
+            'vals' => $vals,
+            'docs' => $docs,
+            'totalChunks' => $total,
+            'enabled' => \PPC\Core\AiService::enabled(),
+            'msg' => Session::pullFlash('admin_ai'),
+        ], ['title' => 'AI & Agents | Patriot Pest Admin', 'crumb' => [['Home', '/'], ['Admin', '/admin'], ['AI & Agents', '/admin/ai']]]);
+    }
+
+    public function aiSettingsSave(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        foreach (['ai_provider', 'ai_base_url', 'ai_model', 'ai_api_key', 'ai_persona', 'ai_rules'] as $k) {
+            \PPC\Core\Settings::set($k, (string) ($_POST[$k] ?? ''));
+        }
+        $this->audit('ai.settings.update', 'settings', null, ['provider' => $_POST['ai_provider'] ?? '']);
+        Session::flash('admin_ai', 'AI settings saved.');
+        header('Location: /admin/ai');
+        exit;
+    }
+
+    public function aiDocUpload(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        $name = Validator::clean($_POST['doc_name'] ?? '');
+        $text = '';
+        if (!empty($_FILES['doc_file']['tmp_name']) && is_uploaded_file($_FILES['doc_file']['tmp_name'])) {
+            $text = (string) file_get_contents($_FILES['doc_file']['tmp_name']);
+            if ($name === '') { $name = preg_replace('/\.[^.]+$/', '', (string) $_FILES['doc_file']['name']); }
+        } elseif (!empty($_POST['doc_text'])) {
+            $text = (string) $_POST['doc_text'];
+        }
+        if ($name === '' || trim($text) === '') {
+            Session::flash('admin_ai', 'Upload a .txt/.md file or paste text.');
+            header('Location: /admin/ai');
+            exit;
+        }
+        $chunks = \PPC\Core\AiService::indexDocument($name, $text);
+        $this->audit('ai.doc.upload', 'rag_docs', null, ['name' => $name, 'chunks' => $chunks]);
+        Session::flash('admin_ai', "Indexed \"$name\" ($chunks chunks).");
+        header('Location: /admin/ai');
+        exit;
+    }
+
+    public function aiDocDelete(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        $name = Validator::clean($_POST['doc_name'] ?? '');
+        if ($name !== '') {
+            Database::instance()->execute('DELETE FROM rag_docs WHERE doc_name = ?', [$name]);
+            $this->audit('ai.doc.delete', 'rag_docs', null, ['name' => $name]);
+        }
+        Session::flash('admin_ai', 'Document removed from knowledge base.');
+        header('Location: /admin/ai');
+        exit;
+    }
+
+    /** AI-draft a blog post body from the title (JSON, used by the editor button). */
+    public function postDraft(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        header('Content-Type: application/json');
+        $brief = [
+            'title'  => Validator::clean($_POST['title'] ?? ''),
+            'pest'   => Validator::clean($_POST['pest_category'] ?? ''),
+            'region' => Validator::clean($_POST['region'] ?? 'all'),
+            'season' => Validator::clean($_POST['season'] ?? ''),
+            'outline'=> Validator::clean($_POST['outline'] ?? ''),
+        ];
+        if ($brief['title'] === '') {
+            echo json_encode(['ok' => false, 'error' => 'Title is required first.']);
+            exit;
+        }
+        if (!\PPC\Core\AiService::enabled()) {
+            echo json_encode(['ok' => false, 'error' => 'AI not configured. Configure it under Admin → AI & Agents.']);
+            exit;
+        }
+        $html = \PPC\Core\AiService::blogDraft($brief);
+        if ($html === null) {
+            echo json_encode(['ok' => false, 'error' => 'AI draft failed (check provider config / logs).']);
+            exit;
+        }
+        $this->audit('blog.draft.ai', 'posts', null, ['title' => $brief['title']]);
+        echo json_encode(['ok' => true, 'html' => $html]);
+        exit;
+    }
+
+    /** Generate scheduled regional blog posts from the pest calendar (NPMA/USDA data). */
+    public function generateRegionalPosts(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        $region = Validator::clean($_POST['region'] ?? 'all');
+        if (!isset(\PPC\Core\PestCalendar::REGION_LABEL[$region])) { $region = 'all'; }
+        $db = Database::instance();
+        $created = 0;
+        foreach (\PPC\Core\PestCalendar::CALENDAR as $pest => $regions) {
+            $entry = $regions[$region] ?? null;
+            if ($entry === null) { continue; }
+            [$start, $end, $severity, $note] = $entry;
+            $label = \PPC\Core\PestCalendar::REGION_LABEL[$region];
+            $title = ucwords(str_replace('-', ' ', $pest)) . " Season in $label: What to Know";
+            $season = match (true) {
+                $start >= 3 && $start <= 5  => 'spring',
+                $start >= 6 && $start <= 8  => 'summer',
+                $start >= 9 && $start <= 11 => 'fall',
+                default                     => 'winter',
+            };
+            $slug = \PPC\Core\Database::instance()->scalar(
+                "SELECT id FROM posts WHERE slug = ?", [$pest . '-' . $region . '-season']
+            );
+            if ($slug !== null) { continue; } // already generated
+            $excerpt = "$note. Seasonal {$label} pest guide from Patriot Pest Control.";
+            $body = "<h2>{$label} {$pest} pressure</h2><p>{$note}.</p><p>Seasonal activity window: "
+                . date('F', mktime(0,0,0,$start,1)) . " – " . date('F', mktime(0,0,0,$end,1))
+                . ". Source: NPMA seasonal guidance + regional climate (USDA hardiness zones).</p>"
+                . "<h2>Prevention</h2><ul><li>Inspect entry points and seal gaps.</li><li>Remove standing water and debris around the foundation.</li><li>Keep kitchens clean and store food sealed.</li></ul>"
+                . "<h2>When to call a pro</h2><p>If you see signs of {$pest} activity, schedule a treatment before it becomes an infestation.</p>"
+                . "<p><a href=\"/contact\">Contact Patriot Pest Control</a> for {$label} service.</p>";
+            $db->insert('posts', [
+                'slug' => $pest . '-' . $region . '-season',
+                'title' => $title,
+                'excerpt' => $excerpt,
+                'body_html' => $body,
+                'season' => $season,
+                'pest_category' => $pest,
+                'region' => $region,
+                'status' => 'draft',
+                'author' => 'Patriot Pest Control',
+                'meta_title' => $title,
+                'meta_description' => $excerpt,
+                'meta_keywords' => "$pest, $label, seasonal pest control",
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+            $created++;
+        }
+        $this->audit('blog.generate.regional', 'posts', null, ['region' => $region, 'created' => $created]);
+        Session::flash('admin_ai', "Generated $created regional draft posts for " . \PPC\Core\PestCalendar::REGION_LABEL[$region] . '.');
+        header('Location: /admin/ai');
+        exit;
+    }
+
     /** Audit-log helper (mirrors AuthController's). */
     private function audit(string $action, string $entity, mixed $entityId, array $meta = []): void
     {

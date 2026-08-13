@@ -96,7 +96,39 @@ $selPhoto = $post['pest_photo_id'] ?? null;
       <label for="body_html">Body (HTML)</label>
       <textarea id="body_html" name="body_html" style="min-height:280px;font-family:var(--mono);font-size:.85rem"><?= $old('body_html') ?></textarea>
       <div class="hint">Allowed: p, br, strong, em, ul, ol, li, h2–h4, blockquote, a, img, table. Scripts &amp; handlers are stripped on save.</div>
+      <div style="display:flex;gap:.6rem;align-items:center;margin-top:.6rem">
+        <button type="button" id="ai-draft-btn" style="background:var(--olive-700);color:var(--cream);border:1px solid var(--olive-500);padding:.5rem .9rem;cursor:pointer;font-family:var(--mono);font-size:.75rem">✦ Draft with AI</button>
+        <input type="text" id="ai-outline" placeholder="Optional outline: sections separated by | (AI prompt)" style="flex:1;background:var(--olive-950);border:1px solid var(--olive-700);color:var(--cream);padding:.5rem .8rem">
+        <span id="ai-draft-status" style="font-family:var(--mono);font-size:.7rem;color:var(--khaki)"></span>
+      </div>
     </div>
+    <script>
+    (function(){
+      var btn = document.getElementById('ai-draft-btn');
+      var out = document.getElementById('ai-outline');
+      var st  = document.getElementById('ai-draft-status');
+      var csrf = document.querySelector('input[name="_csrf"]');
+      if (btn) btn.addEventListener('click', function(){
+        var title = document.getElementById('title').value.trim();
+        if (!title) { st.textContent = 'Add a title first.'; return; }
+        st.textContent = 'Drafting…';
+        var fd = new FormData();
+        fd.append('title', title);
+        fd.append('pest_category', document.getElementById('pest_category').value);
+        fd.append('region', document.getElementById('region').value);
+        fd.append('season', document.getElementById('season').value);
+        fd.append('outline', out ? out.value : '');
+        if (csrf) fd.append('_csrf', csrf.value);
+        fetch('/admin/posts/draft', { method: 'POST', body: fd })
+          .then(function(r){ return r.json(); })
+          .then(function(j){
+            if (j.ok) { document.getElementById('body_html').value = j.html; st.textContent = 'Draft inserted ✓'; }
+            else { st.textContent = j.error || 'Draft failed'; }
+          })
+          .catch(function(){ st.textContent = 'Draft failed (network)'; });
+      });
+    })();
+    </script>
 
     <div class="field">
       <label>Featured Pest Photo</label>
