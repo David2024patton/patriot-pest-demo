@@ -13,7 +13,6 @@ $pestCount = $data['pestCount'] ?? count($pests);
 
 <!-- ============ HERO ============ -->
 <section id="hero">
-  <div id="xh-v"></div><div id="xh-h"></div><div id="xh-ring"></div>
   <div class="hud-top">
     <span>PATRIOT PEST CONTROL <span class="live">SYSTEMS ONLINE</span></span>
     <span>47.6588° N / 117.4260° W - SPOKANE, WA</span>
@@ -46,7 +45,7 @@ $pestCount = $data['pestCount'] ?? count($pests);
   <div class="wrap threats-head">
     <div class="eyebrow">SEC. 01 // THREAT ASSESSMENT</div>
     <h2 data-reveal>Know your <em>enemy.</em></h2>
-    <p class="lead" data-reveal><?= $view->e($pestCount) ?> hostile categories operate in your region right now. Each one is identified, tracked, and eliminated with eco-friendly, family-safe treatments. Scroll the threat board.</p>
+    <p class="lead" data-reveal><?= $view->e($pestCount) ?> hostile categories operate in your region right now. Each one is identified, tracked, and eliminated with eco-friendly, family-safe treatments.</p>
   </div>
   <div class="wrap" style="max-width:100%;padding-right:0"><div class="threat-pin" id="threat-track">
     <?php foreach ($pests as $i => $p): ?>

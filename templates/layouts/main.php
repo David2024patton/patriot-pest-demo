@@ -62,7 +62,10 @@
 </head>
 <body>
 
-<nav aria-label="Main navigation">
+<!-- Crosshair HUD (desktop only; Skyler-approved) -->
+<div id="xh-v"></div><div id="xh-h"></div><div id="xh-ring"></div>
+
+<nav class="top-nav" aria-label="Main navigation">
   <a class="brand" href="/"><span class="star">★</span> PATRIOT PEST CONTROL</a>
   <button id="menu-btn" aria-label="Toggle menu">☰ Menu</button>
   <div class="navlinks">

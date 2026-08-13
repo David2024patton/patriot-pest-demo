@@ -73,18 +73,18 @@ if (cv){
   loop();
 }
 
-/* ---------- hero crosshair ---------- */
-var hero = document.getElementById("hero");
-if (hero && window.matchMedia("(pointer:fine)").matches){
-  var xhv=document.getElementById("xh-v"), xhh=document.getElementById("xh-h"), xhr=document.getElementById("xh-ring");
-  if (xhv){
-    hero.addEventListener("mousemove", function(e){
-      var r=hero.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
-      xhv.style.left=x+"px"; xhh.style.top=y+"px"; xhr.style.left=x+"px"; xhr.style.top=y+"px";
-      hero.classList.add("aim");
+/* ---------- crosshair HUD (desktop, page-wide) ---------- */
+var xhv=document.getElementById("xh-v"), xhh=document.getElementById("xh-h"), xhr=document.getElementById("xh-ring");
+if (xhv && xhh && xhr && window.matchMedia("(pointer: fine)").matches){
+  ["mousemove","mousedown","mouseup"].forEach(function(ev){
+    window.addEventListener(ev, function(e){
+      xhv.style.left=e.clientX+"px";
+      xhh.style.top=e.clientY+"px";
+      xhr.style.left=e.clientX+"px";
+      xhr.style.top=e.clientY+"px";
     });
-    hero.addEventListener("mouseleave", function(){ hero.classList.remove("aim"); });
-  }
+  });
+  document.documentElement.classList.add("has-crosshair");
 }
 
 /* ---------- HUD clock ---------- */
@@ -158,7 +158,7 @@ document.querySelectorAll("form[data-demo]").forEach(function(form){
 if (window.gsap && window.ScrollTrigger){
   gsap.registerPlugin(ScrollTrigger);
 
-  if (!reduced && window.Lenis){
+  if (!reduced && window.Lenis && window.matchMedia("(min-width: 900px) and (pointer: fine)").matches){
     var lenis = new Lenis({duration:1.15, smoothWheel:true});
     window.__lenis = lenis;
     lenis.on("scroll", ScrollTrigger.update);
@@ -193,17 +193,6 @@ if (window.gsap && window.ScrollTrigger){
         setTimeout(function(){ f.style.width=f.dataset.lvl+"%"; },200+i*90);
       });
     }});
-  }
-
-  /* horizontal threat scroll (home, desktop) */
-  var track = document.getElementById("threat-track");
-  if (track){
-    var mm = gsap.matchMedia();
-    mm.add("(min-width: 900px) and (prefers-reduced-motion: no-preference)", function(){
-      var getScroll = function(){ return Math.max(0, track.scrollWidth - window.innerWidth + 60); };
-      gsap.to(track,{x:function(){return -getScroll();},ease:"none",
-        scrollTrigger:{trigger:"#threats",start:"top top",end:function(){return "+="+getScroll();},scrub:1,pin:true,anticipatePin:1,invalidateOnRefresh:true}});
-    });
   }
 
   /* hero strike line */
