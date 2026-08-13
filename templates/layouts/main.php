@@ -15,6 +15,7 @@
 <head>
   <?= $view->raw(\PPC\Core\View::render('layouts/analytics')) ?>
   <meta charset="UTF-8">
+  <script>document.documentElement.classList.add('js');setTimeout(function(){if(!document.documentElement.classList.contains('gsap-ok')){document.querySelectorAll('[data-reveal]').forEach(function(el){el.style.opacity='1';el.style.transform='none';});}},4000);</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes">
   <title><?= $view->e($title ?? 'Patriot Pest Control') ?></title>
   <meta name="description" content="<?= $view->e($description ?? '') ?>">
@@ -69,7 +70,7 @@
   <a class="brand" href="/"><span class="star">★</span> PATRIOT PEST CONTROL</a>
   <button id="menu-btn" aria-label="Toggle menu">☰ Menu</button>
   <div class="navlinks">
-    <a class="nl" href="/">Home</a><a class="nl" href="/about">About</a><a class="nl" href="/services">Services</a><a class="nl" href="/prices">Prices</a><a class="nl" href="/service-areas">Areas</a><a class="nl" href="/blogs">Blog</a><a class="nl" href="/faqs">FAQs</a><a class="nl" href="/contact">Contact</a>
+    <a class="nl" href="/">Home</a><a class="nl" href="/about">About</a><a class="nl" href="/services">Services</a><a class="nl" href="/prices">Prices</a><a class="nl" href="/service-areas">Areas</a><a class="nl" href="/blogs">Blog</a><a class="nl" href="/faqs">FAQs</a><a class="nl" href="/contact">Contact</a><a class="nl" href="/links">🔗 All Links</a>
     <?php if ($view->userType() === 'customer'): ?>
       <a class="nl" href="/customer-dashboard">My Account</a>
     <?php elseif ($view->userType() === 'staff'): ?>

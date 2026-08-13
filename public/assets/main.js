@@ -157,6 +157,7 @@ document.querySelectorAll("form[data-demo]").forEach(function(form){
 /* ---------- GSAP ---------- */
 if (window.gsap && window.ScrollTrigger){
   gsap.registerPlugin(ScrollTrigger);
+  document.documentElement.classList.add('gsap-ok');
 
   if (!reduced && window.Lenis && window.matchMedia("(min-width: 900px) and (pointer: fine)").matches){
     var lenis = new Lenis({duration:1.15, smoothWheel:true});
