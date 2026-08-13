@@ -155,12 +155,42 @@ final class ApiAuth
             'key_prefix' => $prefix,
             'key_hash'   => $hash,
             'scopes'     => json_encode($scopes),
+            'key_cipher' => self::encryptKey($fullKey),
             'created_by' => $createdBy,
             'created_at' => gmdate('Y-m-d H:i:s'),
         ]);
         self::$lastKeyRow = ['id' => $id, 'name' => $name, 'key_prefix' => $prefix, 'scopes' => $scopes];
 
         return $fullKey;
+    }
+
+    /**
+     * Encrypt the raw key at rest (AES-256-CBC) with a per-site secret so it
+     * can be copied later by a super-admin (never stored in plaintext).
+     */
+    public static function encryptKey(string $fullKey): string
+    {
+        $secret = \PPC\Core\Settings::get('key_cipher_secret');
+        if ($secret === '') {
+            $secret = bin2hex(random_bytes(32));
+            \PPC\Core\Settings::set('key_cipher_secret', $secret);
+        }
+        $iv = random_bytes(16);
+        $cipher = openssl_encrypt($fullKey, 'aes-256-cbc', hex2bin($secret), OPENSSL_RAW_DATA, $iv);
+        return base64_encode($iv . $cipher);
+    }
+
+    /** Decrypt a stored key_cipher. Returns null when unavailable/invalid. */
+    public static function decryptKey(string $cipher): ?string
+    {
+        if ($cipher === '') { return null; }
+        $secret = \PPC\Core\Settings::get('key_cipher_secret');
+        if ($secret === '') { return null; }
+        $blob = base64_decode($cipher);
+        if ($blob === false || strlen($blob) < 17) { return null; }
+        $iv = substr($blob, 0, 16);
+        $out = openssl_decrypt(substr($blob, 16), 'aes-256-cbc', hex2bin($secret), OPENSSL_RAW_DATA, $iv);
+        return is_string($out) && $out !== '' ? $out : null;
     }
 
     /**

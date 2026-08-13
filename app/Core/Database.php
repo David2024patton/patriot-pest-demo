@@ -212,6 +212,9 @@ final class Database
             try { $this->pdo->exec($colSql); } catch (\Throwable) { /* idempotent: column exists */ }
         }
 
+        // v6b: api_keys.key_cipher — encrypted raw key so super-admins can copy it later.
+        try { $this->pdo->exec('ALTER TABLE api_keys ADD COLUMN key_cipher TEXT'); } catch (\Throwable) {}
+
         // v6: rag_docs (RAG knowledge base) + pest_calendar (NPMA-style seasonal data).
         try {
             $this->pdo->exec("

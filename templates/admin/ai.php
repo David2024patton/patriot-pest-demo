@@ -22,23 +22,28 @@ $enabled= $data['enabled'] ?? false;
         <label for="ai_provider">Provider</label>
         <select id="ai_provider" name="ai_provider">
           <option value="off" <?= ($vals['ai_provider'] ?? 'off') === 'off' ? 'selected' : '' ?>>Off</option>
-          <option value="api" <?= ($vals['ai_provider'] ?? '') === 'api' ? 'selected' : '' ?>>API (OpenAI / OpenRouter / Together / Groq…)</option>
+          <option value="openai" <?= ($vals['ai_provider'] ?? '') === 'openai' ? 'selected' : '' ?>>OpenAI-compatible (OpenAI / OpenRouter / Together / Groq…)</option>
+          <option value="anthropic" <?= ($vals['ai_provider'] ?? '') === 'anthropic' ? 'selected' : '' ?>>Anthropic (Claude)</option>
           <option value="local" <?= ($vals['ai_provider'] ?? '') === 'local' ? 'selected' : '' ?>>Local (Ollama / llama.cpp / vLLM)</option>
         </select>
       </div>
       <div class="field">
         <label for="ai_model">Model</label>
-        <input type="text" id="ai_model" name="ai_model" value="<?= $view->e($vals['ai_model'] ?? '') ?>" placeholder="gpt-4o-mini | llama3.1:8b | qwen2.5-coder:7b">
+        <input type="text" id="ai_model" name="ai_model" value="<?= $view->e($vals['ai_model'] ?? '') ?>" placeholder="gpt-4o-mini | claude-sonnet-4-5 | llama3.1:8b">
       </div>
     </div>
     <div class="field">
       <label for="ai_base_url">Base URL</label>
-      <input type="text" id="ai_base_url" name="ai_base_url" value="<?= $view->e($vals['ai_base_url'] ?? '') ?>" placeholder="https://api.openai.com/v1  |  http://127.0.0.1:11434/v1">
-      <div class="hint">Any OpenAI-compatible /chat/completions endpoint.</div>
+      <input type="text" id="ai_base_url" name="ai_base_url" value="<?= $view->e($vals['ai_base_url'] ?? '') ?>" placeholder="https://api.openai.com/v1 | https://api.anthropic.com/v1 | http://127.0.0.1:11434/v1">
+      <div class="hint">Any OpenAI-compatible /chat/completions endpoint, or Anthropic's /v1/messages.</div>
     </div>
     <div class="field">
       <label for="ai_api_key">API Key</label>
       <input type="password" id="ai_api_key" name="ai_api_key" value="<?= $view->e($vals['ai_api_key'] ?? '') ?>" placeholder="sk-… (leave blank for local servers)">
+    </div>
+    <div class="field">
+      <label for="ai_max_tokens">Max tokens</label>
+      <input type="number" id="ai_max_tokens" name="ai_max_tokens" value="<?= $view->e($vals['ai_max_tokens'] ?? '4096') ?>" min="256" max="32000" step="256">
     </div>
     <h2 style="font-family:var(--display);color:var(--cream);font-size:1.15rem;margin:1.4rem 0 .6rem">2 · Persona &amp; Rules</h2>
     <div class="field">

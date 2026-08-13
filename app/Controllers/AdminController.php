@@ -550,6 +550,25 @@ class AdminController extends PageController
         $region = Validator::clean($_POST['region'] ?? 'all');
         if (!in_array($region, ['all', 'wa', 'id', 'or', 'az'], true)) { $region = 'all'; }
 
+        // Automatic SEO: fill any empty SEO field from the article content.
+        $metaTitle       = Validator::clean($_POST['meta_title'] ?? '');
+        $metaDesc        = Validator::clean($_POST['meta_description'] ?? '');
+        $metaKeywords    = Validator::clean($_POST['meta_keywords'] ?? '');
+        $seoPost = [
+            'title'         => Validator::clean($_POST['title']),
+            'body_html'     => $_POST['body_html'] ?? '',
+            'excerpt'       => $_POST['excerpt'] ?? '',
+            'pest_category' => Validator::clean($_POST['pest_category'] ?? ''),
+            'region'        => $region,
+            'season'        => Validator::clean($_POST['season'] ?? ''),
+        ];
+        if ($metaTitle === '' || $metaDesc === '' || $metaKeywords === '') {
+            $seo = \PPC\Core\SeoService::generateWithAi($seoPost);
+            if ($metaTitle === '')    { $metaTitle = $seo['meta_title']; }
+            if ($metaDesc === '')     { $metaDesc = $seo['meta_description']; }
+            if ($metaKeywords === '') { $metaKeywords = $seo['meta_keywords']; }
+        }
+
         // Scheduled posts keep published_at null until publishScheduled() fires.
         $scheduledAt = null;
         $publishedAt = null;
@@ -576,11 +595,29 @@ class AdminController extends PageController
             'published_at'     => $publishedAt,
             'scheduled_at'     => $scheduledAt,
             'region'           => $region,
-            'meta_title'       => Validator::clean($_POST['meta_title'] ?? '') ?: null,
-            'meta_description' => Validator::clean($_POST['meta_description'] ?? '') ?: null,
-            'meta_keywords'    => Validator::clean($_POST['meta_keywords'] ?? '') ?: null,
+            'meta_title'       => $metaTitle ?: null,
+            'meta_description' => $metaDesc ?: null,
+            'meta_keywords'    => $metaKeywords ?: null,
             'og_image'         => Validator::clean($_POST['og_image'] ?? '') ?: null,
         ];
+    }
+
+    /** Auto-SEO endpoint: returns generated meta fields as JSON (editor button). */
+    public function postSeo(): void
+    {
+        \PPC\Core\Csrf::verifyOrDie();
+        header('Content-Type: application/json');
+        $seo = \PPC\Core\SeoService::generateWithAi([
+            'title'         => Validator::clean($_POST['title'] ?? ''),
+            'body_html'     => $_POST['body_html'] ?? '',
+            'excerpt'       => $_POST['excerpt'] ?? '',
+            'pest_category' => Validator::clean($_POST['pest_category'] ?? ''),
+            'region'        => Validator::clean($_POST['region'] ?? 'all'),
+            'season'        => Validator::clean($_POST['season'] ?? ''),
+        ]);
+        $this->audit('blog.seo.generate', 'posts', null, ['title' => $_POST['title'] ?? '']);
+        echo json_encode(['ok' => true] + $seo);
+        exit;
     }
 
     /** Ensure the slug is unique (append -2, -3, ... on collision). */
@@ -638,7 +675,7 @@ class AdminController extends PageController
     public function aiSettingsSave(): void
     {
         \PPC\Core\Csrf::verifyOrDie();
-        foreach (['ai_provider', 'ai_base_url', 'ai_model', 'ai_api_key', 'ai_persona', 'ai_rules'] as $k) {
+        foreach (['ai_provider', 'ai_base_url', 'ai_model', 'ai_api_key', 'ai_max_tokens', 'ai_persona', 'ai_rules'] as $k) {
             \PPC\Core\Settings::set($k, (string) ($_POST[$k] ?? ''));
         }
         $this->audit('ai.settings.update', 'settings', null, ['provider' => $_POST['ai_provider'] ?? '']);
@@ -766,6 +803,80 @@ class AdminController extends PageController
         Session::flash('admin_ai', "Generated $created regional draft posts for " . \PPC\Core\PestCalendar::REGION_LABEL[$region] . '.');
         header('Location: /admin/ai');
         exit;
+    }
+
+    /** Audit log viewer — every user action, filterable by role. */
+    public function auditLog(): void
+    {
+        $role   = Validator::clean($_GET['role'] ?? 'all');
+        $action = Validator::clean($_GET['action'] ?? '');
+        $user   = Validator::clean($_GET['user'] ?? '');
+        $page   = max(1, (int) ($_GET['page'] ?? 1));
+        $limit  = 50;
+        $offset = ($page - 1) * $limit;
+        $db     = Database::instance();
+
+        $where  = ['1=1'];
+        $params = [];
+        if ($role !== 'all' && in_array($role, ['super-user', 'admin', 'staff', 'customer', 'system', 'guest'], true)) {
+            if ($role === 'system') { $where[] = 'a.user_type = \'system\''; }
+            elseif ($role === 'customer') { $where[] = 'a.user_type = \'customer\''; }
+            elseif ($role === 'guest') { $where[] = 'a.user_type = \'guest\''; }
+            else { $where[] = 'a.user_type = \'staff\' AND s.role = ?'; $params[] = $role; }
+        }
+        if ($action !== '') { $where[] = 'a.action LIKE ?'; $params[] = '%' . $action . '%'; }
+        if ($user !== '') {
+            $where[] = '(s.name LIKE ? OR s.email LIKE ? OR c.name LIKE ? OR c.email LIKE ?) ';
+            $like = '%' . $user . '%';
+            array_push($params, $like, $like, $like, $like);
+        }
+        $whereSql = implode(' AND ', $where);
+        $total = (int) $db->scalar(
+            "SELECT COUNT(*) FROM audit_log a
+             LEFT JOIN staff s ON s.id = a.user_id AND a.user_type = 'staff'
+             LEFT JOIN customers c ON c.id = a.user_id AND a.user_type = 'customer'
+             WHERE $whereSql", $params
+        );
+        $rows = $db->fetchAll(
+            "SELECT a.*, s.name AS staff_name, s.email AS staff_email, s.role AS staff_role,
+                    c.name AS cust_name, c.email AS cust_email
+             FROM audit_log a
+             LEFT JOIN staff s ON s.id = a.user_id AND a.user_type = 'staff'
+             LEFT JOIN customers c ON c.id = a.user_id AND a.user_type = 'customer'
+             WHERE $whereSql ORDER BY a.id DESC LIMIT $limit OFFSET $offset", $params
+        );
+        $roles = ['all' => 'All roles', 'super-user' => 'Super Admins', 'admin' => 'Admins', 'staff' => 'Staff', 'customer' => 'Customers', 'system' => 'System', 'guest' => 'Guests'];
+        echo View::page('admin/audit-log', [
+            'rows' => $rows, 'role' => $role, 'action' => $action, 'user' => $user,
+            'roles' => $roles, 'page' => $page, 'pages' => max(1, (int) ceil($total / $limit)), 'total' => $total,
+        ], ['title' => 'Audit Log | Patriot Pest Admin', 'crumb' => [['Home', '/'], ['Admin', '/admin'], ['Audit Log', '/admin/audit-log']]]);
+    }
+
+    /** System log viewer — reads storage/logs/*.log with filters. */
+    public function systemLogs(): void
+    {
+        $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET['date'] ?? '')) ? $_GET['date'] : date('Y-m-d');
+        $level = strtoupper(Validator::clean($_GET['level'] ?? 'ALL'));
+        $q = Validator::clean($_GET['q'] ?? '');
+
+        $dir = BASE_PATH . '/storage/logs';
+        $lines = [];
+        foreach (glob($dir . '/*' . $date . '.log') ?: [] as $f) {
+            $src = basename($f);
+            foreach (file($f) ?: [] as $ln) {
+                if ($q !== '' && stripos($ln, $q) === false) { continue; }
+                if ($level !== 'ALL' && stripos($ln, "[$level") === false && !preg_match('/\b' . $level . '\b/', $ln)) { continue; }
+                $lines[] = ['src' => $src, 'line' => rtrim($ln)];
+            }
+        }
+        // newest first
+        $lines = array_reverse($lines);
+        $lines = array_slice($lines, 0, 500);
+        $files = array_map('basename', glob($dir . '/*.log') ?: []);
+        rsort($files);
+        echo View::page('admin/system-logs', [
+            'lines' => $lines, 'date' => $date, 'level' => $level, 'q' => $q, 'files' => $files,
+        ], ['title' => 'System Logs | Patriot Pest Admin', 'crumb' => [['Home', '/'], ['Admin', '/admin'], ['System Logs', '/admin/system-logs']]]);
     }
 
     /** Audit-log helper (mirrors AuthController's). */

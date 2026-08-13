@@ -7,12 +7,22 @@ use PPC\Core\Session;
 use PPC\Core\Csrf;
 use PPC\Core\Logger;
 use PPC\Core\RateLimiter;
+use PPC\Core\Router;
 
 class ApiKeyController
 {
+    /** Only super-admins manage API keys (regular admins get a 404). */
+    private static function superAdminOnly(): void
+    {
+        if (Session::staffRole() !== 'super-user') {
+            Router::notFound();
+        }
+    }
+
     /** List all API keys. */
     public function index(): void
     {
+        self::superAdminOnly();
         $db = Database::instance();
         $keys = $db->fetchAll(
             'SELECT * FROM api_keys ORDER BY created_at DESC'
@@ -24,9 +34,34 @@ class ApiKeyController
         ], $this->meta('API Keys | Patriot Pest Control', 'Manage API keys for AI/Agent access.', '/admin/api-keys'));
     }
 
+    /** Reveal a stored (encrypted-at-rest) key so its owner can copy it again. Audited. */
+    public function reveal(string $id): void
+    {
+        self::superAdminOnly();
+        Csrf::verifyOrDie();
+        header('Content-Type: application/json');
+        $row = Database::instance()->fetch('SELECT id, name, key_cipher, revoked_at FROM api_keys WHERE id = ?', [(int) $id]);
+        if ($row === null) {
+            echo json_encode(['ok' => false, 'error' => 'Key not found.']);
+            exit;
+        }
+        if ($row['revoked_at'] !== null) {
+            echo json_encode(['ok' => false, 'error' => 'Key is revoked — create a new one.']);
+            exit;
+        }
+        $raw = ApiAuth::decryptKey((string) $row['key_cipher']);
+        if ($raw === null) {
+            echo json_encode(['ok' => false, 'error' => 'Key was created before encrypted storage; rotate it to enable copying.']);
+            exit;
+        }
+        Logger::info('API key revealed for copy', ['key' => $row['name'], 'by' => Session::get('user_id')]);
+        echo json_encode(['ok' => true, 'key' => $raw, 'name' => $row['name']]);
+        exit;
+    }
+
     /** Create a new API key. Returns a page showing the raw key ONCE. */
     public function create(): void
-    {
+    { self::superAdminOnly();
         Csrf::verifyOrDie();
         $name   = trim((string) ($_POST['name'] ?? ''));
         $scopes = array_filter(array_map('trim', explode(',', (string) ($_POST['scopes'] ?? ''))), 'strlen');
@@ -62,7 +97,7 @@ class ApiKeyController
 
     /** Revoke an API key. */
     public function revoke(string $id): void
-    {
+    { self::superAdminOnly();
         Csrf::verifyOrDie();
         $row = Database::instance()->fetch('SELECT id, name, key_prefix, scopes FROM api_keys WHERE id = ?', [$id]);
         $ok = ApiAuth::revokeKey((int) $id);
@@ -82,7 +117,7 @@ class ApiKeyController
 
     /** Rotate an API key — creates a new one and revokes the old in one TX. */
     public function rotate(string $id): void
-    {
+    { self::superAdminOnly();
         Csrf::verifyOrDie();
         $old = Database::instance()->fetch('SELECT id, name, key_prefix, scopes FROM api_keys WHERE id = ?', [$id]);
         $newKey = ApiAuth::rotateKey((int) $id, (int) (Session::get('user_id') ?? 0));
@@ -111,7 +146,7 @@ class ApiKeyController
 
     /** Update scopes for an API key. */
     public function updateScopes(string $id): void
-    {
+    { self::superAdminOnly();
         Csrf::verifyOrDie();
         $db = Database::instance();
         $row = $db->fetch('SELECT id, name, key_prefix, scopes FROM api_keys WHERE id = ? AND revoked_at IS NULL', [$id]);
@@ -142,7 +177,7 @@ class ApiKeyController
 
     /** Audit trail for key lifecycle actions, filterable per key. */
     public function audit(): void
-    {
+    { self::superAdminOnly();
         $db = Database::instance();
         $keyFilter = trim((string) ($_GET['key'] ?? ''));
         if ($keyFilter !== '' && !preg_match('/^[a-f0-9]{12}$/', $keyFilter)) {

@@ -53,6 +53,8 @@ if ($uType === 'staff') {
             ['/admin/departments','•','Departments'],
             ['/admin/api-keys','•', 'API Keys'],
             ['/admin/ai',      '✦', 'AI & Agents'],
+            ['/admin/audit-log','•', 'Audit Log'],
+            ['/admin/system-logs','•', 'System Logs'],
             ['/admin/twilio',  '•', 'Twilio'],
             ['/admin/retention', '•', 'Retention'],
         ];

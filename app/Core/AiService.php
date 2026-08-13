@@ -36,7 +36,7 @@ final class AiService
     public static function enabled(): bool
     {
         $provider = Settings::get('ai_provider', 'off');
-        if (!in_array($provider, ['api', 'local'], true)) {
+        if (!in_array($provider, ['openai', 'local', 'anthropic'], true)) {
             return false;
         }
         $base = Settings::get('ai_base_url', '');
@@ -59,20 +59,38 @@ final class AiService
         $base     = rtrim(Settings::get('ai_base_url', ''), '/');
         $model    = Settings::get('ai_model', '');
         $key      = Settings::get('ai_api_key', '');
+        $system   = self::systemPrompt();
 
-        $system = self::systemPrompt();
-        $payload = [
-            'model'       => $model,
-            'messages'    => array_merge([['role' => 'system', 'content' => $system]], $messages),
-            'temperature' => $temperature,
-        ];
-
-        $headers = ['Content-Type: application/json'];
-        if ($key !== '') {
-            $headers[] = 'Authorization: Bearer ' . $key;
+        // Anthropic Messages API (https://api.anthropic.com/v1/messages)
+        if ($provider === 'anthropic') {
+            $payload = [
+                'model'      => $model,
+                'system'     => $system,
+                'messages'   => $messages,
+                'max_tokens' => (int) Settings::get('ai_max_tokens', '4096'),
+                'temperature'=> $temperature,
+            ];
+            $headers = [
+                'Content-Type: application/json',
+                'x-api-key: ' . $key,
+                'anthropic-version: 2023-06-01',
+            ];
+            $url = $base . '/messages';
+        } else {
+            // OpenAI-compatible /chat/completions (OpenAI, OpenRouter, Together, Ollama, llama.cpp…)
+            $payload = [
+                'model'       => $model,
+                'messages'    => array_merge([['role' => 'system', 'content' => $system]], $messages),
+                'temperature' => $temperature,
+            ];
+            $headers = ['Content-Type: application/json'];
+            if ($key !== '') {
+                $headers[] = 'Authorization: Bearer ' . $key;
+            }
+            $url = $base . '/chat/completions';
         }
 
-        $ch = curl_init($base . '/chat/completions');
+        $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => json_encode($payload),
@@ -91,6 +109,15 @@ final class AiService
             return null;
         }
         $json = json_decode((string) $body, true);
+        if ($provider === 'anthropic') {
+            // Anthropic returns {content:[{type:'text', text:...}]}
+            foreach (($json['content'] ?? []) as $block) {
+                if (($block['type'] ?? '') === 'text') {
+                    return (string) ($block['text'] ?? '');
+                }
+            }
+            return null;
+        }
         return $json['choices'][0]['message']['content'] ?? null;
     }
 

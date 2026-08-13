@@ -146,7 +146,8 @@ $selPhoto = $post['pest_photo_id'] ?? null;
     </div>
 
     <fieldset class="seo-box">
-      <legend>SEO &amp; Social</legend>
+      <legend>SEO &amp; Social <button type="button" id="seo-auto-btn" style="margin-left:1rem;background:var(--olive-700);color:var(--cream);border:1px solid var(--olive-500);padding:.3rem .7rem;cursor:pointer;font-family:var(--mono);font-size:.7rem">⚡ Auto-SEO</button> <span id="seo-status" style="font-family:var(--mono);font-size:.7rem;color:var(--khaki)"></span></legend>
+      <div class="hint" style="margin-bottom:.8rem">Leave blank to auto-generate from the article on save (rule-based, AI-polished when configured).</div>
       <div class="form-row">
         <div class="field">
           <label for="meta_title">SEO Title</label>
@@ -167,6 +168,37 @@ $selPhoto = $post['pest_photo_id'] ?? null;
         <label for="og_image">Social Share Image URL</label>
         <input type="text" id="og_image" name="og_image" maxlength="300" placeholder="https://... (defaults to the pest photo / site OG image)" value="<?= $old('og_image') ?: $view->e($post['og_image'] ?? '') ?>">
       </div>
+      <script>
+      (function(){
+        var btn = document.getElementById('seo-auto-btn');
+        var st  = document.getElementById('seo-status');
+        var csrf = document.querySelector('input[name="_csrf"]');
+        if (btn) btn.addEventListener('click', function(){
+          var title = document.getElementById('title').value.trim();
+          if (!title) { st.textContent = 'Add a title first.'; return; }
+          st.textContent = 'Generating…';
+          var fd = new FormData();
+          fd.append('title', title);
+          fd.append('body_html', document.getElementById('body_html').value);
+          fd.append('excerpt', document.getElementById('excerpt').value);
+          fd.append('pest_category', document.getElementById('pest_category').value);
+          fd.append('region', document.getElementById('region').value);
+          fd.append('season', document.getElementById('season').value);
+          if (csrf) fd.append('_csrf', csrf.value);
+          fetch('/admin/posts/seo', { method: 'POST', body: fd })
+            .then(function(r){ return r.json(); })
+            .then(function(j){
+              if (j.ok) {
+                if (document.getElementById('meta_title').value === '') document.getElementById('meta_title').value = j.meta_title || '';
+                if (document.getElementById('meta_description').value === '') document.getElementById('meta_description').value = j.meta_description || '';
+                if (document.getElementById('meta_keywords').value === '') document.getElementById('meta_keywords').value = j.meta_keywords || '';
+                st.textContent = 'SEO generated ✓';
+              } else { st.textContent = j.error || 'Failed'; }
+            })
+            .catch(function(){ st.textContent = 'Failed (network)'; });
+        });
+      })();
+      </script>
     </fieldset>
 
     <script>

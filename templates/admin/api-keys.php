@@ -62,6 +62,7 @@
             <td><span class="badge <?= $revoked ? 'cancelled' : ($expired ? 'cancelled' : 'active') ?>"><?= $revoked ? "Revoked" : ($expired ? "Expired" : "Active") ?></span></td>
             <td style="display:flex;gap:.3rem;flex-wrap:wrap">
 <?php if (!$revoked && !$expired): ?>
+              <button class="btn btn-ghost copy-key" data-id="<?= (int)$k['id'] ?>" data-name="<?= $view->e($k['name']) ?>" style="font-size:.7rem;padding:.2rem .5rem" type="button">📋 Copy</button>
               <form method="post" action="/admin/api-keys/<?= (int)$k['id'] ?>/scopes" style="display:inline">
                 <?= $view->csrf() ?>
                 <input type="hidden" name="scopes" value="<?= $view->e(implode(",", json_decode($k['scopes'] ?? '[]', true) ?: [])) ?>">
@@ -84,3 +85,31 @@
     </div>
   </div>
 </div>
+<script>
+// Copy-key: reveal via audited endpoint then clipboard. Requires super-admin.
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest('.copy-key');
+  if (!btn) return;
+  var id = btn.dataset.id;
+  var csrf = document.querySelector('input[name="_csrf"]');
+  var fd = new FormData();
+  if (csrf) fd.append('_csrf', csrf.value);
+  btn.textContent = '…';
+  fetch('/admin/api-keys/' + id + '/reveal', { method: 'POST', body: fd })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (j.ok) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(j.key).then(function () { btn.textContent = '✓ Copied'; }).catch(function () { btn.textContent = 'Copy failed'; });
+        } else {
+          // fallback for older browsers
+          var ta = document.createElement('textarea');
+          ta.value = j.key; document.body.appendChild(ta); ta.select();
+          document.execCommand('copy'); ta.remove(); btn.textContent = '✓ Copied';
+        }
+        setTimeout(function () { btn.textContent = '📋 Copy'; }, 2500);
+      } else { btn.textContent = '✕'; alert(j.error || 'Failed to reveal key'); }
+    })
+    .catch(function () { btn.textContent = '✕'; });
+});
+</script>

@@ -154,11 +154,14 @@ Router::get('/admin/settings',  [AdminController::class, 'settings'])->auth('sta
 Router::post('/admin/settings', [AdminController::class, 'settingsSave'])->auth('staff')->role('admin');
 // AI & Agents section (LLM provider config + RAG docs + regional blog generation)
 Router::get('/admin/ai',            [AdminController::class, 'aiSettings'])->auth('staff')->role('admin');
+Router::get('/admin/audit-log',     [AdminController::class, 'auditLog'])->auth('staff')->role('admin');
+Router::get('/admin/system-logs',   [AdminController::class, 'systemLogs'])->auth('staff')->role('admin');
 Router::post('/admin/ai',           [AdminController::class, 'aiSettingsSave'])->auth('staff')->role('admin');
 Router::post('/admin/ai/docs',      [AdminController::class, 'aiDocUpload'])->auth('staff')->role('admin');
 Router::post('/admin/ai/docs/delete', [AdminController::class, 'aiDocDelete'])->auth('staff')->role('admin');
 Router::post('/admin/ai/generate',  [AdminController::class, 'generateRegionalPosts'])->auth('staff')->role('admin');
 Router::post('/admin/posts/draft',  [AdminController::class, 'postDraft'])->auth('staff')->role('admin');
+Router::post('/admin/posts/seo',    [AdminController::class, 'postSeo'])->auth('staff')->role('admin');
 
 // ---------- Staff CRUD (admin-guarded) ----------
 Router::get('/admin/staff',          [StaffController::class, 'staffList'])->auth('staff')->role('admin');
@@ -184,6 +187,7 @@ Router::get("/admin/api-keys/audit",   [ApiKeyController::class, "audit"])->auth
 Router::post("/admin/api-keys",         [ApiKeyController::class, "create"])->auth("staff")->role("admin");
 Router::post("/admin/api-keys/{id}/revoke",  [ApiKeyController::class, "revoke"])->auth("staff")->role("admin");
 Router::post("/admin/api-keys/{id}/rotate",  [ApiKeyController::class, "rotate"])->auth("staff")->role("admin");
+Router::post("/admin/api-keys/{id}/reveal",  [ApiKeyController::class, "reveal"])->auth("staff")->role("admin");
 Router::post("/admin/api-keys/{id}/scopes",  [ApiKeyController::class, "updateScopes"])->auth("staff")->role("admin");
 
 // ---------- Twilio admin (admin-guarded) ----------
