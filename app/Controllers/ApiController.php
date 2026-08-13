@@ -540,10 +540,19 @@ class ApiController
                     if (!empty($args['customer_id'])) { $sql .= ' WHERE customer_id = ?'; $p[] = (int) $args['customer_id']; }
                     return $db->fetchAll($sql . ' ORDER BY created_at DESC LIMIT 50', $p);
                 })(),
-                'list_services' => fn() => $db->fetchAll('SELECT slug, name, scientific_name, category, threat_level FROM pest_photos ORDER BY sort_order, name'),
-                'list_posts' => fn() => $db->fetchAll('SELECT slug, title, excerpt, season, region, published_at FROM posts WHERE status = ? ORDER BY published_at DESC LIMIT ' . min(50, max(1,(int)($args['limit'] ?? 20))), ['published']),
-                'get_post' => fn() => $db->fetch('SELECT slug, title, excerpt, body_html, season, region, published_at FROM posts WHERE slug = ? AND status = ?', [(string)($args['slug'] ?? ''), 'published']) ?? ['error' => 'not found'],
-                'get_pest' => fn() => $db->fetch('SELECT slug, name, scientific_name, category, threat_level, description FROM pest_photos WHERE slug = ?', [(string)($args['slug'] ?? '')]) ?? ['error' => 'not found'],
+                'list_services' => (function () use ($db) {
+                    return $db->fetchAll('SELECT slug, name, scientific_name, category, threat_level FROM pest_photos ORDER BY sort_order, name');
+                })(),
+                'list_posts' => (function () use ($db, $args) {
+                    $lim = min(50, max(1, (int) ($args['limit'] ?? 20)));
+                    return $db->fetchAll('SELECT slug, title, excerpt, season, region, published_at FROM posts WHERE status = ? ORDER BY published_at DESC LIMIT ' . $lim, ['published']);
+                })(),
+                'get_post' => (function () use ($db, $args) {
+                    return $db->fetch('SELECT slug, title, excerpt, body_html, season, region, published_at FROM posts WHERE slug = ? AND status = ?', [(string) ($args['slug'] ?? ''), 'published']) ?? ['error' => 'not found'];
+                })(),
+                'get_pest' => (function () use ($db, $args) {
+                    return $db->fetch('SELECT slug, name, scientific_name, category, threat_level, description FROM pest_photos WHERE slug = ?', [(string) ($args['slug'] ?? '')]) ?? ['error' => 'not found'];
+                })(),
                 'create_lead' => (function () use ($db, $args) {
                     ApiAuth::requireAuth('create_customers');
                     $name  = trim((string) ($args['name'] ?? ''));
@@ -556,17 +565,18 @@ class ApiController
                         'city'  => trim((string) ($args['city'] ?? '')) ?: null,
                         'status' => 0,
                         'source' => 'api-lead',
-                        'notes'  => trim((string) ($args['message'] ?? '')) ?: null,
                         'created_at' => date('Y-m-d H:i:s'),
                     ]);
                     return ['created' => true, 'id' => $id];
                 })(),
-                'get_health' => fn() => [
-                    'status' => 'ok',
-                    'customers' => (int) $db->scalar('SELECT COUNT(*) FROM customers'),
-                    'posts' => (int) $db->scalar("SELECT COUNT(*) FROM posts WHERE status = 'published'"),
-                    'time' => date('c'),
-                ],
+                'get_health' => (function () use ($db) {
+                    return [
+                        'status' => 'ok',
+                        'customers' => (int) $db->scalar('SELECT COUNT(*) FROM customers'),
+                        'posts' => (int) $db->scalar("SELECT COUNT(*) FROM posts WHERE status = 'published'"),
+                        'time' => date('c'),
+                    ];
+                })(),
                 default => ['error' => 'Unknown tool: ' . $tool],
             };
         } catch (\Throwable $e) {
