@@ -44,7 +44,8 @@ final class SeoService
         $freq = [];
         foreach ($words as $w) {
             $w = trim($w);
-            if (strlen($w) < 4 || in_array($w, $stop, true)) { continue; }
+            // skip too-short, stop words, and malformed joins (e.g. 'antscarpenter')
+            if (strlen($w) < 4 || strlen($w) > 24 || in_array($w, $stop, true) || !preg_match('/[aeiouy]/', $w)) { continue; }
             $freq[$w] = ($freq[$w] ?? 0) + 1;
         }
         arsort($freq);
