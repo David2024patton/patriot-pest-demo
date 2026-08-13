@@ -59,7 +59,14 @@ final class View
             /** Public asset URL. */
             public function asset(string $path): string
             {
-                return '/assets/' . ltrim($path, '/');
+                $rel = ltrim($path, '/');
+                // Cache-bust: filemtime changes on every deploy so browsers
+                // never serve stale CSS/JS after an update.
+                $v = '1';
+                foreach ([BASE_PATH . '/public/assets/' . $rel, BASE_PATH . '/assets/' . $rel] as $c) {
+                    if (is_file($c)) { $v = (string) filemtime($c); break; }
+                }
+                return '/assets/' . $rel . '?v=' . $v;
             }
             /** Absolute site URL for a path (canonical/OG tags). */
             public function url(string $path = '/'): string
