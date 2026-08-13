@@ -613,9 +613,11 @@ img, video, canvas, iframe {
 @media (max-width: 960px) {
   .mobile-sticky-nav {
     position: fixed;
+    top: auto;              /* override base nav{top:0} so it sits at the bottom */
     bottom: 0;
     left: 0;
     right: 0;
+    height: auto;
     background: var(--olive-950);
     border-top: 2px solid var(--orange);
     padding: .5rem 1rem calc(.5rem + env(safe-area-inset-bottom));
