@@ -18,7 +18,7 @@ final class SeoService
     public static function generate(array $post): array
     {
         $title   = trim((string) ($post['title'] ?? ''));
-        $body    = strip_tags((string) ($post['body_html'] ?? ''));
+        $body    = strip_tags(preg_replace('/></', '> <', (string) ($post['body_html'] ?? '')) ?? '');
         $excerpt = trim((string) ($post['excerpt'] ?? ''));
         $pest    = trim((string) ($post['pest_name'] ?? $post['pest_category'] ?? ''));
         $region  = trim((string) ($post['region'] ?? 'all'));
