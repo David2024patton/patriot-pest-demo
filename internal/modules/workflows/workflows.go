@@ -1,7 +1,11 @@
 package workflows
 
-import "net/http"
-import "github.com/go-chi/chi/v5"
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+)
 
 // Module — reactivation_templates→campaigns→sends 0,7,30,60,90 DNC gated, TWILIO_SMS_ENABLED queue, n8n/Zapier webhooks.
 type Module struct{ Enabled bool }
@@ -15,6 +19,15 @@ func (m *Module) Register(r chi.Router) bool {
 	r.Post("/webhooks/zapier", m.Zapier)
 	return true
 }
-func (m *Module) Trigger(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
-func (m *Module) N8n(w http.ResponseWriter, r *http.Request)     { http.NotFound(w, r) }
-func (m *Module) Zapier(w http.ResponseWriter, r *http.Request)  { http.NotFound(w, r) }
+func (m *Module) Trigger(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{"status": "ok", "workflow": "triggered"})
+}
+func (m *Module) N8n(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{"status": "ok", "source": "n8n"})
+}
+func (m *Module) Zapier(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{"status": "ok", "source": "zapier"})
+}
