@@ -14,16 +14,24 @@ import (
 
 	"github.com/David2024patton/patriot-pest-go/internal/config"
 	custommw "github.com/David2024patton/patriot-pest-go/internal/middleware"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/admin"
 	ai "github.com/David2024patton/patriot-pest-go/internal/modules/ai"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/api"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/compliance"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/customers"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/email"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/facebook"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/health"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/inbox"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/kanban"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/knowledge"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/marketing"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/messaging"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/portal"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/retention"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/supply"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/tech"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/twilio"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/workflows"
 )
 
@@ -83,6 +91,30 @@ func main() {
 	}
 	if (&ai.Module{Enabled: true, BaseURL: cfg.AppURL}).Register(r) {
 		logger.Info("module enabled", "module", "ai", "base_url", cfg.AppURL)
+	}
+	if (&admin.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "admin")
+	}
+	if (&api.Module{Enabled: cfg.APIEnabled || true}).Register(r) {
+		logger.Info("module enabled", "module", "api")
+	}
+	if (&customers.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "customers")
+	}
+	if (&twilio.Module{Enabled: cfg.TwilioEnabled}).Register(r) {
+		logger.Info("module enabled", "module", "twilio")
+	}
+	if (&facebook.Module{Enabled: cfg.FacebookEnabled}).Register(r) {
+		logger.Info("module enabled", "module", "facebook")
+	}
+	if (&compliance.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "compliance")
+	}
+	if (&messaging.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "messaging")
+	}
+	if (&retention.Module{Enabled: cfg.RetentionEnabled}).Register(r) {
+		logger.Info("module enabled", "module", "retention")
 	}
 
 	srv := &http.Server{Addr: cfg.Addr, Handler: r}
