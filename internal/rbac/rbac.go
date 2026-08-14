@@ -38,16 +38,16 @@ m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 		return err
 	}
 	// Policies: Customer can read self, Admin all except delete customers, SuperAdmin all except delete customers
-	_ = e.AddPolicy("Customer", "customer", "read")
-	_ = e.AddPolicy("Customer", "appointment", "read")
-	_ = e.AddPolicy("Admin", "customer", "read")
-	_ = e.AddPolicy("Admin", "customer", "write")
-	_ = e.AddPolicy("Admin", "board", "read")
-	_ = e.AddPolicy("Admin", "board", "write")
-	_ = e.AddPolicy("SuperAdmin", "all", "read")
-	_ = e.AddPolicy("SuperAdmin", "all", "write")
+	_, _ = e.AddPolicy("Customer", "customer", "read")
+	_, _ = e.AddPolicy("Customer", "appointment", "read")
+	_, _ = e.AddPolicy("Admin", "customer", "read")
+	_, _ = e.AddPolicy("Admin", "customer", "write")
+	_, _ = e.AddPolicy("Admin", "board", "read")
+	_, _ = e.AddPolicy("Admin", "board", "write")
+	_, _ = e.AddPolicy("SuperAdmin", "all", "read")
+	_, _ = e.AddPolicy("SuperAdmin", "all", "write")
 	// Roles: super-user gets SuperAdmin immutable
-	_ = e.AddGroupingPolicy(superUser, "SuperAdmin")
+	_, _ = e.AddGroupingPolicy(superUser, "SuperAdmin")
 	enforcer = e
 	return nil
 }
