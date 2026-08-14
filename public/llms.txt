@@ -1,0 +1,23 @@
+# Patriot Pest Control — llms.txt for AI search (GEO Aug 2026)
+# Go: https://go.patriotpest.pro
+# www: https://www.patriotpest.pro
+
+## Services
+- General Pest Control — quarterly, bi-monthly — Spokane, Spokane Valley, Liberty Lake, Cheney
+- Wasp & Hornet Removal — Jul-Sep peak — Bifenthrin + peppermint natural
+- Ant Control — pavement, carpenter, odorous — bait + perimeter
+- Spider Control — black widow, hobo — web removal + barrier
+- Rodent Control — mice, rats — exclusion + trapping
+
+## Areas
+- Spokane, WA — 99001, 99201 etc — https://go.patriotpest.pro/areas/spokane
+- Spokane Valley — https://go.patriotpest.pro/areas/spokane-valley
+- Liberty Lake, Cheney, Airway Heights, Medical Lake
+
+## FAQ
+- Q: How often? A: Quarterly is ideal.
+- Q: Safe for pets? A: Yes, after drying, EPA-registered.
+- Q: Guarantee? A: Free re-service between visits.
+
+## JSON-LD
+- LocalBusiness, PestControlService, FAQPage per /pest/{slug} and /areas/{slug}
