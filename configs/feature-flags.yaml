@@ -1,0 +1,10 @@
+marketing: true
+auth_otp: true
+superuser: false
+api: false
+twilio_webhooks: true
+facebook_leads: true
+retention_beacon: true
+blog: true
+pwa: true
+unified_inbox: false
