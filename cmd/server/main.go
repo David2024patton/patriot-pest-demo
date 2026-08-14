@@ -14,8 +14,17 @@ import (
 
 	"github.com/David2024patton/patriot-pest-go/internal/config"
 	custommw "github.com/David2024patton/patriot-pest-go/internal/middleware"
+	ai "github.com/David2024patton/patriot-pest-go/internal/modules/ai"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/email"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/health"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/inbox"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/kanban"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/knowledge"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/marketing"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/portal"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/supply"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/tech"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/workflows"
 )
 
 func main() {
@@ -41,8 +50,40 @@ func main() {
 		logger.Info("module enabled", "module", "marketing")
 	}
 
-	// TODO: wire remaining modules with flag gates:
-	// auth, rbac, portal, admin, customers, messaging, twilio, facebook, api, retention, compliance
+	// Supply — truck/warehouse/hazmat photo ledger (always for now)
+	sup := &supply.Module{Enabled: true}
+	if sup.Register(r) {
+		logger.Info("module enabled", "module", "supply", "routes", "GET /admin/supplies, POST /api/supplies/{id}/checkin|checkout, GET /admin/supplies/{id}/ledger")
+	}
+	// Kanban shared boards
+	kb := &kanban.Module{Enabled: true}
+	if kb.Register(r) {
+		logger.Info("module enabled", "module", "kanban")
+	}
+	// Portal — customer pay proxy FieldRoutes, cancel→tel, notifications
+	pm := &portal.Module{Enabled: true}
+	if pm.Register(r) {
+		logger.Info("module enabled", "module", "portal")
+	}
+	// Inbox 7-ch + email + workflows + knowledge + tech PWA + AI Pokedex
+	if (&inbox.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "inbox")
+	}
+	if (&email.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "email")
+	}
+	if (&workflows.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "workflows")
+	}
+	if (&knowledge.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "knowledge")
+	}
+	if (&tech.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "tech")
+	}
+	if (&ai.Module{Enabled: true, BaseURL: cfg.AppURL}).Register(r) {
+		logger.Info("module enabled", "module", "ai", "base_url", cfg.AppURL)
+	}
 
 	srv := &http.Server{Addr: cfg.Addr, Handler: r}
 	go func() {
