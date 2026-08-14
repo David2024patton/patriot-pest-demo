@@ -3,6 +3,7 @@
    Robust & page-agnostic: each feature self-gates on its element.
    ============================================================ */
 (function(){
+window.__mainLoaded=true; console.log("main.js loaded marker");
 "use strict";
 var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -12,10 +13,10 @@ var navlinks = document.querySelector(".navlinks");
 if (menuBtn && navlinks){
   menuBtn.addEventListener("click", function(){
     var open = navlinks.classList.toggle("open");
-    menuBtn.textContent = open ? "× Close" : "☰ Menu";
+    menuBtn.textContent = open ? "x Close" : "= Menu";
   });
   navlinks.querySelectorAll("a").forEach(function(a){
-    a.addEventListener("click", function(){ navlinks.classList.remove("open"); menuBtn.textContent="☰ Menu"; });
+    a.addEventListener("click", function(){ navlinks.classList.remove("open"); menuBtn.textContent="= Menu"; });
   });
 }
 
@@ -128,7 +129,7 @@ if (briefEl){
 var tick = document.getElementById("ticker-track");
 if (tick && !tick.children.length){
   var CITIES = ["Spokane","Spokane Valley","Cheney","Liberty Lake","Airway Heights","Medical Lake","Deer Park","Mead","Coeur d'Alene","Post Falls","Hayden","Rathdrum","Hermiston","Milton-Freewater","Phoenix"];
-  var seq = CITIES.map(function(c){return "<span><i>▸</i>"+c.toUpperCase()+" - SAME-DAY AVAILABLE</span>";}).join("");
+  var seq = CITIES.map(function(c){return "<span><i>></i>"+c.toUpperCase()+" - SAME-DAY AVAILABLE</span>";}).join("");
   tick.innerHTML = seq + seq;
 }
 

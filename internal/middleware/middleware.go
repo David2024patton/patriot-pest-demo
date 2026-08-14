@@ -49,7 +49,7 @@ func SecurityHeaders(next http.Handler) http.Handler {
 		if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
 			w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
 		}
-		w.Header().Set("Content-Security-Policy", "default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;")
+		w.Header().Set("Content-Security-Policy", "default-src 'self' https: http: data:; script-src 'self' 'unsafe-inline' https: http:; style-src 'self' 'unsafe-inline' https: http:; img-src 'self' data: https: http:;")
 		next.ServeHTTP(w, r)
 	})
 }
