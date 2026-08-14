@@ -35,7 +35,7 @@ if (cv){
   }
   resize(); window.addEventListener("resize", resize);
   for (var i=0;i<56;i++){
-    bugs.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,a:Math.random()*6.28,s:2.2+Math.random()*2.4,wig:Math.random()*6.28});
+    bugs.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,a:Math.random()*6.28,s:2.2+Math.random()*2.4,wig:Math.random()*6.28});
   }
   window.addEventListener("mousemove", function(e){ mouse.x=e.clientX; mouse.y=e.clientY; });
   window.addEventListener("click", function(e){ splats.push({x:e.clientX,y:e.clientY,t:1,r:6+Math.random()*5}); });
