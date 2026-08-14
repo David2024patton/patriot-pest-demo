@@ -20,7 +20,7 @@ func (m *Module) Register(r chi.Router) bool {
 	return true
 }
 func (m *Module) Dashboard(w http.ResponseWriter, r *http.Request)    { http.NotFound(w, r) }
-func (m *Module) Account(w http.ResponseWriter, r *http.Request)     { http.NotFound(w, r) }
+func (m *Module) Account(w http.ResponseWriter, r *http.Request)      { http.NotFound(w, r) }
 func (m *Module) Appointments(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
 func (m *Module) InvoicePDF(w http.ResponseWriter, r *http.Request)   { http.NotFound(w, r) }
 func (m *Module) Pay(w http.ResponseWriter, r *http.Request)          { http.NotFound(w, r) }

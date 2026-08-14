@@ -15,6 +15,6 @@ func (m *Module) Register(r chi.Router) bool {
 	r.Get("/tech/scan", m.ScanPage)
 	return true
 }
-func (m *Module) Index(w http.ResponseWriter, r *http.Request)  { http.NotFound(w, r) }
-func (m *Module) Routes(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
+func (m *Module) Index(w http.ResponseWriter, r *http.Request)    { http.NotFound(w, r) }
+func (m *Module) Routes(w http.ResponseWriter, r *http.Request)   { http.NotFound(w, r) }
 func (m *Module) ScanPage(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }

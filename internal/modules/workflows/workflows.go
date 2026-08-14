@@ -16,5 +16,5 @@ func (m *Module) Register(r chi.Router) bool {
 	return true
 }
 func (m *Module) Trigger(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
-func (m *Module) N8n(w http.ResponseWriter, r *http.Request)    { http.NotFound(w, r) }
-func (m *Module) Zapier(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
+func (m *Module) N8n(w http.ResponseWriter, r *http.Request)     { http.NotFound(w, r) }
+func (m *Module) Zapier(w http.ResponseWriter, r *http.Request)  { http.NotFound(w, r) }

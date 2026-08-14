@@ -9,13 +9,13 @@ import (
 
 // Config holds all runtime configuration. Never commit .env; inject via env.
 type Config struct {
-	Env      string
-	Debug    bool
-	AppURL   string
-	AppKey   string
-	Addr     string
-	DBPath   string
-	DBURL    string
+	Env    string
+	Debug  bool
+	AppURL string
+	AppKey string
+	Addr   string
+	DBPath string
+	DBURL  string
 
 	// Feature flags — each module reads its flag.
 	MarketingEnabled    bool
@@ -30,19 +30,19 @@ type Config struct {
 	UnifiedInboxEnabled bool
 
 	// Auth tuning
-	OTPTTL         int
-	OTPMaxAttempts int
-	SuOTPTTL       int
-	SuMaxAttempts  int
+	OTPTTL          int
+	OTPMaxAttempts  int
+	SuOTPTTL        int
+	SuMaxAttempts   int
 	SessCustomerTTL int
 	SessStaffTTL    int
 
 	// External
-	MailHost string
-	MailPort int
-	TwilioSID   string
-	TwilioToken string
-	TwilioPhone string
+	MailHost       string
+	MailPort       int
+	TwilioSID      string
+	TwilioToken    string
+	TwilioPhone    string
 	FieldRoutesURL string
 	FBAppSecret    string
 	FBVerifyToken  string

@@ -42,8 +42,8 @@ func (m *Module) page(name string) http.HandlerFunc {
 		http.ServeFile(w, r, "internal/view/assets/"+name+".html")
 	}
 }
-func (m *Module) pest(w http.ResponseWriter, r *http.Request)   { http.NotFound(w, r) }
-func (m *Module) area(w http.ResponseWriter, r *http.Request)   { http.NotFound(w, r) }
+func (m *Module) pest(w http.ResponseWriter, r *http.Request)      { http.NotFound(w, r) }
+func (m *Module) area(w http.ResponseWriter, r *http.Request)      { http.NotFound(w, r) }
 func (m *Module) blogIndex(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
 func (m *Module) blogPost(w http.ResponseWriter, r *http.Request)  { http.NotFound(w, r) }
 func (m *Module) rss(w http.ResponseWriter, r *http.Request)       { http.NotFound(w, r) }

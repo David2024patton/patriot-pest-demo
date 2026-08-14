@@ -30,9 +30,9 @@ func (m *Module) Register(r chi.Router) bool {
 	return true
 }
 
-func (m *Module) Board(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
+func (m *Module) Board(w http.ResponseWriter, r *http.Request)     { http.NotFound(w, r) }
 func (m *Module) AddMember(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
-func (m *Module) Move(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
-func (m *Module) Events(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
-func (m *Module) APIList(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
+func (m *Module) Move(w http.ResponseWriter, r *http.Request)      { http.NotFound(w, r) }
+func (m *Module) Events(w http.ResponseWriter, r *http.Request)    { http.NotFound(w, r) }
+func (m *Module) APIList(w http.ResponseWriter, r *http.Request)   { http.NotFound(w, r) }
 func (m *Module) APICreate(w http.ResponseWriter, r *http.Request) { http.NotFound(w, r) }
