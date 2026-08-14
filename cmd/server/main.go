@@ -12,7 +12,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/David2024patton/patriot-pest-go/internal/auth"
 	"github.com/David2024patton/patriot-pest-go/internal/config"
+	"github.com/David2024patton/patriot-pest-go/internal/db"
 	custommw "github.com/David2024patton/patriot-pest-go/internal/middleware"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/admin"
 	ai "github.com/David2024patton/patriot-pest-go/internal/modules/ai"
@@ -33,20 +35,26 @@ import (
 	"github.com/David2024patton/patriot-pest-go/internal/modules/tech"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/twilio"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/workflows"
+	"github.com/David2024patton/patriot-pest-go/internal/rbac"
 )
 
 func main() {
 	cfg := config.Load()
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	slog.SetDefault(logger)
+	_ = rbac.Init()
+	admin.SetAppKey(cfg.AppKey)
+	surreal := db.New(cfg.SurrealURL, cfg.SurrealNS, cfg.SurrealDB)
+	_ = surreal.Connect(context.Background())
 
 	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
+	r.Use(custommw.RequestID)
 	r.Use(custommw.SlogLogger(logger))
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(15 * time.Second))
 	r.Use(custommw.SecurityHeaders)
 	r.Use(custommw.CORS)
+	auth.RegisterRoutes(r)
 
 	// Health — always on.
 	h := &health.Module{}
