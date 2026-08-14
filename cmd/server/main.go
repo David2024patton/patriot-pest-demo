@@ -27,6 +27,7 @@ import (
 	"github.com/David2024patton/patriot-pest-go/internal/modules/inbox"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/kanban"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/knowledge"
+	"github.com/David2024patton/patriot-pest-go/internal/modules/legacy"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/marketing"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/messaging"
 	"github.com/David2024patton/patriot-pest-go/internal/modules/portal"
@@ -123,6 +124,9 @@ func main() {
 	}
 	if (&retention.Module{Enabled: cfg.RetentionEnabled}).Register(r) {
 		logger.Info("module enabled", "module", "retention")
+	}
+	if (&legacy.Module{Enabled: true}).Register(r) {
+		logger.Info("module enabled", "module", "legacy", "routes", "103 spec")
 	}
 
 	srv := &http.Server{Addr: cfg.Addr, Handler: r}
