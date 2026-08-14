@@ -1,10 +1,15 @@
+# Feature flags — each module Enabled bool, hot-reload via admin/settings#channels
 marketing: true
 auth_otp: true
 superuser: false
-api: false
+api: true
 twilio_webhooks: true
 facebook_leads: true
 retention_beacon: true
 blog: true
 pwa: true
-unified_inbox: false
+unified_inbox: true
+supply: true
+kanban: true
+knowledge: true
+ai_autonomous: false
