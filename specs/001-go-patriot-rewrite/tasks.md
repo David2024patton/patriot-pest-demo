@@ -5,18 +5,18 @@
 
 ## Phase 0 — Research (0.5d)
 
-- [ ] T0.1 Spike SurrealDB Go SDK `surrealdb.go` ws vs embedded, SurrealQL 41 tables, tx pattern, testcontainers — `research.md`
-- [ ] T0.2 Audit FieldRoutes inventory API — native `supplies` vs sync decision — `research.md`
-- [ ] T0.3 Map kanbn/kanban schema — boards/columns/cards labels/checklist/WIP — `research.md`
-- [ ] T0.4 Draft `api/openapi.yaml` scopes `customer:read post:create kanban:read/write inbox:read/write` + 7-channel webhook contracts — `contracts/`
+- [x] T0.1 Spike SurrealDB Go SDK `surrealdb.go` ws vs embedded, SurrealQL 41 tables, tx pattern, testcontainers — `research.md`
+- [x] T0.2 Audit FieldRoutes inventory API — native `supplies` vs sync decision — `research.md`
+- [x] T0.3 Map kanbn/kanban schema — boards/columns/cards labels/checklist/WIP — `research.md`
+- [x] T0.4 Draft `api/openapi.yaml` scopes `customer:read post:create kanban:read/write inbox:read/write` + 7-channel webhook contracts — `contracts/`
 
 ## Phase 1 — Skeleton (1d)
 
-- [ ] T1.1 `cmd/server/main.go` chi + graceful, `internal/config` SURREAL_*+all tokens 12-factor, `internal/db` surreal client + `migrations/*.surql`
-- [ ] T1.2 `internal/middleware` recovery/slog/CORS/HSTS/CSRF/ratelimit/timeout
-- [ ] T1.3 `internal/view` templ `layouts/main|app` + identical tactical assets `styles.css` `app.css` `main.js` crosshair bugfield (no scrollbars), `configs/feature-flags.yaml`
-- [ ] T1.4 `internal/modules/health` GET /health (no auth) + /ready (DB ping) + `deploy/Dockerfile` distroless:nonroot
-- [ ] T1.5 `internal/modules/marketing` 14 routes + pest/area/blog RSS + /cost direct + GEO `llms.txt` JSON-LD
+- [x] T1.1 `cmd/server/main.go` chi + graceful, `internal/config` SURREAL_*+all tokens 12-factor, `internal/db` surreal client + `migrations/*.surql`
+- [x] T1.2 `internal/middleware` recovery/slog/CORS/HSTS/CSRF/ratelimit/timeout
+- [x] T1.3 `internal/view` templ `layouts/main|app` + identical tactical assets `styles.css` `app.css` `main.js` crosshair bugfield (no scrollbars), `configs/feature-flags.yaml`
+- [x] T1.4 `internal/modules/health` GET /health (no auth) + /ready (DB ping) + `deploy/Dockerfile` distroless:nonroot
+- [x] T1.5 `internal/modules/marketing` 14 routes + pest/area/blog RSS + /cost direct + GEO `llms.txt` JSON-LD
 
 ## Phase 2 — Auth + Settings Multi-Key (2d)
 
