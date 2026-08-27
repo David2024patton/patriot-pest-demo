@@ -186,6 +186,7 @@ Still stubbed in `internal/modules/legacy/legacy.go` — each needs a real Go ha
 
 - [ ] **Global Command Bar (Ctrl+K)** — Spotlight-style floating modal to jump to any customer, ticket, or message
 - [ ] **Customer 360 Timeline** — Unified feed on each customer profile: calls, texts, emails, visits, invoices
+- [ ] **Sameday AI Receptionist & Call Coach** — 24/7 AI CSR voice/chat receptionist + automatic call outcome scoring
 - [ ] **USA Customer Density Heatmap** — Leaflet.js map of customer locations across WA and AZ with drill-down
 - [ ] **Kanban Pipeline Boards** — Lead and Collections drag-and-drop boards; card moves trigger SMS/email
 - [ ] **SSE Live Feed HUD** — Real-time sidebar notifications for incoming calls, callbacks, and social messages

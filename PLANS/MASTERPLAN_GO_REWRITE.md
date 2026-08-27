@@ -10,8 +10,8 @@
 ## 0) Why This Exists (Context You Gave)
 
 - **User:** David Patton (Full Sail AS, Game Design). Friend/owner **Skyler Rose** (Afghanistan, 1yr Army tour) runs Patriot Pest Control.
-- **Pain:** Paying **GoHighLevel $300+/mo**, plus **FieldRoutes** (source of truth) + **Twilio** numbers ported back from GHL. 3 dashboards, 3 bills, no unified inbox.
-- **Vision:** One self-contained site better than GHL/Salesforce — **customer dashboard + admin dashboard + unified inbox (SMS/voice/social) + MCP API** in one place. Marketing site is `www`; test is `test.`; Go lives at `go.` then promotes to `www` after parity. Future SaaS `alphaflex.net` reuses same Go modules.
+- **Pain:** Paying **Sameday AI ($500/mo)** + **GoHighLevel ($300+/mo)**, plus **FieldRoutes** (source of truth) + **Twilio** numbers. Multiple dashboards, multiple bills, no unified inbox.
+- **Vision:** One self-contained site better than GHL/Salesforce/Sameday AI — **customer dashboard + admin dashboard + 24/7 AI CSR + unified inbox (SMS/voice/social) + MCP API** in one place. Marketing site is `www`; test is `test.`; Go lives at `go.` then promotes to `www` after parity. Future SaaS `alphaflex.net` reuses same Go modules.
 - **Look & Feel:** Current `www` felt like a **video game** — "mesmerizing" scroll, patriotic tactical theme. Must be pixel-identical in Go: olive/khaki/paper/orange tactical palette, Black Ops One + Barlow + IBM Plex Mono, hazard stripes, bug-field canvas, crosshair hero, grain, progress bar, Lenis smooth scroll.
 
 **Master files found:** `PLANS/MASTERPLAN_AI_API.md` (MCP/API) + `PLANS/MASTERPLAN_PASSWORDLESS_EMAIL_CODE.md` (superuser OTP). Both are ingested below.
@@ -138,12 +138,16 @@ Port verbatim — no redesign:
 
 ---
 
-## 4) Unified System (Replace GHL + FieldRoutes + Twilio + Salesforce)
+## 4) Unified System (Replace Sameday AI + GHL + FieldRoutes + Twilio + Salesforce)
 
-**Goal:** Skyler never opens FieldRoutes, Twilio console, or Salesforce — everything inside `go.patriotpest.pro`.
+**Goal:** Skyler never opens FieldRoutes, Twilio console, Sameday AI, or Salesforce — everything inside `go.patriotpest.pro`.
 
 | Today | Go module | How |
 |---|---|---|
+| Sameday AI CSR ($500/mo) | `modules/twilio` + `modules/inbox` | 24/7 AI CSR voice/chat receptionist, books into FieldRoutes, auto-mutes on human agent reply |
+| Sameday AI Coach | `modules/analytics` + `modules/twilio` | Transcribes & scores all CSR calls for booking rates, objection handling & winning script identification |
+| Sameday AI Scheduling Wizard | `modules/customers` + `integrations/fieldroutes` | Zone (WA/AZ) & skill-aware slot selection with dynamic 1:00 PM local time cutoff |
+| Sameday AI Campaigns | `modules/workflows` + `modules/email` | Outbound reactivation, seasonal reminders, review requests via Titan SMTP & Twilio SMS |
 | FieldRoutes customers | `modules/customers` + `integrations/fieldroutes` | `sqlc` cache `customers` table, nightly + webhook sync, district WA/AZ encrypted creds in DB (not env), `source='fieldroutes'` |
 | Twilio numbers/SMS/voice | `modules/twilio` + `integrations/twilio` | Ported numbers via Twilio API, Lookup v2, `X-Twilio-Signature` verify, unified log `/admin/twilio` |
 | GHL inbox | `modules/messaging` **UNIFIED INBOX** (new) | One view merging `messages` + Twilio SMS + Facebook/Instagram replies (add Meta Graph inbox API) — admin sees all threads, `Compliance::isBlocked` gate before send |
