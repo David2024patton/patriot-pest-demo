@@ -213,7 +213,31 @@ Port verbatim — no redesign:
 
 ---
 
-## 10) Verification Commands (Vanguard Loop)
+## 11) System Architecture & Operational Rules
+
+### 1. The 90-Day Cancellation-Save Cooldown Rule
+* **The Rule**: Customers who call the IVR or use the portal to cancel can only claim the $25 loyalty save credit once every 3 months (90 days).
+* **Implementation**: Store a historical ledger of all retention saves (`retention_saves` table) with timestamps. If a customer attempts to claim it again within the cooldown window, the system automatically redirects them to the "Speak to Manager" queue or displays a direct callback prompt instead of applying the discount.
+
+### 2. Timezone & Same-Day Dispatch Cutoff Logic
+* **The Challenge**: Patriot Pest operates in Washington (Pacific Time) and Arizona (Mountain Standard Time - no Daylight Saving).
+* **The Rule**: Same-day scheduling availability must dynamically check the time zone of the customer's district and apply a strict same-day dispatch cutoff (e.g., 1:00 PM local time). If they try to book past 1:00 PM local time, the scheduler automatically hides same-day options and defaults to the next morning.
+
+### 3. FieldRoutes API Outage Resilience (Local Caching)
+* **The Rule**: The Go dashboards must load instantly even if the FieldRoutes API is down or slow.
+* **Implementation**: Maintain an offline-first SQLite cache of active customer profiles, service addresses, and scheduled appointments. The Go app queries this local cache first for instant UI rendering, and updates it asynchronously via background sync workers and FieldRoutes webhook events.
+
+### 4. Zero-Storage Payment Security (PCI Compliance)
+* **The Rule**: To keep compliance overhead zero and security absolute, our Go application must **never** ingest, process, or store credit card numbers or bank details on our servers.
+* **Implementation**: All payment portals and "Make a Payment" buttons must redirect to or embed FieldRoutes/Stripe-hosted checkout links so payment details are tokenized directly in the customer's browser.
+
+### 5. AI Copilot Integration & Safety Rails
+* **The Rule**: If you use local LLMs (like Qwen or Ollama) to draft social media replies or summarize incoming voicemails, there must be strict safety walls.
+* **Implementation**: The AI can *never* delete records (the "No Customer Delete" invariant in the MCP API). AI-generated draft responses are presented as *suggestions* in the Unified Social Inbox for staff to review and click "Send," rather than sending auto-replies directly, preventing accidental hallucination slipups.
+
+---
+
+## 12) Verification Commands (Vanguard Loop)
 
 ```bash
 templ generate
