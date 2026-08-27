@@ -62,7 +62,7 @@ The primary goal of the Go rewrite is **consolidation**. Super-admins must have 
 
 1. **Skeleton + content parity** — layout, marketing pages, pest catalog, blog/search seeded from live site. ✅
 2. **Auth surface** — OTP login web flow (staff + customer), CSRF, rate limiting, dev mailer, session cookies; legacy stubs removed for `/login`, `/login/verify`, `/logout`. ✅ (smoke-tested end-to-end)
-3. **Dashboards** — customer dashboard + staff dashboard app shells behind the new sessions; admin panel wiring. ▶ in progress
+3. **Dashboards** — customer, staff, and admin panels behind the new sessions (admin: overview + people + keys + api-keys sub-screens). ✅ (E2E-verified 2026-08-27)
 4. **Deploy + parity verification** — rebuild image, deploy to go.patriotpest.pro, browser-verify against live PHP site, then retire legacy stubs module-by-module.
 
 ---
@@ -148,3 +148,79 @@ The primary goal of the Go rewrite is **consolidation**. Super-admins must have 
 18. **Instant SMS Payment Links**: In-chat link generator allowing card/Apple Pay checkout in 30 seconds.
 19. **Technician Sales Leaderboard**: Gamifies upsell values, review scores, and chemical efficiencies to drive competition.
 20. **Digital Referral Cashout**: Dynamic tracking of referral credits with automatic Visa card generation.
+
+---
+
+## STILL TO DO — Remaining Work Checklist
+
+> Tracks every outstanding task across the Go rewrite and IVR/retention system. Check off as completed.
+
+---
+
+### PHASE 1 — Legacy Page Migrations (from test.patriotpest.pro)
+
+Still stubbed in `internal/modules/legacy/legacy.go` — each needs a real Go handler + template.
+
+- [ ] `/cost` — Service pricing calculator page (real interactive UI)
+- [ ] `/customer-portal` — Customer hub landing alias
+- [ ] `/customer/invoices/{id}/download` — Stream invoice PDF from FieldRoutes API
+- [ ] `/customer/messages` — Customer-facing messaging thread UI
+- [ ] `POST /api/customer/messages` — Customer message submit (feeds Unified Inbox)
+- [ ] `/customer-auth` / `/customer-verify` — Legacy auth aliases (redirect to `/login`)
+- [ ] `/staff` / `/staff-verify` / `/staff-logout` — Legacy staff aliases
+- [ ] `/dashboard` — Legacy dashboard alias (redirect based on role)
+- [ ] `/account` — Customer profile / account settings page
+- [ ] `/admin/posts/new` + `/admin/posts/{id}` — Blog post creator and editor (CMS)
+- [ ] `/admin/settings POST` — General site settings save handler
+- [ ] `/admin/staff/new` + `/admin/staff/{id}` — Add and edit staff profiles / roles
+- [ ] `/admin/api-keys/audit` — API key usage audit log screen
+- [ ] `/admin/api-keys/{id}/revoke|rotate|scopes` — Key lifecycle controls
+- [ ] `/admin/retention/settings POST` — Save retention engine settings
+- [ ] `/admin/fieldroutes` — FieldRoutes health dashboard (WA vs AZ district sync status)
+- [ ] `/tech/ask` — Field tech AI copilot search UI
+- [ ] `/su` + `/su/verify` — Super-user master login flow (when `SUPERUSER_ENABLED=true`)
+
+---
+
+### PHASE 2 — Salesforce-Killer Dashboard Features (New Builds)
+
+- [ ] **Global Command Bar (Ctrl+K)** — Spotlight-style floating modal to jump to any customer, ticket, or message
+- [ ] **Customer 360 Timeline** — Unified feed on each customer profile: calls, texts, emails, visits, invoices
+- [ ] **USA Customer Density Heatmap** — Leaflet.js map of customer locations across WA and AZ with drill-down
+- [ ] **Kanban Pipeline Boards** — Lead and Collections drag-and-drop boards; card moves trigger SMS/email
+- [ ] **SSE Live Feed HUD** — Real-time sidebar notifications for incoming calls, callbacks, and social messages
+- [ ] **Central API Settings Console** — Hot-reload SQLite UI for Twilio, Meta, TikTok, LinkedIn, Webhook keys
+- [ ] **Meta Pixel Admin Console** — Set pixel ID globally or per-page from the dashboard (no redeploy needed)
+- [ ] **Unified Social Inbox** — Merge Facebook, Instagram, TikTok leads, website chat, SMS, voicemails into one threaded inbox
+
+---
+
+### PHASE 3 — IVR / Twilio / Calling Ads (e:\hi / test.patriotpest.pro)
+
+- [ ] **Calling Ads CAPI** — Verify Conversions API Gateway fires `Lead` events to Meta for every call from a calling ad
+- [ ] **Retention beacon** — Confirm first-party SQLite beacon captures sessions and admin summary endpoint returns data
+- [ ] **IVR hold-music finalization** — Confirm final approved queue ads/audio files are live in the Twilio Flow
+- [ ] **Messenger bot mute** — Verify bot auto-mutes on keywords and unmutes after 15 minutes
+- [ ] **Facebook Pixel on IVR pages** — Confirm pixel fires on `/referral`, `/reward-choice`, `/optout` (deployed commit `f0a08e0`)
+- [ ] **Twilio Call Whisper / Barge** — Supervisor monitor, whisper, and barge-in controls in staff dashboard
+
+---
+
+### PHASE 4 — Downloadable Native App (Wails)
+
+- [ ] **Wails scaffold** — Initialize Wails project wrapping the Go backend as a native downloadable shell
+- [ ] **Tech Routing Screen** — Map-based daily route view with stop ordering, client info, check-in/checkout
+- [ ] **Offline-First Sync** — Service notes, photos, material logs written locally and synced when online
+- [ ] **Mobile E-Sign** — Customer agreement signature capture from the tech's device
+- [ ] **Field Tech AI Copilot** — Wire `/tech/ask` to local Qwen model for treatment guide lookups in the field
+
+---
+
+### PHASE 5 — Infrastructure & DevOps
+
+- [ ] **go.patriotpest.pro live deploy** — Push Go binary Docker image to VPS and confirm live traffic
+- [ ] **golangci-lint CI** — Add linter to GitHub Actions so every PR is checked
+- [ ] **Race detector in CI** — Enable `CGO_ENABLED=1` on the Actions runner so `-race` tests run on every push
+- [ ] **Automated DB migrations** — Replace manual SQLite edits with versioned `goose`/`golang-migrate` runner
+- [ ] **FieldRoutes offline cache** — Local SQLite cache of FR customer/service data for when the FR API is down
+- [ ] **PCI compliance audit** — Walk every payment touchpoint and confirm zero card data stored on our servers
