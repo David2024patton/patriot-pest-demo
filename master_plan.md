@@ -98,3 +98,55 @@ The primary goal of the Go rewrite is **consolidation**. Super-admins must have 
 * **The Rule**: If you use local LLMs (like Qwen or Ollama) to draft social media replies or summarize incoming voicemails, there must be strict safety walls.
 * **Implementation**: The AI can *never* delete records (the "No Customer Delete" invariant in the MCP API). AI-generated draft responses are presented as *suggestions* in the Unified Social Inbox for staff to review and click "Send," rather than sending auto-replies directly, preventing accidental hallucination slipups.
 
+---
+
+## Salesforce-Killer Dashboard Features
+
+### 1. Global Command Bar (Command-K "Spotlight" Search)
+* Floating search bar accessed from anywhere (`Cmd+K` or `Ctrl+K`) to search Customers, Service Tickets, Invoices, or Messages with keyboard navigation.
+
+### 2. Customer 360 Interactive Timeline
+* Chronological unified feed on the customer's profile combining call logs, text bubbles, emails, invoices, technician statuses, and bot interactions.
+
+### 3. "Quick Action" Timeline Sidebar
+* Expanded sidebar on the timeline to log a call, send an SMS, compile an email, or trigger a callback in 1-click using HTMX.
+
+### 4. Interactive Kanban Pipelines
+* Drag-and-drop boards to track leads and collections. Card transitions trigger automated notifications (e.g. dragging to "Scheduled" texts confirmation).
+
+### 5. Server-Sent Events (SSE) Live Feed HUD
+* Live tactical slide-out notifications on the dashboard for incoming calls, customer callbacks, or social messages with audio cues.
+
+---
+
+## 20 Consolidated Operational Expansion Ideas
+
+### Operations & Dispatch
+1. **Smart Route Cluster Map**: Geographic auto-clustering to minimize drive times for WA and AZ technicians.
+2. **Timezone-Aware Cutoff Enforcement**: Strict same-day cutoff (1:00 PM local district time) dynamically applied to booking portals.
+3. **Weather-Adaptive Scheduler**: Dynamic warning overlay for exterior appointments affected by heavy rain or Phoenix extreme heat.
+4. **Google Maps Place Autocomplete**: Prevents address typos on manual entries using API lookups.
+5. **Auto-Stitch Duplicate Accounts**: Automatic merging recommendation widget for matching phones/emails.
+
+### Communication & Inbox
+6. **AI Call & Voicemail Summaries**: Direct Twilio voice transcriptions compressed into single-sentence summaries.
+7. **Canned Template Shortcodes**: Quick key triggers (like `;onmyway` or `;delayed`) to pre-fill customized messages.
+8. **Twilio Call Whisper & Barging**: Allows managers to silently listen to live calls, whisper tips, or barge in to resolve disputes.
+9. **Website Live Chat Widget**: Integrates a live chat window on `patriotpest.pro` directly into the Social Inbox.
+10. **After-Hours Lead Alert Cascade**: Cascade SMS sequence alerting coordinators of overnight leads until claimed.
+
+### Customers & Field Techs
+11. **Bug-Photo Upload Portal**: Customers upload photos of active infestations directly to their booking requests.
+12. **AI Pest Identifier (Vision)**: Integrates local vision LLM processing on photos to identify pest species for technician prep.
+13. **Offline PWA Field Notes**: A lightweight, offline-first app for technicians to write service reports and sync when online.
+14. **Mobile E-Sign Contracts**: Send customer agreements directly via SMS for on-site mobile signature.
+15. **Google Review Booster**: 5-star visit feedback redirects to Google Business; low scores trigger coordinator callbacks.
+
+### Sales & Marketing ROI
+16. **Neighborhood Churn Heatmap**: Maps inactive accounts to identify high-density regions for localized flyer drops or digital ads.
+17. **Seasonal Pest Forecast Matrix**: Predicts wasp, spider, and rodent spikes based on year-over-year ticket data.
+18. **Instant SMS Payment Links**: In-chat link generator allowing card/Apple Pay checkout in 30 seconds.
+19. **Technician Sales Leaderboard**: Gamifies upsell values, review counts, and chemical efficiencies to drive competition.
+20. **Digital Referral Cashout**: Dynamic tracking of referral credits with automatic Visa card generation.
+
+
