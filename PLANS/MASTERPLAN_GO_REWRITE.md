@@ -275,12 +275,12 @@ Port verbatim — no redesign:
 ### Customers & Field Techs
 11. **Bug-Photo Upload Portal**: Customers upload photos of active infestations directly to their booking requests.
 12. **AI Pest Identifier (Vision)**: Integrates local vision LLM processing on photos to identify pest species for technician prep.
-13. **Offline PWA Field Notes**: A lightweight, offline-first app for technicians to write service reports and sync when online.
+13. **Downloadable Mobile Field Service App**: A dedicated, downloadable native application (compiled using Wails or a Capacitor PWA wrapper) for technicians in the field, modeled after professional field service dispatch apps. Includes offline-first route maps, client service histories, material logs, and photo uploads.
 14. **Mobile E-Sign Contracts**: Send customer agreements directly via SMS for on-site mobile signature.
 15. **Google Review Booster**: 5-star visit feedback redirects to Google Business; low scores trigger coordinator callbacks.
 
 ### Sales & Marketing ROI
-16. **Neighborhood Churn Heatmap**: Maps inactive accounts to identify high-density regions for localized flyer drops or digital ads.
+16. **Interactive USA Customer Density Heatmap**: An interactive visual map of the United States (using Leaflet.js/OpenStreetMap or Google Maps API) displaying customer distribution, hot leads, and churn patterns. Admins can zoom from a national level down to specific neighborhoods in Spokane/Phoenix to target local marketing and flyer drops.
 17. **Seasonal Pest Forecast Matrix**: Predicts wasp, spider, and rodent spikes based on year-over-year ticket data.
 18. **Instant SMS Payment Links**: In-chat link generator allowing card/Apple Pay checkout in 30 seconds.
 19. **Technician Sales Leaderboard**: Gamifies upsell values, review scores, and chemical efficiencies to drive competition.
