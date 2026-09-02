@@ -1,6 +1,6 @@
 /* ============================================================
    PATRIOT PEST CONTROL - Tactical Design System
-   Display: Black Ops One · Body: Barlow · Mono: IBM Plex Mono
+   Display: Black Ops One Â· Body: Barlow Â· Mono: IBM Plex Mono
    ============================================================ */
 :root{
   --ink:#141a10;
@@ -62,7 +62,7 @@ nav{
 nav .brand{font-family:var(--display);font-size:1rem;letter-spacing:.05em;color:var(--cream);text-decoration:none;display:flex;align-items:center;gap:.55rem;white-space:nowrap}
 nav .brand .star{color:var(--orange);font-size:1.15rem;display:inline-block;animation:spinSlow 14s linear infinite}
 @keyframes spinSlow{to{transform:rotate(360deg)}}
-.navlinks{display:flex;gap:1.15rem;align-items:center}
+.navlinks{display:flex;gap:1.15rem;align-items:center;flex-wrap:wrap}
 .navlinks a.nl{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;color:var(--khaki);text-decoration:none;text-transform:uppercase;position:relative;padding:.3rem 0}
 .navlinks a.nl::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--orange);transition:width .25s}
 .navlinks a.nl:hover::after,.navlinks a.nl.active::after{width:100%}
@@ -140,7 +140,7 @@ h2 em,h1 em{font-style:normal;color:var(--orange)}
   font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;
   border:1px solid var(--olive-500);color:var(--khaki);padding:.4rem .8rem;
 }
-.page-head .head-tags span::before{content:"✓ ";color:var(--orange)}
+.page-head .head-tags span::before{content:"âœ“ ";color:var(--orange)}
 
 /* ---------- content blocks ---------- */
 .block{padding:5.5rem 0}
@@ -195,7 +195,7 @@ h2 em,h1 em{font-style:normal;color:var(--orange)}
   display:inline-block;margin-top:.9rem;font-family:var(--mono);font-size:.66rem;
   letter-spacing:.18em;color:var(--orange);text-decoration:none;text-transform:uppercase;
 }
-.card a.more::after{content:" ▸";transition:margin .2s}
+.card a.more::after{content:" â–¸";transition:margin .2s}
 .card a.more:hover::after{margin-left:4px}
 
 /* paper cards (for light sections) */
@@ -297,11 +297,418 @@ h2 em,h1 em{font-style:normal;color:var(--orange)}
 .plan .pdesc{font-size:.86rem;color:var(--khaki);line-height:1.55;margin:.7rem 0 1rem}
 .plan ul{list-style:none;margin:0 0 1.2rem;flex:1}
 .plan li{font-size:.84rem;color:var(--khaki);padding:.32rem 0;border-bottom:1px dashed var(--olive-700)}
-.plan li::before{content:"▸ ";color:var(--orange)}
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS FIXES (Phase 1)
+   Fix text overlapping, touch targets, and mobile/tablet layouts
+   ========================================================================== */
+
+/* ---------- Mobile viewport and typography fixes ---------- */
+@media (max-width: 768px) {
+  html {
+    font-size: 16px; /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  body {
+    font-size: 16px;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+  
+  /* Fix text overlapping in headings */
+  h1 {
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    line-height: 1.1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  h2 {
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    line-height: 1.2;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  h3 {
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    line-height: 1.3;
+  }
+  
+  /* Hero section mobile fixes */
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem 1rem;
+  }
+  
+  .hero h1 {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    line-height: 1.1;
+  }
+  
+  .hero-sub {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .hero-ctas {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .hero-ctas .btn {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .hero-badges {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  
+  .hero-badges span {
+    font-size: .75rem;
+    padding: .4rem .6rem;
+  }
+}
+
+/* ---------- Touch-friendly button sizing ---------- */
+@media (max-width: 768px) {
+  .btn,
+  .btn-ghost,
+  button[type="submit"],
+  a {
+    min-height: 44px; /* iOS touch target minimum */
+    min-width: 44px;
+    padding: .8rem 1rem;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Navigation improvements */
+  nav a {
+    padding: .8rem 1rem;
+    min-height: 44px;
+    font-size: .9rem;
+  }
+  
+  /* Form inputs touch targets */
+  .field input,
+  .field select,
+  .field textarea {
+    min-height: 48px;
+    padding: .8rem;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+  
+  /* Checkbox and radio touch targets */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+}
+
+/* ---------- Tablet landscape optimizations ---------- */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .wrap {
+    padding: 0 2rem;
+  }
+  
+  /* Two-column layouts for tablet */
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .grid.g2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .grid.g3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* ---------- Mobile form layouts ---------- */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .form-grid .full {
+    grid-column: 1;
+  }
+  
+  /* Stack grid layouts on mobile */
+  .grid.g2,
+  .grid.g3,
+  .grid.g4 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Stats grid mobile */
+  .stat-grid {
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+  
+  .plan-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Panel spacing on mobile */
+  .panel,
+  .pcard,
+  .form-panel {
+    padding: 1.5rem 1rem;
+    margin: 0 0 1.5rem 0;
+  }
+}
+
+/* ---------- Mobile navigation improvements ---------- */
+@media (max-width: 768px) {
+  nav {
+    padding: 1rem;
+  }
+  
+  .navlinks {
+    flex-direction: column;
+    gap: .5rem;
+  }
+  
+  .navlinks a {
+    padding: .8rem 1rem;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+  
+  .nav-cta {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  /* Mobile menu button */
+  #menu-btn {
+    min-height: 44px;
+    min-width: 44px;
+    font-size: 1.5rem;
+    padding: .5rem;
+  }
+}
+
+/* ---------- Mobile: hide top nav, keep bottom sticky nav ---------- */
+@media (max-width: 960px) {
+  .top-nav { display: none; }
+}
+
+/* Medium-width nav: prevent links overflowing/overlapping before the 960px dropdown kicks in */
+@media (min-width: 961px) and (max-width: 1320px) {
+  nav { padding:.6rem 1rem; }
+  .navlinks { gap:.6rem; }
+  .navlinks a.nl { font-size:.58rem; letter-spacing:.12em; }
+  .nav-cta { font-size:.66rem; padding:.5rem .8rem; }
+}
+
+/* ---------- Safe area for notched devices ---------- */
+@supports (padding: max(0px)) {
+  .appshell-bar {
+    padding-bottom: max(.4rem, env(safe-area-inset-bottom));
+  }
+  
+  .appshell-topbar {
+    padding-top: max(.8rem, env(safe-area-inset-top));
+  }
+}
+
+/* ---------- Prevent horizontal scroll ---------- */
+* {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- Improved mobile text readability ---------- */
+@media (max-width: 600px) {
+  p, li, td, th {
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+  
+  /* Table horizontal scroll on mobile */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table {
+    min-width: 600px; /* Force horizontal scroll on small screens */
+  }
+  
+  table th,
+  table td {
+    padding: .6rem .5rem;
+    font-size: .85rem;
+    white-space: nowrap;
+  }
+  
+  /* Allow text wrapping in specific columns */
+  table td.wrap-text {
+    white-space: normal;
+    min-width: 150px;
+    max-width: 200px;
+  }
+}
+
+/* ---------- Mobile hero section fixes ---------- */
+@media (max-width: 768px) {
+  #hero {
+    min-height: auto;
+    padding: 4rem 0;
+  }
+  
+  .hud-top {
+    position: static;          /* pull out of absolute overlap: stack above the grid */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem .9rem;
+    font-size: .68rem;
+    padding: .2rem 1rem 1rem;
+    margin-top: -3.4rem;       /* offset the hero's top padding so it hugs the top */
+  }
+  /* Decorative coordinates + clock add 3 stacked lines on mobile; show only
+     the compact brand line so nothing overlaps the headline below. */
+  .hud-top > span:nth-child(2),
+  .hud-top > span:nth-child(3) {
+    display: none;
+  }
+  
+  .brief {
+    font-size: .8rem;
+    padding: 1rem;
+  }
+  
+  /* Crosshair and HUD elements mobile sizing */
+  #xh-v, #xh-h, #xh-ring {
+    display: none; /* Hide complex HUD elements on mobile for cleaner look */
+  }
+}
+
+/* ---------- Mobile sticky navigation (requested feature) ---------- */
+/* Hidden by default on desktop; shown as the ONLY nav below 960px */
+.mobile-sticky-nav { display: none; }
+.mobile-nav-spacer { display: none; }
+@media (max-width: 960px) {
+  .mobile-sticky-nav {
+    position: fixed;
+    top: auto;              /* override base nav{top:0} so it sits at the bottom */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    background: var(--olive-950);
+    border-top: 2px solid var(--orange);
+    padding: .35rem .25rem calc(.35rem + env(safe-area-inset-bottom));
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .1rem;
+  }
+  
+  .mobile-sticky-nav a {
+    flex: 1;
+    min-height: 48px;
+    min-width: 0;
+    padding: .3rem .15rem;
+    color: var(--cream);
+    text-decoration: none;
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .1rem;
+    font-size: .56rem;
+    font-family: var(--mono);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  
+  .mobile-sticky-nav svg {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+  }
+  
+  .mobile-sticky-nav .label {
+    line-height: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .mobile-sticky-nav a:active {
+    color: var(--orange);
+  }
+  
+  /* Add space at bottom for sticky nav */
+  body {
+    padding-bottom: 76px;
+  }
+  
+  .mobile-nav-spacer {
+    display: block;
+    height: 76px;
+  }
+}
+
+/* ---------- Gesture support hints ---------- */
+@media (hover: none) and (pointer: coarse) {
+  /* Touch device optimizations */
+  .btn:hover,
+  .btn-ghost:hover,
+  a:hover {
+    /* Remove hover effects on touch devices */
+    transform: none;
+  }
+  
+  .btn:active,
+  .btn-ghost:active,
+  a:active {
+    /* Add active state feedback */
+    transform: scale(0.98);
+    opacity: 0.8;
+  }
+}
+.plan li::before{content:"â–¸ ";color:var(--orange)}
 .plan li.bonus{color:var(--cream)}
-.plan li.bonus::before{content:"★ ";color:var(--orange)}
+.plan li.bonus::before{content:"â˜… ";color:var(--orange)}
 .plan li.excl{color:var(--olive-300);font-size:.74rem}
-.plan li.excl::before{content:"✕ ";color:var(--red)}
+.plan li.excl::before{content:"âœ• ";color:var(--red)}
 .plan.gold{border:2px solid var(--orange);background:var(--olive-700);box-shadow:0 16px 38px rgba(0,0,0,.4);transform:scale(1.03)}
 .plan.gold:hover{transform:scale(1.03) translateY(-8px)}
 .plan.gold .pname{color:var(--orange)}
@@ -335,7 +742,7 @@ h2 em,h1 em{font-style:normal;color:var(--orange)}
 .blog-card h3{font-size:.98rem;color:var(--cream);letter-spacing:.02em;line-height:1.35;font-family:var(--body);font-weight:700;text-transform:none}
 .blog-card p{font-size:.82rem;color:var(--khaki);line-height:1.5;flex:1}
 .blog-card .bdate{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:var(--olive-300)}
-.blog-card .bdate::after{content:" →";color:var(--orange)}
+.blog-card .bdate::after{content:" â†’";color:var(--orange)}
 
 /* ---------- link tree ---------- */
 .linktree{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:.9rem}
@@ -478,7 +885,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 }
 .hud-top{position:absolute;top:74px;left:0;right:0;display:flex;justify-content:space-between;padding:.9rem clamp(1rem,4vw,2.5rem);font-family:var(--mono);font-size:.64rem;letter-spacing:.2em;color:var(--olive-300);text-transform:uppercase;gap:1rem;flex-wrap:wrap}
 .hud-top .live{color:var(--orange)}
-.hud-top .live::before{content:"●";animation:blink 1.4s infinite;margin-right:.4rem}
+.hud-top .live::before{content:"â—";animation:blink 1.4s infinite;margin-right:.4rem}
 @keyframes blink{50%{opacity:.15}}
 .hero-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:clamp(1.5rem,4vw,4rem);align-items:end;padding-bottom:2.5rem}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr;align-items:start}}
@@ -490,7 +897,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .hero-sub b{color:var(--cream)}
 .hero-ctas{display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap}
 .hero-badges{display:flex;gap:1.6rem;margin-top:2rem;flex-wrap:wrap;font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;color:var(--olive-300);text-transform:uppercase}
-.hero-badges span::before{content:"✓ ";color:var(--orange)}
+.hero-badges span::before{content:"âœ“ ";color:var(--orange)}
 .brief{background:rgba(20,26,16,.82);border:1px solid var(--olive-700);padding:1.4rem 1.4rem 1.1rem;position:relative;font-family:var(--mono);box-shadow:10px 10px 0 rgba(0,0,0,.35)}
 .brief::before,.brief::after,.brief .corner::before,.brief .corner::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--orange)}
 .brief::before{top:-2px;left:-2px;border-right:0;border-bottom:0}
@@ -502,14 +909,14 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .brief .line b{color:var(--cream)}
 .brief .caret{display:inline-block;width:8px;height:13px;background:var(--orange);vertical-align:-2px;animation:blink 1s infinite}
 .brief .coords{margin-top:1rem;padding-top:.8rem;border-top:1px dashed var(--olive-700);font-size:.6rem;letter-spacing:.18em;color:var(--olive-300)}
-#xh-v,#xh-h{position:absolute;background:rgba(244,119,46,.35);pointer-events:none;z-index:2;opacity:0;transition:opacity .3s}
+#xh-v,#xh-h{position:fixed;background:rgba(244,119,46,.35);pointer-events:none;z-index:9990;opacity:0;transition:opacity .3s}
 #xh-v{top:0;bottom:0;width:1px}
 #xh-h{left:0;right:0;height:1px}
-#xh-ring{position:absolute;width:46px;height:46px;border:1px solid rgba(244,119,46,.7);border-radius:50%;pointer-events:none;z-index:2;opacity:0;transition:opacity .3s;transform:translate(-50%,-50%)}
+#xh-ring{position:fixed;width:46px;height:46px;border:1px solid rgba(244,119,46,.7);border-radius:50%;pointer-events:none;z-index:9990;opacity:0;transition:opacity .3s;transform:translate(-50%,-50%)}
 #xh-ring::before,#xh-ring::after{content:"";position:absolute;background:rgba(244,119,46,.7)}
 #xh-ring::before{left:50%;top:-8px;bottom:-8px;width:1px}
 #xh-ring::after{top:50%;left:-8px;right:-8px;height:1px}
-#hero.aim #xh-v,#hero.aim #xh-h,#hero.aim #xh-ring{opacity:1}
+html.has-crosshair #xh-v,html.has-crosshair #xh-h,html.has-crosshair #xh-ring{opacity:1}
 .scroll-cue{position:absolute;bottom:64px;right:clamp(1rem,4vw,2.5rem);font-family:var(--mono);font-size:.6rem;letter-spacing:.28em;color:var(--olive-300);text-transform:uppercase;writing-mode:vertical-rl;display:flex;align-items:center;gap:.7rem}
 .scroll-cue::after{content:"";width:1px;height:52px;background:var(--orange);animation:drip 1.6s ease-in-out infinite}
 @keyframes drip{0%{transform:scaleY(0);transform-origin:top}55%{transform:scaleY(1);transform-origin:top}56%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
@@ -517,8 +924,8 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 /* ---------- threat files (home horizontal) ---------- */
 #threats{background:var(--olive-900);overflow:hidden}
 .threats-head{padding:5.5rem 0 2.5rem}
-.threat-pin{display:flex;align-items:stretch;will-change:transform}
-.threat-card{flex:0 0 320px;margin-right:1.4rem;background:var(--olive-800);border:1px solid var(--olive-700);padding:1.6rem 1.5rem 1.4rem;position:relative;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));transition:border-color .25s,transform .25s}
+.threat-pin{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.4rem;align-items:stretch}
+.threat-card{background:var(--olive-800);border:1px solid var(--olive-700);padding:1.6rem 1.5rem 1.4rem;position:relative;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));transition:border-color .25s,transform .25s}
 .threat-card:hover{border-color:var(--orange);transform:translateY(-8px)}
 .threat-card .file-no{font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;color:var(--olive-300);text-transform:uppercase}
 /* ---------- pest photos - tactical "surveillance still" treatment ---------- */
@@ -560,7 +967,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .card:hover .pemoji.s-md{transform:scale(1.15) rotate(-6deg)}
 .target-photo{margin:1.4rem 0 1.6rem}
 .target-photo figcaption{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;color:var(--olive-300);text-transform:uppercase;margin-top:.55rem;display:flex;justify-content:space-between}
-.target-photo figcaption::after{content:"◤ VERIFIED SPECIMEN";color:var(--orange)}
+.target-photo figcaption::after{content:"â—¤ VERIFIED SPECIMEN";color:var(--orange)}
 .threat-card h3{font-size:1.1rem;color:var(--cream)}
 .threat-card p{font-size:.85rem;color:var(--khaki);line-height:1.55;margin-top:.5rem;min-height:3.2em}
 .meter{margin-top:1.1rem}
@@ -569,7 +976,7 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 .meter .fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--olive-500),var(--orange) 60%,var(--red));transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
 .threat-card .neutralized{position:absolute;top:14px;right:14px;font-family:var(--display);font-size:.52rem;letter-spacing:.12em;color:var(--red);border:2px solid var(--red);padding:.2rem .5rem;transform:rotate(8deg) scale(0);transition:transform .25s cubic-bezier(.34,1.56,.64,1);text-transform:uppercase}
 .threat-card:hover .neutralized{transform:rotate(8deg) scale(1)}
-.threat-end{flex:0 0 300px;display:flex;flex-direction:column;justify-content:center;gap:1rem;padding:1.6rem;border:1px dashed var(--olive-500)}
+.threat-end{display:flex;flex-direction:column;justify-content:center;gap:1rem;padding:1.6rem;border:1px dashed var(--olive-500);grid-column:1/-1}
 .threat-end p{font-family:var(--display);font-size:1.05rem;text-transform:uppercase;color:var(--cream);line-height:1.3}
 
 /* ---------- radar (home + areas) ---------- */
@@ -594,17 +1001,31 @@ footer{background:var(--olive-950);border-top:2px solid var(--olive-700);padding
 
 /* ---------- dossier (about) ---------- */
 .dossier-file{background:#f6f0dd;border:2px solid var(--ink);padding:1.8rem;position:relative;box-shadow:12px 12px 0 rgba(20,26,16,.16);transform:rotate(-1.2deg)}
+@media(max-width:600px){.dossier-file{transform:rotate(0);box-shadow:8px 8px 0 rgba(20,26,16,.16);padding:1.4rem}}
 .dossier-file .form-id{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;color:#7a7258;text-transform:uppercase;display:flex;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:1.2rem}
 .drow{display:grid;grid-template-columns:130px 1fr;gap:1rem;padding:.62rem 0;border-bottom:1px dashed #b3a884;font-family:var(--mono);font-size:.76rem}
 .drow dt{color:#7a7258;letter-spacing:.12em;text-transform:uppercase;font-size:.6rem;padding-top:.15rem}
 .drow dd{font-weight:600;letter-spacing:.03em;color:var(--ink)}
 .redact{background:var(--ink);color:var(--ink);border-radius:2px;padding:0 .4rem;user-select:none}
 .bigquote{margin-top:2rem;border-left:6px solid var(--red);padding:1.2rem 1.6rem;background:#e4dabf;font-size:clamp(1.02rem,1.7vw,1.25rem);line-height:1.55;font-weight:600;color:var(--ink);position:relative}
-.bigquote::before{content:"“";font-family:var(--display);font-size:4rem;color:var(--red);position:absolute;top:-1.4rem;left:.6rem;opacity:.35}
+.bigquote::before{content:"â€œ";font-family:var(--display);font-size:4rem;color:var(--red);position:absolute;top:-1.4rem;left:.6rem;opacity:.35}
 
-/* ---------- reveal default ---------- */
-[data-reveal]{opacity:0;transform:translateY(34px)}
+/* ---------- themed scrollbars (document only - never add stray bars to cards/panels) ---------- */
+html::-webkit-scrollbar{width:12px;height:12px}
+html::-webkit-scrollbar-track{background:var(--olive-950)}
+html::-webkit-scrollbar-thumb{background:var(--olive-700);border:3px solid var(--olive-950);border-radius:8px}
+html::-webkit-scrollbar-thumb:hover{background:var(--orange)}
+html{scrollbar-width:thin;scrollbar-color:var(--olive-700) var(--olive-950)}
+
+/* ---------- reveal default (fail-safe: only hidden when JS is active) ---------- */
+html.js [data-reveal]{opacity:0;transform:translateY(34px)}
+html.js.no-gsap [data-reveal]{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   [data-reveal]{opacity:1;transform:none}
   .radar,.ticker-track,.grain,.blip::after,nav .brand .star{animation:none}
 }
+
+/* --- Go-only additions --- */
+#hero.aim #xh-v,#hero.aim #xh-h,#hero.aim #xh-ring{opacity:1}
+/* ---------- reveal default ---------- */
+[data-reveal]{opacity:0;transform:translateY(34px)}

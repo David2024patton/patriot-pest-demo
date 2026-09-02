@@ -1,0 +1,58 @@
+/* ============================================================
+   PWA install prompt - mobile/tablet only, tactical theme.
+   Hidden on desktop by both the media query and JS gating.
+   Never blocks content: fixed bottom bar, dismissible, compact.
+   ============================================================ */
+.ppc-install{display:none}
+@media (max-width:1024px){
+  .ppc-install{
+    display:none;               /* JS flips to block via .is-open */
+    position:fixed;left:0;right:0;bottom:0;z-index:1200;
+    padding:0 .75rem calc(.75rem + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,var(--olive-900),var(--olive-950));
+    border-top:2px solid var(--orange);
+    box-shadow:0 -6px 18px rgba(0,0,0,.45);
+  }
+  /* When the fixed bottom nav is present (≤960px) the banner floats just
+     above it instead of hiding underneath it. Nav ≈64px + safe area. */
+  @media (max-width:960px){
+    .ppc-install{bottom:calc(72px + env(safe-area-inset-bottom))}
+  }
+  .ppc-install.is-open{display:block}
+  .ppc-install-card{
+    display:flex;align-items:center;gap:.7rem;
+    max-width:640px;margin:0 auto;padding:.6rem .5rem;
+  }
+  .ppc-install-ico{
+    width:48px;height:48px;border-radius:10px;flex:0 0 auto;
+    border:1px solid var(--olive-500);
+  }
+  .ppc-install-copy{flex:1 1 auto;min-width:0;line-height:1.25}
+  .ppc-install-tag{
+    display:inline-block;font-family:var(--mono);font-size:.62rem;
+    letter-spacing:.14em;color:var(--olive-300);
+    border:1px solid var(--olive-500);border-radius:3px;
+    padding:.05rem .35rem;margin-bottom:.15rem;
+  }
+  .ppc-install-copy strong{
+    display:block;font-family:var(--display);font-size:.86rem;
+    letter-spacing:.04em;color:var(--cream);text-transform:uppercase;
+  }
+  .ppc-install-copy span:last-child{
+    display:block;font-size:.74rem;color:var(--khaki);
+  }
+  .ppc-install-actions{flex:0 0 auto;display:flex;align-items:center;gap:.5rem}
+  .ppc-install-btn{
+    font-family:var(--body);font-weight:700;font-size:.78rem;
+    text-transform:uppercase;letter-spacing:.05em;cursor:pointer;
+    color:var(--ink);background:var(--orange);
+    border:1px solid var(--orange-hot);border-radius:5px;
+    padding:.5rem .8rem;
+  }
+  .ppc-install-btn:hover{background:var(--orange-hot)}
+  .ppc-install-x{
+    cursor:pointer;color:var(--khaki);background:none;border:none;
+    font-size:1.15rem;line-height:1;padding:.25rem;
+  }
+  .ppc-install-x:hover{color:var(--orange)}
+}
