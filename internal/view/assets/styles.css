@@ -1029,3 +1029,37 @@ html.js.no-gsap [data-reveal]{opacity:1;transform:none}
 #hero.aim #xh-v,#hero.aim #xh-h,#hero.aim #xh-ring{opacity:1}
 /* ---------- reveal default ---------- */
 [data-reveal]{opacity:0;transform:translateY(34px)}
+
+/* ---------- Mobile hero overrides (trailing, must stay last) ----------
+   The base #hero and .hud-top rules are appended later in this file than
+   the earlier mobile block, so without this trailing override the base
+   absolute .hud-top wins on phones/tablets and overlaps the headline. */
+@media (max-width: 900px) {
+  #hero {
+    min-height: auto;
+    padding: 4rem 0;
+  }
+  #hero .hud-top {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem .9rem;
+    font-size: .68rem;
+    padding: .2rem 1rem 1rem;
+    margin-top: -3.4rem;
+  }
+  #hero .hud-top > span:nth-child(2),
+  #hero .hud-top > span:nth-child(3) {
+    display: none;
+  }
+  #hero .brief {
+    font-size: .8rem;
+    padding: 1rem;
+  }
+  #hero #xh-v,
+  #hero #xh-h,
+  #hero #xh-ring {
+    display: none;
+  }
+}
