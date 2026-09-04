@@ -14,7 +14,7 @@
  */
 "use strict";
 
-var CACHE = "ppc-shell-v2";
+var CACHE = "ppc-shell-v3";
 
 var SHELL = [
   "/",

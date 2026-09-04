@@ -1063,3 +1063,15 @@ html.js.no-gsap [data-reveal]{opacity:1;transform:none}
     display: none;
   }
 }
+
+/* ---------- Short desktop windows: keep content clear of the HUD ----------
+   #hero is min-height:100vh with content bottom-anchored. When the window is
+   shorter than the hero content, the content top slides up underneath the
+   absolutely positioned HUD strip. On short windows, top-align the content
+   and reserve room below the HUD instead of overlapping it. */
+@media (min-width: 901px) and (max-height: 900px) {
+  #hero {
+    justify-content: flex-start;
+    padding-top: 150px;
+  }
+}
