@@ -1,6 +1,6 @@
 /* ============================================================
    PATRIOT PEST CONTROL - Tactical Design System
-   Display: Black Ops One · Body: Barlow · Mono: IBM Plex Mono
+   Display: Black Ops One Â· Body: Barlow Â· Mono: IBM Plex Mono
    ============================================================ */
 :root{
   --ink:#141a10;
@@ -589,10 +589,20 @@ img, video, canvas, iframe {
   }
   
   .hud-top {
-    flex-direction: column;
-    gap: .5rem;
-    font-size: .7rem;
-    padding: 1rem;
+    position: static;          /* pull out of absolute overlap: stack above the grid */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem .9rem;
+    font-size: .68rem;
+    padding: .2rem 1rem 1rem;
+    margin-top: -3.4rem;       /* offset the hero's top padding so it hugs the top */
+  }
+  /* Decorative coordinates + clock add 3 stacked lines on mobile; show only
+     the compact brand line so nothing overlaps the headline below. */
+  .hud-top > span:nth-child(2),
+  .hud-top > span:nth-child(3) {
+    display: none;
   }
   
   .brief {
@@ -1013,4 +1023,55 @@ html.js.no-gsap [data-reveal]{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   [data-reveal]{opacity:1;transform:none}
   .radar,.ticker-track,.grain,.blip::after,nav .brand .star{animation:none}
+}
+
+/* --- Go-only additions --- */
+#hero.aim #xh-v,#hero.aim #xh-h,#hero.aim #xh-ring{opacity:1}
+/* ---------- reveal default ---------- */
+[data-reveal]{opacity:0;transform:translateY(34px)}
+
+/* ---------- Mobile hero overrides (trailing, must stay last) ----------
+   The base #hero and .hud-top rules are appended later in this file than
+   the earlier mobile block, so without this trailing override the base
+   absolute .hud-top wins on phones/tablets and overlaps the headline. */
+@media (max-width: 900px) {
+  #hero {
+    min-height: auto;
+    padding: 4rem 0;
+  }
+  #hero .hud-top {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem .9rem;
+    font-size: .68rem;
+    padding: .2rem 1rem 1rem;
+    margin-top: -3.4rem;
+  }
+  #hero .hud-top > span:nth-child(2),
+  #hero .hud-top > span:nth-child(3) {
+    display: none;
+  }
+  #hero .brief {
+    font-size: .8rem;
+    padding: 1rem;
+  }
+  #hero #xh-v,
+  #hero #xh-h,
+  #hero #xh-ring {
+    display: none;
+  }
+}
+
+/* ---------- Short desktop windows: keep content clear of the HUD ----------
+   #hero is min-height:100vh with content bottom-anchored. When the window is
+   shorter than the hero content, the content top slides up underneath the
+   absolutely positioned HUD strip. On short windows, top-align the content
+   and reserve room below the HUD instead of overlapping it. */
+@media (min-width: 901px) and (max-height: 900px) {
+  #hero {
+    justify-content: flex-start;
+    padding-top: 150px;
+  }
 }
