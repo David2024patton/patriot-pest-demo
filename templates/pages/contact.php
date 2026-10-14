@@ -12,7 +12,7 @@ $val     = fn(string $k) => $view->e($old[$k] ?? '');
   <div class="wrap">
     <div class="eyebrow">COMMS // CONTACT</div>
     <h1 style="font-family:var(--display);color:var(--cream);font-size:clamp(2rem,6vw,3rem);margin:.4rem 0 .8rem">Get your <em>free quote.</em></h1>
-    <p class="lead">Call the line or send the form. We respond within one business day (usually much faster). Same-day service available across all four states.</p>
+    <p class="lead">Call the line or send the form. We respond within one business day (usually much faster). Same-day service available across Washington, Idaho &amp; Oregon.</p>
   </div>
 </section>
 
@@ -24,7 +24,6 @@ $val     = fn(string $k) => $view->e($old[$k] ?? '');
           <h3 style="font-family:var(--display);color:var(--cream)">Direct Lines</h3>
           <dl class="kv" style="margin-top:.8rem">
             <dt>WA · ID · OR</dt><dd><a href="tel:+15094715767" style="color:var(--orange)">(509) 471-5767</a></dd>
-            <dt>Arizona</dt><dd><a href="tel:+16027558414" style="color:var(--orange)">(602) 755-8414</a></dd>
             <dt>Email</dt><dd><a href="mailto:info@patriotpest.pro" style="color:var(--orange)">info@patriotpest.pro</a></dd>
             <dt>HQ</dt><dd>Spokane, WA 99201</dd>
             <dt>Hours</dt><dd>Mon–Fri 9a–5p · Sat–Sun 10a–4p · 24/7 line</dd>
