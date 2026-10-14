@@ -34,7 +34,7 @@ class BlogController extends PageController
 
         echo View::page('pages/blog-index', ['posts' => $posts], $this->meta(
             'Pest Control Blog & Tips - Seasonal Guides | Patriot Pest Control',
-            'Expert pest control tips, seasonal guides, and identification help for WA, ID, OR, AZ. Written by licensed technicians.',
+            'Expert pest control tips, seasonal guides, and identification help for WA, ID, OR. Written by licensed technicians.',
             '/blogs',
             ['crumb' => [['Home', '/'], ['Blog', '/blogs']]]
         ));
@@ -72,7 +72,7 @@ class BlogController extends PageController
 
         $metaTitle = $post['meta_title'] ?: ($post['title'] . ' | Patriot Pest Control Blog');
         $metaDesc  = $post['meta_description'] ?: ($post['excerpt'] ?? '');
-        $regionTag = ($post['region'] ?? 'all') === 'all' ? 'Washington, Idaho, Oregon, Arizona' : strtoupper((string) $post['region']);
+        $regionTag = ($post['region'] ?? 'all') === 'all' ? 'Washington, Idaho, Oregon' : strtoupper((string) $post['region']);
         $metaKw    = $post['meta_keywords'] ?: trim('pest control, ' . ($post['pest_name'] ?? '') . ', ' . $regionTag . ', ' . ($post['season'] ?? ''), ', ');
         $ogImage   = $post['og_image'] ?: ($post['photo'] ? 'https://patriotpest.pro/assets/img/pests/' . $post['photo'] : null);
 
