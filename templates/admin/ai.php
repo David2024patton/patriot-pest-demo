@@ -97,7 +97,7 @@ $enabled= $data['enabled'] ?? false;
       <div class="field">
         <label for="region">Region</label>
         <select id="region" name="region">
-          <?php foreach (['all'=>'All States','wa'=>'Washington','id'=>'Idaho','or'=>'Oregon','az'=>'Arizona'] as $v=>$l): ?>
+          <?php foreach (['all'=>'All States','wa'=>'Washington','id'=>'Idaho','or'=>'Oregon',] as $v=>$l): ?>
           <option value="<?= $v ?>"><?= $l ?></option>
           <?php endforeach; ?>
         </select>
