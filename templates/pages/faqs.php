@@ -12,7 +12,7 @@ $faqs = [
     ],
     'Service & Scheduling' => [
         ['Do you offer same-day service?', 'Yes, same-day service is available across all four states when pests can\'t wait. Call the line and we\'ll get you scheduled fast.'],
-        ['What areas do you serve?', 'We serve Washington, Idaho, Oregon, and Arizona, including Spokane, Coeur d\'Alene, Hermiston, Phoenix, and surrounding communities. See our service areas for the full list.'],
+        ['What areas do you serve?', 'We serve Washington, Idaho, and Oregon, including Spokane, Coeur d\'Alene, Hermiston, and surrounding communities. See our service areas for the full list.'],
         ['Do I need to prepare my home before treatment?', 'We\'ll give you simple, specific prep instructions when we schedule. Most treatments require minimal preparation, and your technician will walk you through everything.'],
     ],
     'Getting Started' => [
