@@ -148,7 +148,7 @@ final class AiService
         if (!self::enabled()) {
             return null;
         }
-        $regionName = ['all' => 'Washington, Idaho, Oregon & Arizona', 'wa' => 'Washington', 'id' => 'Idaho', 'or' => 'Oregon', 'az' => 'Arizona'][$brief['region'] ?? 'all'] ?? 'the service area';
+        $regionName = ['all' => 'Washington, Idaho & Oregon', 'wa' => 'Washington', 'id' => 'Idaho', 'or' => 'Oregon'][$brief['region'] ?? 'all'] ?? 'the service area';
         $outline = '';
         if (!empty($brief['outline'])) {
             $outline = "\nSuggested outline:\n" . $brief['outline'];
