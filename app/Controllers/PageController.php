@@ -31,7 +31,7 @@ class PageController
         return array_merge([
             'title'       => $title,
             'description' => $description,
-            'keywords'    => 'pest control, Spokane, Washington, Idaho, Oregon, Arizona, veteran-owned',
+            'keywords'    => 'pest control, Spokane, Washington, Idaho, Oregon, veteran-owned',
             'canonical'   => $site . $path,
             'ogImage'     => $site . '/assets/img/og.png',
             'robots'      => 'index, follow, max-snippet:-1, max-image-preview:large',
@@ -58,7 +58,7 @@ class PageController
             'email'       => 'info@patriotpest.pro',
             'image'       => 'https://patriotpest.pro/assets/img/og.png',
             'logo'        => 'https://patriotpest.pro/assets/img/og.png',
-            'description' => 'Veteran-owned pest control serving Washington, Idaho, Oregon & Arizona. Same-day service, eco-friendly family & pet safe treatments, 90-day warranty.',
+            'description' => 'Veteran-owned pest control serving Washington, Idaho & Oregon. Same-day service, eco-friendly family & pet safe treatments, 90-day warranty.',
             'priceRange'  => '$$',
             'address'     => [
                 '@type' => 'PostalAddress',
@@ -72,7 +72,6 @@ class PageController
                 ['@type' => 'State', 'name' => 'Washington'],
                 ['@type' => 'State', 'name' => 'Idaho'],
                 ['@type' => 'State', 'name' => 'Oregon'],
-                ['@type' => 'State', 'name' => 'Arizona'],
             ],
             'openingHoursSpecification' => [
                 ['@type' => 'OpeningHoursSpecification', 'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday'], 'opens' => '09:00', 'closes' => '17:00'],
@@ -99,8 +98,8 @@ class PageController
         $pests = $db->fetchAll('SELECT slug, name, scientific_name, filename, description, threat_level, category FROM pest_photos ORDER BY sort_order, name');
 
         $meta = $this->meta(
-            'Pest Control in Washington, Idaho, Oregon & Arizona | Patriot Pest Control',
-            'Veteran-owned pest control across WA, ID, OR & AZ. Same-day service, eco-friendly family & pet safe treatments, 90-day warranty. Ants, spiders, rodents, bed bugs, termites & more.',
+            'Pest Control in Washington, Idaho & Oregon | Patriot Pest Control',
+            'Veteran-owned pest control across WA, ID & OR. Same-day service, eco-friendly family & pet safe treatments, 90-day warranty. Ants, spiders, rodents, bed bugs, termites & more.',
             '/',
             ['crumb' => [['Home', '/']]]
         );
@@ -116,7 +115,7 @@ class PageController
     {
         echo View::page('pages/about', [], $this->meta(
             'About Us - Veteran-Owned | Patriot Pest Control',
-            'Founded by U.S. Military Veteran Skyler Rose. Military discipline, integrity, and eco-friendly pest control across Washington, Idaho, Oregon & Arizona.',
+            'Founded by U.S. Military Veteran Skyler Rose. Military discipline, integrity, and eco-friendly pest control across Washington, Idaho & Oregon.',
             '/about'
         ));
     }
@@ -128,7 +127,7 @@ class PageController
         $pests = $db->fetchAll('SELECT slug, name, filename, category FROM pest_photos ORDER BY name');
         echo View::page('pages/services', ['pests' => $pests], $this->meta(
             'Pest Control Services - Every Pest We Treat | Patriot Pest Control',
-            'Complete pest control: ants, spiders, rodents, bed bugs, termites, mosquitoes, wasps, roaches, scorpions, wildlife & more across WA, ID, OR, AZ.',
+            'Complete pest control: ants, spiders, rodents, bed bugs, termites, mosquitoes, wasps, roaches, scorpions, wildlife & more across WA, ID, OR.',
             '/services'
         ));
     }
@@ -147,8 +146,8 @@ class PageController
     public function areas(): void
     {
         echo View::page('pages/areas', ['states' => $this->states()], $this->meta(
-            'Service Areas - WA, ID, OR & AZ | Patriot Pest Control',
-            'Pest control service areas across Spokane WA, Coeur d\'Alene ID, Hermiston OR, Phoenix AZ and surrounding communities.',
+            'Service Areas - WA, ID & OR | Patriot Pest Control',
+            'Pest control service areas across Spokane WA, Coeur d\'Alene ID, Hermiston OR and surrounding communities.',
             '/service-areas'
         ));
     }
@@ -188,7 +187,7 @@ class PageController
             'analytics_event' => Session::pullFlash('analytics_event'),
         ], $this->meta(
             'Contact Us - Free Quotes & Same-Day Service | Patriot Pest Control',
-            'Call (509) 471-5767 (WA/ID/OR) or (602) 755-8414 (AZ). Free quotes, same-day pest control service, 24/7 line.',
+            'Call (509) 471-5767. Free quotes, same-day pest control service, 24/7 line.',
             '/contact'
         ));
     }
@@ -292,14 +291,13 @@ class PageController
         echo View::page('pages/legal', ['kind' => 'terms'], $this->meta('Terms of Use | Patriot Pest Control', 'Terms of use for the Patriot Pest Control website and services.', '/terms-of-use'));
     }
 
-    /** The four-state coverage map data. */
+    /** The coverage map data. */
     protected function states(): array
     {
         return [
             'WA' => ['name' => 'Washington', 'cities' => ['Spokane','Spokane Valley','Cheney','Liberty Lake','Airway Heights','Medical Lake','Deer Park','Mead']],
             'ID' => ['name' => 'Idaho', 'cities' => ["Coeur d'Alene",'Post Falls','Hayden','Rathdrum']],
             'OR' => ['name' => 'Oregon', 'cities' => ['Hermiston','Milton-Freewater']],
-            'AZ' => ['name' => 'Arizona', 'cities' => ['Phoenix']],
         ];
     }
 
