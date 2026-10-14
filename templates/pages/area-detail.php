@@ -6,7 +6,7 @@
 $city = $data['city'] ?? [];
 $name = $city['city'] ?? 'Your Area';
 $st   = $city['stateName'] ?? '';
-$phone = ($city['state'] ?? '') === 'AZ' ? ['(602) 755-8414', '+16027558414'] : ['(509) 471-5767', '+15094715767'];
+$phone = ['(509) 471-5767', '+15094715767']; // one line for every city
 ?>
 <section class="block">
   <div class="wrap">
