@@ -37,7 +37,7 @@ class PestController extends PageController
 
         $meta = $this->meta(
             "{$pest['name']} Control Across 4 States | Patriot Pest Control",
-            ($pest['description'] ?? "Professional {$pest['name']} control") . ' Veteran-owned, eco-friendly, 90-day warranty across WA, ID, OR, AZ.',
+            ($pest['description'] ?? "Professional {$pest['name']} control") . ' Veteran-owned, eco-friendly, 90-day warranty across WA, ID, OR.',
             "/pest/{$pest['slug']}",
             [
                 'crumb'  => [['Home', '/'], ['Services', '/services'], [$pest['name'], "/pest/{$pest['slug']}"]],
@@ -65,7 +65,6 @@ class PestController extends PageController
                 ['@type' => 'State', 'name' => 'Washington'],
                 ['@type' => 'State', 'name' => 'Idaho'],
                 ['@type' => 'State', 'name' => 'Oregon'],
-                ['@type' => 'State', 'name' => 'Arizona'],
             ],
         ];
     }
