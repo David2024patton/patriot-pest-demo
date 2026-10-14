@@ -22,7 +22,7 @@ $bucketLabel = ['new_plan' => 'New Plans', 'upgrade' => 'Upsell / Add-ons', 'rea
       <div class="field"><label for="cta_label">Button text</label><input type="text" id="cta_label" name="cta_label" value="Learn More" maxlength="40"></div>
       <div class="field"><label for="cta_url">Button URL</label><input type="text" id="cta_url" name="cta_url" value="/prices" maxlength="200" placeholder="/prices"></div>
       <div class="form-row">
-        <div class="field"><label for="region">Region</label><select id="region" name="region"><?php foreach (['all'=>'All','wa'=>'WA','id'=>'ID','or'=>'OR','az'=>'AZ'] as $v=>$l): ?><option value="<?= $v ?>"><?= $l ?></option><?php endforeach; ?></select></div>
+        <div class="field"><label for="region">Region</label><select id="region" name="region"><?php foreach (['all'=>'All','wa'=>'WA','id'=>'ID','or'=>'OR'] as $v=>$l): ?><option value="<?= $v ?>"><?= $l ?></option><?php endforeach; ?></select></div>
         <div class="field"><label for="season">Season</label><select id="season" name="season"><?php foreach (['all'=>'All','spring'=>'Spring','summer'=>'Summer','fall'=>'Fall','winter'=>'Winter'] as $v=>$l): ?><option value="<?= $v ?>"><?= $l ?></option><?php endforeach; ?></select></div>
         <div class="field"><label for="weight">Weight</label><input type="number" id="weight" name="weight" value="1" min="1" max="10" style="width:70px"></div>
       </div>
