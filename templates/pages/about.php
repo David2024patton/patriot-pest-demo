@@ -14,7 +14,7 @@
     <div class="split" style="align-items:start">
       <div>
         <h2 style="font-family:var(--display);color:var(--cream)">Our <em>story.</em></h2>
-        <p style="color:var(--khaki);line-height:1.8;margin-top:.8rem">After serving our country, our founder brought the same dedication and precision learned in the military to protecting American homes and businesses. What started as a one-operator mission has grown into a trusted, licensed, bonded, and insured team serving Washington, Idaho, Oregon, and Arizona.</p>
+        <p style="color:var(--khaki);line-height:1.8;margin-top:.8rem">After serving our country, our founder brought the same dedication and precision learned in the military to protecting American homes and businesses. What started as a one-operator mission has grown into a trusted, licensed, bonded, and insured team serving Washington, Idaho, and Oregon.</p>
         <p style="color:var(--khaki);line-height:1.8;margin-top:1rem">We're not just eliminating pests. We're protecting what matters most. Every treatment is backed by our 90-day warranty and our 100% satisfaction guarantee.</p>
       </div>
       <div class="dossier-file">
