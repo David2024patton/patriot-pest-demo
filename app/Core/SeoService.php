@@ -24,7 +24,7 @@ final class SeoService
         $region  = trim((string) ($post['region'] ?? 'all'));
         $season  = trim((string) ($post['season'] ?? ''));
 
-        $regionLabel = ['all' => 'Washington, Idaho, Oregon & Arizona', 'wa' => 'Washington', 'id' => 'Idaho', 'or' => 'Oregon', 'az' => 'Arizona'][$region] ?? 'the service area';
+        $regionLabel = ['all' => 'Washington, Idaho & Oregon', 'wa' => 'Washington', 'id' => 'Idaho', 'or' => 'Oregon'][$region] ?? 'the service area';
 
         // meta title: Title | Pest Control | Region (<= ~64 chars)
         $metaTitle = mb_substr($title . ' | Patriot Pest Control', 0, 64);
