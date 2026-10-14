@@ -68,7 +68,7 @@ $selPhoto = $post['pest_photo_id'] ?? null;
       <div class="field">
         <label for="region">Target Region</label>
         <select id="region" name="region">
-          <?php foreach (['all' => 'All States', 'wa' => 'Washington', 'id' => 'Idaho', 'or' => 'Oregon', 'az' => 'Arizona'] as $v => $l): ?>
+          <?php foreach (['all' => 'All States', 'wa' => 'Washington', 'id' => 'Idaho', 'or' => 'Oregon', ] as $v => $l): ?>
             <option value="<?= $v ?>" <?= ($post['region'] ?? 'all') === $v ? 'selected' : '' ?>><?= $l ?></option>
           <?php endforeach; ?>
         </select>
