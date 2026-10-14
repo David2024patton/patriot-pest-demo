@@ -548,7 +548,7 @@ class AdminController extends PageController
         $status = $_POST['status'] ?? 'draft';
         $now    = date('Y-m-d H:i:s');
         $region = Validator::clean($_POST['region'] ?? 'all');
-        if (!in_array($region, ['all', 'wa', 'id', 'or', 'az'], true)) { $region = 'all'; }
+        if (!in_array($region, ['all', 'wa', 'id', 'or'], true)) { $region = 'all'; }
 
         // Automatic SEO: fill any empty SEO field from the article content.
         $metaTitle       = Validator::clean($_POST['meta_title'] ?? '');
@@ -894,7 +894,7 @@ class AdminController extends PageController
         $bucket = Validator::clean($_POST['bucket'] ?? 'new_plan');
         if (!in_array($bucket, ['new_plan', 'upgrade', 'reactivate', 'referral', 'review'], true)) { $bucket = 'new_plan'; }
         $region = Validator::clean($_POST['region'] ?? 'all');
-        if (!in_array($region, ['all', 'wa', 'id', 'or', 'az'], true)) { $region = 'all'; }
+        if (!in_array($region, ['all', 'wa', 'id', 'or'], true)) { $region = 'all'; }
         $season = Validator::clean($_POST['season'] ?? 'all');
         if (!in_array($season, ['all', 'spring', 'summer', 'fall', 'winter'], true)) { $season = 'all'; }
         $title = Validator::clean($_POST['title'] ?? '');
