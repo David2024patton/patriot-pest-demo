@@ -2,14 +2,14 @@
 /**
  * Geo - visitor region detection for localizing the site (phone number, etc.).
  *
- * Patriot runs two phone lines: the main WA/ID/OR line and a dedicated Arizona
- * line. This class figures out which line to show a visitor based on where they
- * appear to be, so an Arizonan sees the Arizona number front-and-center while
- * everyone else sees the main line.
+ * Patriot has ONE phone line, (509) 471-5767, shown to every visitor. This
+ * class resolves the visitor's region for coverage labels; since the Arizona
+ * operation was sold (2026-10), there is no second line and no Arizona
+ * region: every lookup resolves to the main 'wa' region.
  *
  * Detection order (first hit wins):
  *   1. Session cache - resolved once per visit, never re-computed per request.
- *   2. GEO_FORCE_REGION env var - lets you preview a region (e.g. "az") locally.
+ *   2. GEO_FORCE_REGION env var - lets you preview a region locally.
  *   3. On-disk cache keyed by IP (7-day TTL) - repeat visitors skip the lookup.
  *   4. A fast GeoIP lookup (ip-api.com, no key needed) with a short timeout.
  *   5. Default: 'wa' (the main line) - we never block or fail a page over this.
@@ -24,11 +24,10 @@ namespace PPC\Core;
 
 final class Geo
 {
-    /** The two phone regions and their lines. */
+    /** The phone region and its line. One number for everyone. */
     public const REGIONS = [
         'wa' => ['display' => '(509) 471-5767', 'tel' => '+15094715767', 'label' => 'WA, ID, OR', 'state' => 'Washington'],
-        'az' => ['display' => '(602) 755-8414', 'tel' => '+16027558414', 'label' => 'ARIZONA',   'state' => 'Arizona'],
-    ];
+            ];
 
     public const DEFAULT_REGION = 'wa';
 
@@ -42,7 +41,7 @@ final class Geo
     private static ?string $resolved = null;
 
     /**
-     * The visitor's region code: 'wa' (main line) or 'az' (Arizona line).
+     * The visitor's region code: 'wa' (the one and only line).
      */
     public static function region(): string
     {
@@ -76,34 +75,34 @@ final class Geo
         return self::$resolved = self::remember($region ?? self::DEFAULT_REGION);
     }
 
-    /** True when the visitor resolves to the Arizona line. */
+    /** Kept for template compatibility; there is no Arizona line anymore. */
     public static function isArizona(): bool
     {
         return self::region() === 'az';
     }
 
-    /** The phone number to show this visitor, e.g. "(602) 755-8414". */
+    /** The phone number to show this visitor, e.g. "(509) 471-5767". */
     public static function phoneDisplay(): string
     {
         return self::REGIONS[self::region()]['display'];
     }
 
-    /** The tel: href for this visitor, e.g. "tel:+16027558414". */
+    /** The tel: href for this visitor, e.g. "tel:+15094715767". */
     public static function phoneTel(): string
     {
         return 'tel:' . self::REGIONS[self::region()]['tel'];
     }
 
-    /** The coverage label for this visitor's line, e.g. "ARIZONA". */
+    /** The coverage label for this visitor's line, e.g. "WA, ID, OR". */
     public static function phoneLabel(): string
     {
         return self::REGIONS[self::region()]['label'];
     }
 
-    /** The other line (so templates can show both, primary first). */
+    /** The other line. There is only one line now, so this is the same region. */
     public static function otherRegion(): string
     {
-        return self::region() === 'az' ? 'wa' : 'az';
+        return self::region();
     }
 
     /* ============================ internals ============================ */
@@ -175,9 +174,8 @@ final class Geo
     }
 
     /**
-     * Live GeoIP lookup. Returns 'az' or 'wa', or null on any failure. Uses the
-     * free ip-api.com endpoint (no key required); the region field is the state
-     * code. Arizona → 'az'; everything else falls to the main 'wa' line.
+     * Live GeoIP lookup kept for future regions. With a single line, every
+     * state resolves to the main 'wa' region.
      */
     private static function lookup(string $ip): ?string
     {
@@ -193,6 +191,6 @@ final class Geo
             return null;
         }
         $state = strtoupper((string) ($data['region'] ?? ''));
-        return $state === 'AZ' ? 'az' : self::DEFAULT_REGION;
+        return self::DEFAULT_REGION;
     }
 }
