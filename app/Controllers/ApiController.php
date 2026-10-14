@@ -388,8 +388,8 @@ class ApiController
                 'response' => "We're open Monday-Friday 9AM-5PM and Saturday-Sunday 10AM-4PM. For urgent pest issues, we offer same-day service when possible. Call our 24/7 line at (509) 471-5767 for immediate assistance."
             ],
             'areas' => [
-                'keywords' => ['area', 'location', 'where', 'serve', 'cover', 'region', 'washington', 'idaho', 'oregon', 'arizona'],
-                'response' => "We serve Washington, Idaho, Oregon, and Arizona. In Washington, we cover Spokane, Spokane Valley, Cheney, Liberty Lake, Airway Heights, Medical Lake, Deer Park, and Mead. In Idaho: Coeur d'Alene, Post Falls, Hayden, and Rathdrum. In Oregon: Hermiston and Milton-Freewater. In Arizona: Phoenix."
+                'keywords' => ['area', 'location', 'where', 'serve', 'cover', 'region', 'washington', 'idaho', 'oregon'],
+                'response' => "We serve Washington, Idaho, and Oregon. In Washington, we cover Spokane, Spokane Valley, Cheney, Liberty Lake, Airway Heights, Medical Lake, Deer Park, and Mead. In Idaho: Coeur d'Alene, Post Falls, Hayden, and Rathdrum. In Oregon: Hermiston and Milton-Freewater."
             ],
             'appointment' => [
                 'keywords' => ['appointment', 'schedule', 'book', 'reserve', 'booked'],
