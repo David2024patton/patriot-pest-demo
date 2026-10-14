@@ -22,7 +22,7 @@ $pestCount = $data['pestCount'] ?? count($pests);
     <div>
       <div class="kicker"><span>🇺🇸</span> A PROUD VETERAN-OWNED AMERICAN COMPANY</div>
       <h1>Hostile pests?<br><span class="strike">Neutralized.</span></h1>
-      <p class="hero-sub">Military-precision pest control for homes and businesses across <b>Washington, Idaho, Oregon &amp; Arizona</b>. Eco-friendly treatments safe for your family and pets, with <b>same-day service</b> when it can't wait.</p>
+      <p class="hero-sub">Military-precision pest control for homes and businesses across <b>Washington, Idaho &amp; Oregon</b>. Eco-friendly treatments safe for your family and pets, with <b>same-day service</b> when it can't wait.</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="<?= $view->phoneHref() ?>">☎ Call <?= $view->phone() ?> <small><?= $view->phoneLabel() ?></small></a>
         <a class="btn btn-ghost" href="/prices">View Plans ▸</a>
@@ -110,9 +110,6 @@ $pestCount = $data['pestCount'] ?? count($pests);
       <div class="area-col"><h3>OR</h3><div class="area-cities">
         <a href="/areas/hermiston">Hermiston</a><a href="/areas/milton-freewater">Milton-Freewater</a>
       </div><span class="area-note">● 2 ZONES · SAME-DAY AVAILABLE</span></div>
-      <div class="area-col"><h3>AZ</h3><div class="area-cities">
-        <a href="/areas/phoenix">Phoenix</a>
-      </div><span class="area-note">● 1 ZONE · SAME-DAY AVAILABLE</span></div>
     </div>
   </div>
 </section>
