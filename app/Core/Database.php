@@ -225,7 +225,7 @@ final class Database
                     body       TEXT NOT NULL,
                     cta_label  TEXT NOT NULL,
                     cta_url    TEXT NOT NULL,
-                    region     TEXT NOT NULL DEFAULT 'all',  -- all | wa | id | or | az
+                    region     TEXT NOT NULL DEFAULT 'all',  -- all | wa | id | or
                     season     TEXT NOT NULL DEFAULT 'all',  -- all | spring | summer | fall | winter
                     weight     INTEGER NOT NULL DEFAULT 1,
                     active     INTEGER NOT NULL DEFAULT 1,
