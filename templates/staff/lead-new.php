@@ -148,7 +148,6 @@ $flash = $data['flash'] ?? null;
         <p style="margin-top:.8rem"><strong>District Selection:</strong></p>
         <ul style="margin-left:1.5rem;margin-top:.4rem;line-height:1.6">
           <li><strong>WA District:</strong> Washington, Idaho, Oregon operations</li>
-          <li><strong>AZ District:</strong> Arizona operations</li>
         </ul>
       </div>
     </div>
