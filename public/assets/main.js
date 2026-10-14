@@ -127,7 +127,7 @@ if (briefEl){
 /* ---------- ticker ---------- */
 var tick = document.getElementById("ticker-track");
 if (tick && !tick.children.length){
-  var CITIES = ["Spokane","Spokane Valley","Cheney","Liberty Lake","Airway Heights","Medical Lake","Deer Park","Mead","Coeur d'Alene","Post Falls","Hayden","Rathdrum","Hermiston","Milton-Freewater","Phoenix"];
+  var CITIES = ["Spokane","Spokane Valley","Cheney","Liberty Lake","Airway Heights","Medical Lake","Deer Park","Mead","Coeur d'Alene","Post Falls","Hayden","Rathdrum","Hermiston","Milton-Freewater"];
   var seq = CITIES.map(function(c){return "<span><i>▸</i>"+c.toUpperCase()+" - SAME-DAY AVAILABLE</span>";}).join("");
   tick.innerHTML = seq + seq;
 }
