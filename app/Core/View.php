@@ -88,12 +88,12 @@ final class View
             {
                 return Geo::phoneTel();
             }
-            /** Coverage label for this visitor's line (e.g. "ARIZONA"). */
+            /** Coverage label for the line (e.g. "WA, ID, OR"). */
             public function phoneLabel(): string
             {
                 return Geo::phoneLabel();
             }
-            /** True if this visitor should see the Arizona line. */
+            /** Kept for template compatibility; there is no Arizona line anymore. */
             public function isArizona(): bool
             {
                 return Geo::isArizona();
