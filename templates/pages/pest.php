@@ -81,7 +81,7 @@ $fileNo = str_pad((string) (($pest['sort_order'] ?? 0) + 1), 3, '0', STR_PAD_LEF
         </ul>
       </div>
     </div>
-    <div class="promise" style="margin-top:1.6rem"><b>🛡️ 90-Day Warranty:</b> if <?= $view->e(strtolower($pest['name'])) ?> return between scheduled visits, we re-treat at no additional cost. Licensed, bonded, and insured across Washington, Idaho, Oregon &amp; Arizona.</div>
+    <div class="promise" style="margin-top:1.6rem"><b>🛡️ 90-Day Warranty:</b> if <?= $view->e(strtolower($pest['name'])) ?> return between scheduled visits, we re-treat at no additional cost. Licensed, bonded, and insured across Washington, Idaho &amp; Oregon.</div>
   </div>
 </section>
 
@@ -111,7 +111,6 @@ $fileNo = str_pad((string) (($pest['sort_order'] ?? 0) + 1), 3, '0', STR_PAD_LEF
     <p class="lead">Same-day service available. Free quotes, transparent pricing, 90-day warranty.</p>
     <div class="hero-ctas" style="justify-content:center;margin-top:1.4rem">
       <a class="btn btn-primary" href="tel:+15094715767">☎ (509) 471-5767 <small>WA, ID, OR</small></a>
-      <a class="btn btn-ghost" href="tel:+16027558414">☎ (602) 755-8414 <small>ARIZONA</small></a>
     </div>
   </div>
 </section>
