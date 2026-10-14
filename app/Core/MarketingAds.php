@@ -66,7 +66,7 @@ final class MarketingAds
             default                     => 'winter',
         };
         $region = strtolower(trim((string) ($customer['state'] ?? $customer['district'] ?? 'all')));
-        $region = in_array($region, ['wa', 'id', 'or', 'az'], true) ? $region : 'all';
+        $region = in_array($region, ['wa', 'id', 'or'], true) ? $region : 'all';
 
         $rows = $db->fetchAll(
             "SELECT * FROM marketing_ads WHERE active = 1 AND bucket = ? AND (region = ? OR region = 'all') AND (season = ? OR season = 'all')",
