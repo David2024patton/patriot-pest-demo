@@ -137,7 +137,7 @@
     <div class="foot-grid">
       <div>
         <div class="foot-brand"><span style="color:var(--orange)">★</span> PATRIOT PEST CONTROL</div>
-        <p>Veteran-owned pest control for homes &amp; businesses across Washington, Idaho, Oregon &amp; Arizona. Founded by U.S. Military Veteran Skyler Rose. Eco-friendly, family &amp; pet safe, 100% satisfaction guaranteed.</p>
+        <p>Veteran-owned pest control for homes &amp; businesses across Washington, Idaho &amp; Oregon. Founded by U.S. Military Veteran Skyler Rose. Eco-friendly, family &amp; pet safe, 100% satisfaction guaranteed.</p>
       </div>
       <div>
         <h4>Quick Links</h4>
@@ -155,9 +155,9 @@
       <div>
         <h4>Contact</h4>
         <?php
-          // Show the visitor's local line first, then the other one.
+          // One line for every visitor.
           $__primary = \PPC\Core\Geo::region();
-          $__order   = [$__primary, \PPC\Core\Geo::otherRegion()];
+          $__order   = [$__primary];
         ?>
         <?php foreach ($__order as $__r): $__line = \PPC\Core\Geo::REGIONS[$__r]; ?>
           <a href="tel:<?= $view->e($__line['tel']) ?>"><?= $view->e($__line['display']) ?> - <?= $view->e($__line['label']) ?></a>
